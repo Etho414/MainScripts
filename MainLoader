@@ -1,9 +1,19 @@
 -- Main way to load scripts for each game!
 
+--[[
+
+  Xeno Online 2 - 10366978580 - https://www.roblox.com/games/10366978580/Xeno-Online-II-NEW-CODE
+
+
+
+]]
+
+
 if not game:IsLoaded() then
   game.Loaded:Wait()
 end
 
 if game.GameId == 3785125742 then 
+    print("Loading Xeno Online 2!")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/Xeno%20Online%202", true))()
 end
