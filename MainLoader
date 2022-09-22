@@ -5,5 +5,5 @@ if not game:IsLoaded() then
 end
 
 if game.GameId == 3785125742 then 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/jasonw33/MainScripts/main/Xeno%20Online%202", true))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/Xeno%20Online%202", true))()
 end
