@@ -2,6 +2,23 @@
 
 -- Oh hi there :D:D
 
+
+_G.CanAttackDisabler = true 
+-- Tp Gui
+_G.ToggleGUIKey =  "RightShift"
+-- Flying Speed
+_G.FlySpeed = 10
+
+-- ESP Settings
+_G.EspKey = "G"
+_G.ShowHp = true -- Shows HP On ESP
+_G.UsePercentage = true -- Shows it in percentages
+_G.ShowLifeForce = true
+
+
+_G.LagServer = false
+
+
 local Ver = "Text"
 local NameOfExe,ExeVer = identifyexecutor()
 if ExeVer == "5bcbba6" then
