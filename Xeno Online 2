@@ -168,27 +168,27 @@ function CreateBPCounter()
      TextLabel.TextWrapped = true
    
      config.SpeedBoost.Changed:connect(function()
+          if config:FindFirstChild("SpeedBoost") == true then
           config.SpeedBoost.Value = _G.FlySpeed
+          
+          end
      end)
      config.SpeedBoost.Value = _G.FlySpeed
      config.AttackCooldown.Changed:connect(function()
-          if _G.CanAttackDisabler == true then
+          if _G.CanAttackDisabler == true and  config:FindFirstChild("AttackCooldown") == true  then
                config.AttackCooldown.Value = false
 
           end
          
      end)
      config.BattlePower.Changed:connect(function()
-        if Checks(game.Players.LocalPlayer) == true then
-            TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
-        end
+          if config:FindFirstChild("BattlePower") == true then
+               TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
+          end
+ 
+        
        
      end)
-     while wait(0.5) do  
-        if Checks(game.Players.LocalPlayer) == true then
-            TextLabel.Text = "BP: "..tostring(config.BattlePower.Value)
-        end
-     end
 end
 coroutine.wrap(CreateBPCounter)()
 
