@@ -13,7 +13,7 @@ _G.FlySpeed = 10
 _G.EspKey = "G"
 _G.ShowHp = true -- Shows HP On ESP
 _G.UsePercentage = true -- Shows it in percentages
-_G.ShowLifeForce = true
+_G.ShowLethalBlow = true
 
 
 _G.LagServer = false
@@ -28,7 +28,7 @@ else
 end
 local TurnOn = true 
 function Checks(v)
-    if v and v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Config") and v.Character.Config:FindFirstChild("BattlePower") and TurnOn == true  then
+    if v and v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Config") and v.Character.Config:FindFirstChild("BattlePower") and TurnOn == true  and v:FindFirstChild("LethalBlows") then
         return true        
 
     else 
@@ -36,6 +36,7 @@ function Checks(v)
     end
 end
 local function round(n)
+     if n < 0 then return n end
 	return math.floor(n + 0.5)
 end
 function GetPercent(i,v)
@@ -66,6 +67,9 @@ function ESP(v)
                          else
                               Texte.Text = Texte.Text.." HP: "..tostring(round(GetPercent(v.Character.Health.Value,v.Character.Health.Max.Value))).."%"
                          end 
+                    end
+                    if _G.ShowLethalBlow == true then
+                         Texte.Text = Texte.Text.." LB: "..tostring(v.LethalBlows.Value)
                     end
                     Texte.Position = Vector2.new(Pos.x - 80,Pos.y - 40)
                else
@@ -443,14 +447,14 @@ function CreateSetting()
      ShowLifeForceBut.Position = UDim2.new(0.125, 0, 0.446043164, 0)
      ShowLifeForceBut.Size = UDim2.new(0, 149, 0, 29)
      ShowLifeForceBut.Font = Enum.Font.SourceSans
-     ShowLifeForceBut.Text = "Show Life Force: "..tostring(_G.ShowLifeForce)
+     ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
      ShowLifeForceBut.TextColor3 = Color3.fromRGB(0, 0, 0)
      ShowLifeForceBut.TextScaled = true
      ShowLifeForceBut.TextSize = 14.000
      ShowLifeForceBut.TextWrapped = true
      ShowLifeForceBut.MouseButton1Click:connect(function()
-          _G.ShowLifeForce = not _G.ShowLifeForce
-          ShowLifeForceBut.Text = "Show Life Force: "..tostring(_G.ShowLifeForce)
+          _G.ShowLethalBlow = not _G.ShowLethalBlow
+          ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
      end)
 
 
