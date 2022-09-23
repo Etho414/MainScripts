@@ -1,542 +1,538 @@
 
 
--- Oh hi there :D:D
+     -- Oh hi there :D:D
 
 
-_G.CanAttackDisabler = true 
--- Tp Gui
-_G.ToggleGUIKey =  "RightShift"
--- Flying Speed
-_G.FlySpeed = 10
+     _G.CanAttackDisabler = true 
 
--- ESP Settings
-_G.EspKey = "G"
-_G.ShowHp = true -- Shows HP On ESP
-_G.UsePercentage = true -- Shows it in percentages
-_G.ShowLethalBlow = true
+     _G.ToggleGUIKey =  "RightShift"
 
+     _G.FlySpeed = 10
 
-_G.LagServer = false
-
-
-local Ver = "Text"
-local NameOfExe,ExeVer = identifyexecutor()
-if ExeVer == "5bcbba6" then
-    Ver = "Text"
-else
-    Ver = "Name"
-end
-local TurnOn = true 
-function Checks(v)
-    if v and v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Config") and v.Character.Config:FindFirstChild("BattlePower") and TurnOn == true  and v:FindFirstChild("LethalBlows") then
-        return true        
-
-    else 
-        return false 
-    end
-end
-local function round(n)
-     if n < 0 then return n end
-	return math.floor(n + 0.5)
-end
-function GetPercent(i,v)
-     return (i / v) * 100
-
-end 
-function ESP(v)
-    local Texte;
-    if Ver == "Text" then
-        Texte = Text.new()
-    elseif Ver == "Name" then
-        Texte = Drawing.new("Text")
-
-    end
-
-     Texte.Text = v.Name
-     Texte.Visible = false 
-     Texte.Size = 20
-     game:GetService("RunService").RenderStepped:connect(function()
-          if Checks(v) == true then 
-               local Pos,Ons = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
-               if Ons then
-                    Texte.Visible = true 
-                    Texte.Text = v.Name.." BP: "..tostring(v.Character.Config.BattlePower.Value)
-                    if _G.ShowHp == true then
-                         if _G.UsePercentage == false then 
-                              Texte.Text = Texte.Text.." HP: "..tostring(round(v.Character.Health.Value)).."/"..tostring(round(v.Character.Health.Max.Value))
-                         else
-                              Texte.Text = Texte.Text.." HP: "..tostring(round(GetPercent(v.Character.Health.Value,v.Character.Health.Max.Value))).."%"
-                         end 
-                    end
-                    if _G.ShowLethalBlow == true then
-                         Texte.Text = Texte.Text.." LB: "..tostring(v.LethalBlows.Value)
-                    end
-                    Texte.Position = Vector2.new(Pos.x - 80,Pos.y - 40)
-               else
-                    Texte.Visible = false 
-            end
-            
-        else 
-            Texte.Visible = false
-        end
-        
-    
-    end)
-
-end
-
-for i,v in pairs(game.Players:GetChildren()) do
-    ESP(v)
-end
-game.Players.ChildAdded:connect(function(v)
-    ESP(v)
-end)
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
-    if input.KeyCode == Enum.KeyCode[_G.EspKey] then
-        TurnOn = not TurnOn
-
-    end
-end)
-
-function dragify(MainFrame)
-
-	local dragging
-	local dragInput
-	local dragStart
-	local startPos
-
-	local function update(input)
-		Delta = input.Position - dragStart
-		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-		game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
-	end
-
-	MainFrame.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = MainFrame.Position
-
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-
-	MainFrame.InputChanged:Connect(function(input)
-		if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			dragInput = input
-		end
-	end)
-
-	game:GetService("UserInputService").InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			update(input)
-		end
-	end)
-end
-
-function CreateBPCounter()
-
-
-     local player = game.Players.LocalPlayer
-     local config = player.Character:WaitForChild("Config")
-
-     local ScreenGui = Instance.new("ScreenGui")
-     local Frame = Instance.new("Frame")
-     local TextLabel = Instance.new("TextLabel")
-
-     ScreenGui.Parent = game.CoreGui
-     Frame.Parent = ScreenGui
-     Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     Frame.Position = UDim2.new(0.235841081, 0, 0.318107665, 0)
-     Frame.Size = UDim2.new(0, 150, 0, 30)
-     Frame.Active = true 
-     dragify(Frame)
-
-     TextLabel.Parent = Frame
-     TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     TextLabel.Position = UDim2.new(-0.00415891409, 0, -0.0152256787, 0)
-     TextLabel.Size = UDim2.new(0, 150, 0, 30)
-     TextLabel.Font = Enum.Font.SourceSans
-     TextLabel.Text = "BP: "..tostring(player.Character.Config.BattlePower.Value)
-     TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-     TextLabel.TextScaled = true
-     TextLabel.TextSize = 14.000
-     TextLabel.TextWrapped = true
-   
-     config.SpeedBoost.Changed:connect(function()
-          if config:FindFirstChild("SpeedBoost") == true then
-          config.SpeedBoost.Value = _G.FlySpeed
-          
-          end
-     end)
-     config.SpeedBoost.Value = _G.FlySpeed
-     config.AttackCooldown.Changed:connect(function()
-          if _G.CanAttackDisabler == true and  config:FindFirstChild("AttackCooldown") == true  then
-               config.AttackCooldown.Value = false
-
-          end
-         
-     end)
-     config.BattlePower.Changed:connect(function()
-          if config:FindFirstChild("BattlePower") == true then
-               TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
-          end
  
-        
-       
-     end)
-end
-coroutine.wrap(CreateBPCounter)()
+     _G.EspKey = "G"
+     _G.ShowHp = true 
+     _G.UsePercentage = true
+     _G.ShowLethalBlow = false
 
-function CreateTP()
 
-     local ScreenGui = Instance.new("ScreenGui")
-     local Main = Instance.new("Frame")
-     local CloneArea = Instance.new("Frame")
-     local GridLayout = Instance.new("UIGridLayout")
-     local CloneBut = Instance.new("TextButton")
-     local MainLab = Instance.new("TextLabel")
-     local CloseMain = Instance.new("TextButton")
-     local KeyBox = Instance.new("TextBox")
-     game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
-          if not gpe and i.KeyCode == Enum.KeyCode[_G.ToggleGUIKey] then 
-               ScreenGui.Enabled = not ScreenGui.Enabled
-          end
-     end)
+     _G.LagServer = false
 
-     ScreenGui.Parent = game.CoreGui
-     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-     Main.Name = "Main"
-     Main.Parent = ScreenGui
-     Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     Main.Position = UDim2.new(0.392036766, 0, 0.289962828, 0)
-     Main.Size = UDim2.new(0, 200, 0, 16)
-     Main.Active = true
-     dragify(Main)
+     local Ver = "Text"
+     local NameOfExe,ExeVer = identifyexecutor()
+     if ExeVer == "5bcbba6" then
+     Ver = "Text"
+     else
+     Ver = "Name"
+     end
+     local TurnOn = true 
+     function Checks(v)
+     if v and v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Config") and v.Character.Config:FindFirstChild("BattlePower") and TurnOn == true  and v:FindFirstChild("LethalBlows") then
+          return true        
 
-     CloneArea.Name = "CloneArea"
-     CloneArea.Parent = Main
-     CloneArea.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     CloneArea.Position = UDim2.new(0, 0, 1, 0)
-     CloneArea.Size = UDim2.new(0, 200, 0, 0)
+     else 
+          return false 
+     end
+     end
+     local function round(n)
+          if n < 0 then return n end
+          return math.floor(n + 0.5)
+     end
+     function GetPercent(i,v)
+          return (i / v) * 100
 
-     GridLayout.Name = "GridLayout"
-     GridLayout.Parent = CloneArea
-     GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-     GridLayout.CellPadding = UDim2.new(0, 20, 0, 0)
-     GridLayout.CellSize = UDim2.new(0, 80, 0, 20)
-     GridLayout.FillDirectionMaxCells = 2
+     end 
+     function ESP(v)
+     local Texte;
+     if Ver == "Text" then
+          Texte = Text.new()
+     elseif Ver == "Name" then
+          Texte = Drawing.new("Text")
 
-     CloneBut.Name = "CloneBut"
-     CloneBut.Parent = CloneArea
-     CloneBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     CloneBut.Position = UDim2.new(0.267993867, 0, 0.485130101, 0)
-     CloneBut.Size = UDim2.new(0, 50, 0, 15)
-     CloneBut.Visible = false
-     CloneBut.Font = Enum.Font.SourceSans
-     CloneBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     CloneBut.TextSize = 14.000
-
-     MainLab.Name = "MainLab"
-     MainLab.Parent = Main
-     MainLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     MainLab.Size = UDim2.new(0, 200, 0, 16)
-     MainLab.Font = Enum.Font.SourceSans
-     MainLab.Text = "Click A Name To Teleport To Them"
-     MainLab.TextColor3 = Color3.fromRGB(0, 0, 0)
-     MainLab.TextSize = 14.000
-     MainLab.TextXAlignment = Enum.TextXAlignment.Left
-
-     CloseMain.Name = "CloseMain"
-     CloseMain.Parent = Main
-     CloseMain.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     CloseMain.Position = UDim2.new(0.920000017, 0, 0, 0)
-     CloseMain.Size = UDim2.new(0, 16, 0, 16)
-     CloseMain.Font = Enum.Font.SourceSans
-     CloseMain.Text = "X"
-     CloseMain.TextColor3 = Color3.fromRGB(0, 0, 0)
-     CloseMain.TextSize = 14.000
-
-     KeyBox.Name = "KeyBox"
-     KeyBox.Parent = CloneBut
-     KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     KeyBox.Position = UDim2.new(1, 0, 0, 0)
-     KeyBox.Size = UDim2.new(0, 20, 0, 20)
-     KeyBox.Font = Enum.Font.SourceSans
-     KeyBox.Text = ""
-     KeyBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-     KeyBox.TextSize = 14.000
-
-     local player = game.Players.LocalPlayer
-     for i,v in pairs(game.Players:GetChildren()) do
-          if v ~= player then
-               local clone = CloneBut:Clone()
-               clone.Parent = CloneArea
-               clone.Text = v.Name
-               clone.Name = v.Name
-               clone.Active = true
-               clone.TextScaled = true
-               clone.Visible = true
-               local function clickname()
-                    clone.MouseButton1Click:connect(function()
-                         if clone == nil then return end
-                         player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
-                    end)
-                    game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
-                         if clone == nil then return end
-                         if clone:FindFirstChild("KeyBox") == nil then return end 
-                         if clone.KeyBox.Text == "" then return end 
-                  
-                    if key.KeyCode == Enum.KeyCode[string.upper(clone.KeyBox.Text)] then
-                         player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
-                    end
-               end)
-               end 
-               coroutine.wrap(clickname)()
-          end
      end
 
+          Texte.Text = v.Name
+          Texte.Visible = false 
+          Texte.Size = 20
+          game:GetService("RunService").RenderStepped:connect(function()
+               if Checks(v) == true then 
+                    local Pos,Ons = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                    if Ons then
+                         Texte.Visible = true 
+                         Texte.Text = v.Name.." BP: "..tostring(v.Character.Config.BattlePower.Value)
+                         if _G.ShowHp == true then
+                              if _G.UsePercentage == false then 
+                                   Texte.Text = Texte.Text.." HP: "..tostring(round(v.Character.Health.Value)).."/"..tostring(round(v.Character.Health.Max.Value))
+                              else
+                                   Texte.Text = Texte.Text.." HP: "..tostring(round(GetPercent(v.Character.Health.Value,v.Character.Health.Max.Value))).."%"
+                              end 
+                         end
+                         if _G.ShowLethalBlow == true then
+                              Texte.Text = Texte.Text.." LB: "..tostring(v.LethalBlows.Value)
+                         end
+                         Texte.Position = Vector2.new(Pos.x - 80,Pos.y - 40)
+                    else
+                         Texte.Visible = false 
+               end
+               
+          else 
+               Texte.Visible = false
+          end
+          
+     
+     end)
 
-     game.Players.ChildAdded:Connect(function(v)
-          if v ~= player then
-               local clone = CloneBut:Clone()
-               clone.Parent = CloneArea
-               clone.Text = v.Name
-               clone.Name = v.Name
-               clone.Active = true
-               clone.TextScaled = true
-               clone.Visible = true
-               local function clickname()
-                    clone.MouseButton1Click:connect(function()
-                         if clone == nil then return end
-                         player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
+     end
+
+     for i,v in pairs(game.Players:GetChildren()) do
+     ESP(v)
+     end
+     game.Players.ChildAdded:connect(function(v)
+     ESP(v)
+     end)
+     game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
+     if input.KeyCode == Enum.KeyCode[_G.EspKey] then
+          TurnOn = not TurnOn
+
+     end
+     end)
+
+     function dragify(MainFrame)
+
+          local dragging
+          local dragInput
+          local dragStart
+          local startPos
+
+          local function update(input)
+               Delta = input.Position - dragStart
+               Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+               game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
+          end
+
+          MainFrame.InputBegan:Connect(function(input)
+               if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    dragStart = input.Position
+                    startPos = MainFrame.Position
+
+                    input.Changed:Connect(function()
+                         if input.UserInputState == Enum.UserInputState.End then
+                              dragging = false
+                         end
                     end)
-                    game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
-                         if clone == nil then return end
-                         if clone:FindFirstChild("KeyBox") == nil then return end 
-                         if clone.KeyBox.Text == "" then return end 
-                         
+               end
+          end)
+
+          MainFrame.InputChanged:Connect(function(input)
+               if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                    dragInput = input
+               end
+          end)
+
+          game:GetService("UserInputService").InputChanged:Connect(function(input)
+               if input == dragInput and dragging then
+                    update(input)
+               end
+          end)
+     end
+
+     function CreateBPCounter()
+
+
+          local player = game.Players.LocalPlayer
+          local config = player.Character:WaitForChild("Config")
+
+          local ScreenGui = Instance.new("ScreenGui")
+          local Frame = Instance.new("Frame")
+          local TextLabel = Instance.new("TextLabel")
+
+          ScreenGui.Parent = game.CoreGui
+          Frame.Parent = ScreenGui
+          Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          Frame.Position = UDim2.new(0.235841081, 0, 0.318107665, 0)
+          Frame.Size = UDim2.new(0, 150, 0, 30)
+          Frame.Active = true 
+          dragify(Frame)
+
+          TextLabel.Parent = Frame
+          TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          TextLabel.Position = UDim2.new(-0.00415891409, 0, -0.0152256787, 0)
+          TextLabel.Size = UDim2.new(0, 150, 0, 30)
+          TextLabel.Font = Enum.Font.SourceSans
+          TextLabel.Text = "BP: "..tostring(player.Character.Config.BattlePower.Value)
+          TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+          TextLabel.TextScaled = true
+          TextLabel.TextSize = 14.000
+          TextLabel.TextWrapped = true
+     
+          config.SpeedBoost.Changed:connect(function()
+               if config:FindFirstChild("SpeedBoost") == true then
+               config.SpeedBoost.Value = _G.FlySpeed
+               
+               end
+          end)
+          config.SpeedBoost.Value = _G.FlySpeed
+          config.AttackCooldown.Changed:connect(function()
+               if _G.CanAttackDisabler == true then
+                    print("Changed Attack")
+                    config.AttackCooldown.Value = false
+
+               end
+          
+          end)
+          config.BattlePower.Changed:connect(function()
+               TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
+          end)
+     end
+     coroutine.wrap(CreateBPCounter)()
+
+     function CreateTP()
+
+          local ScreenGui = Instance.new("ScreenGui")
+          local Main = Instance.new("Frame")
+          local CloneArea = Instance.new("Frame")
+          local GridLayout = Instance.new("UIGridLayout")
+          local CloneBut = Instance.new("TextButton")
+          local MainLab = Instance.new("TextLabel")
+          local CloseMain = Instance.new("TextButton")
+          local KeyBox = Instance.new("TextBox")
+          game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
+               if not gpe and i.KeyCode == Enum.KeyCode[_G.ToggleGUIKey] then 
+                    ScreenGui.Enabled = not ScreenGui.Enabled
+               end
+          end)
+
+          ScreenGui.Parent = game.CoreGui
+          ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+          Main.Name = "Main"
+          Main.Parent = ScreenGui
+          Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          Main.Position = UDim2.new(0.392036766, 0, 0.289962828, 0)
+          Main.Size = UDim2.new(0, 200, 0, 16)
+          Main.Active = true
+          dragify(Main)
+
+          CloneArea.Name = "CloneArea"
+          CloneArea.Parent = Main
+          CloneArea.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          CloneArea.Position = UDim2.new(0, 0, 1, 0)
+          CloneArea.Size = UDim2.new(0, 200, 0, 0)
+
+          GridLayout.Name = "GridLayout"
+          GridLayout.Parent = CloneArea
+          GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+          GridLayout.CellPadding = UDim2.new(0, 20, 0, 0)
+          GridLayout.CellSize = UDim2.new(0, 80, 0, 20)
+          GridLayout.FillDirectionMaxCells = 2
+
+          CloneBut.Name = "CloneBut"
+          CloneBut.Parent = CloneArea
+          CloneBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          CloneBut.Position = UDim2.new(0.267993867, 0, 0.485130101, 0)
+          CloneBut.Size = UDim2.new(0, 50, 0, 15)
+          CloneBut.Visible = false
+          CloneBut.Font = Enum.Font.SourceSans
+          CloneBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          CloneBut.TextSize = 14.000
+
+          MainLab.Name = "MainLab"
+          MainLab.Parent = Main
+          MainLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          MainLab.Size = UDim2.new(0, 200, 0, 16)
+          MainLab.Font = Enum.Font.SourceSans
+          MainLab.Text = "Click A Name To Teleport To Them"
+          MainLab.TextColor3 = Color3.fromRGB(0, 0, 0)
+          MainLab.TextSize = 14.000
+          MainLab.TextXAlignment = Enum.TextXAlignment.Left
+
+          CloseMain.Name = "CloseMain"
+          CloseMain.Parent = Main
+          CloseMain.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          CloseMain.Position = UDim2.new(0.920000017, 0, 0, 0)
+          CloseMain.Size = UDim2.new(0, 16, 0, 16)
+          CloseMain.Font = Enum.Font.SourceSans
+          CloseMain.Text = "X"
+          CloseMain.TextColor3 = Color3.fromRGB(0, 0, 0)
+          CloseMain.TextSize = 14.000
+
+          KeyBox.Name = "KeyBox"
+          KeyBox.Parent = CloneBut
+          KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          KeyBox.Position = UDim2.new(1, 0, 0, 0)
+          KeyBox.Size = UDim2.new(0, 20, 0, 20)
+          KeyBox.Font = Enum.Font.SourceSans
+          KeyBox.Text = ""
+          KeyBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+          KeyBox.TextSize = 14.000
+
+          local player = game.Players.LocalPlayer
+          for i,v in pairs(game.Players:GetChildren()) do
+               if v ~= player then
+                    local clone = CloneBut:Clone()
+                    clone.Parent = CloneArea
+                    clone.Text = v.Name
+                    clone.Name = v.Name
+                    clone.Active = true
+                    clone.TextScaled = true
+                    clone.Visible = true
+                    local function clickname()
+                         clone.MouseButton1Click:connect(function()
+                              if clone == nil then return end
+                              player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
+                         end)
+                         game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
+                              if clone == nil then return end
+                              if clone:FindFirstChild("KeyBox") == nil then return end 
+                              if clone.KeyBox.Text == "" then return end 
+                    
                          if key.KeyCode == Enum.KeyCode[string.upper(clone.KeyBox.Text)] then
                               player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
                          end
                     end)
-               end 
-               coroutine.wrap(clickname)()
-          end
-     end)
-     game.Players.ChildRemoved:Connect(function(v)
-          CloneArea[v.Name]:Destroy()
-     end)
-
-
-     CloseMain.MouseButton1Click:Connect(function()
-          if CloneArea.Visible == true then
-               CloneArea.Visible = false
-          else
-               CloneArea.Visible = true
-          end
-     
-     end)
-
-
-end
-coroutine.wrap(CreateTP)()
-
-
-
-function CreateSetting()
-     local SettingsGUI = Instance.new("ScreenGui")
-     local Main = Instance.new("Frame")
-     local SetBindEsp = Instance.new("TextButton")
-     local ShowHealthBut = Instance.new("TextButton")
-     local UsePercentageHealthBut = Instance.new("TextButton")
-     local ShowLifeForceBut = Instance.new("TextButton")
-     local LagServerBut = Instance.new("TextButton")
-     local FlYSpeedLab = Instance.new("TextLabel")
-     local FlyspeedBox = Instance.new("TextBox")
-     local CanAttackDisablerBut = Instance.new("TextButton")
-
-     game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
-          if not gpe and i.KeyCode == Enum.KeyCode[_G.ToggleGUIKey] then 
-               SettingsGUI.Enabled = not SettingsGUI.Enabled
-          end
-     end)
-     SettingsGUI.Name = "SettingsGUI"
-     SettingsGUI.Parent = game.CoreGui
-
-     Main.Name = "Main"
-     Main.Parent = SettingsGUI
-     Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     Main.Position = UDim2.new(0.798647642, 0, 0.435562819, 0)
-     Main.Size = UDim2.new(0, 200, 0, 278)
-    dragify(Main)
-     SetBindEsp.Name = "SetBindEsp"
-     SetBindEsp.Parent = Main
-     SetBindEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     SetBindEsp.Position = UDim2.new(0.125, 0, 0.0683453232, 0)
-     SetBindEsp.Size = UDim2.new(0, 149, 0, 29)
-     SetBindEsp.Font = Enum.Font.SourceSans
-     SetBindEsp.Text = "Change ESP Bind: "..tostring(_G.EspKey)
-     SetBindEsp.TextColor3 = Color3.fromRGB(0, 0, 0)
-     SetBindEsp.TextScaled = true
-     SetBindEsp.TextSize = 14.000
-     SetBindEsp.TextWrapped = true
-
-     local ChangingESPBind = false
-
-     SetBindEsp.MouseButton1Click:connect(function()
-          ChangingESPBind = true
-           SetBindEsp.Text = "Changing Bind..."
-     end)
-     game:GetService("UserInputService").InputBegan:connect(function(i)
-          if ChangingESPBind == true then
-               if i.KeyCode ~= Enum.KeyCode.Unknown then
-                    _G.EspKey = i.KeyCode.Name
-                    SetBindEsp.Text = "Change ESP Bind: ".._G.EspKey  
-                    ChangingESPBind = false 
+                    end 
+                    coroutine.wrap(clickname)()
                end
-          end 
-     end)
+          end
+
+
+          game.Players.ChildAdded:Connect(function(v)
+               if v ~= player then
+                    local clone = CloneBut:Clone()
+                    clone.Parent = CloneArea
+                    clone.Text = v.Name
+                    clone.Name = v.Name
+                    clone.Active = true
+                    clone.TextScaled = true
+                    clone.Visible = true
+                    local function clickname()
+                         clone.MouseButton1Click:connect(function()
+                              if clone == nil then return end
+                              player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
+                         end)
+                         game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
+                              if clone == nil then return end
+                              if clone:FindFirstChild("KeyBox") == nil then return end 
+                              if clone.KeyBox.Text == "" then return end 
+                              
+                              if key.KeyCode == Enum.KeyCode[string.upper(clone.KeyBox.Text)] then
+                                   player.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[clone.Name].Character.HumanoidRootPart.Position)
+                              end
+                         end)
+                    end 
+                    coroutine.wrap(clickname)()
+               end
+          end)
+          game.Players.ChildRemoved:Connect(function(v)
+               CloneArea[v.Name]:Destroy()
+          end)
+
+
+          CloseMain.MouseButton1Click:Connect(function()
+               if CloneArea.Visible == true then
+                    CloneArea.Visible = false
+               else
+                    CloneArea.Visible = true
+               end
+          
+          end)
+
+
+     end
+     coroutine.wrap(CreateTP)()
+
+
+
+     function CreateSetting()
+          local SettingsGUI = Instance.new("ScreenGui")
+          local Main = Instance.new("Frame")
+          local SetBindEsp = Instance.new("TextButton")
+          local ShowHealthBut = Instance.new("TextButton")
+          local UsePercentageHealthBut = Instance.new("TextButton")
+          local ShowLifeForceBut = Instance.new("TextButton")
+          local LagServerBut = Instance.new("TextButton")
+          local FlYSpeedLab = Instance.new("TextLabel")
+          local FlyspeedBox = Instance.new("TextBox")
+          local CanAttackDisablerBut = Instance.new("TextButton")
+
+          game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
+               if not gpe and i.KeyCode == Enum.KeyCode[_G.ToggleGUIKey] then 
+                    SettingsGUI.Enabled = not SettingsGUI.Enabled
+               end
+          end)
+          SettingsGUI.Name = "SettingsGUI"
+          SettingsGUI.Parent = game.CoreGui
+
+          Main.Name = "Main"
+          Main.Parent = SettingsGUI
+          Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          Main.Position = UDim2.new(0.798647642, 0, 0.435562819, 0)
+          Main.Size = UDim2.new(0, 200, 0, 278)
+     dragify(Main)
+          SetBindEsp.Name = "SetBindEsp"
+          SetBindEsp.Parent = Main
+          SetBindEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          SetBindEsp.Position = UDim2.new(0.125, 0, 0.0683453232, 0)
+          SetBindEsp.Size = UDim2.new(0, 149, 0, 29)
+          SetBindEsp.Font = Enum.Font.SourceSans
+          SetBindEsp.Text = "Change ESP Bind: "..tostring(_G.EspKey)
+          SetBindEsp.TextColor3 = Color3.fromRGB(0, 0, 0)
+          SetBindEsp.TextScaled = true
+          SetBindEsp.TextSize = 14.000
+          SetBindEsp.TextWrapped = true
+
+          local ChangingESPBind = false
+
+          SetBindEsp.MouseButton1Click:connect(function()
+               ChangingESPBind = true
+               SetBindEsp.Text = "Changing Bind..."
+          end)
+          game:GetService("UserInputService").InputBegan:connect(function(i)
+               if ChangingESPBind == true then
+                    if i.KeyCode ~= Enum.KeyCode.Unknown then
+                         _G.EspKey = i.KeyCode.Name
+                         SetBindEsp.Text = "Change ESP Bind: ".._G.EspKey  
+                         ChangingESPBind = false 
+                    end
+               end 
+          end)
 
 
 
 
 
-     ShowHealthBut.Name = "ShowHealthBut"
-     ShowHealthBut.Parent = Main
-     ShowHealthBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     ShowHealthBut.Position = UDim2.new(0.125, 0, 0.194244593, 0)
-     ShowHealthBut.Size = UDim2.new(0, 149, 0, 29)
-     ShowHealthBut.Font = Enum.Font.SourceSans
-     ShowHealthBut.Text = "Show Health: "..tostring(_G.ShowHp)
-     ShowHealthBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     ShowHealthBut.TextScaled = true
-     ShowHealthBut.TextSize = 14.000
-     ShowHealthBut.TextWrapped = true
-
-     ShowHealthBut.MouseButton1Click:connect(function()
-          _G.ShowHp = not _G.ShowHp
+          ShowHealthBut.Name = "ShowHealthBut"
+          ShowHealthBut.Parent = Main
+          ShowHealthBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          ShowHealthBut.Position = UDim2.new(0.125, 0, 0.194244593, 0)
+          ShowHealthBut.Size = UDim2.new(0, 149, 0, 29)
+          ShowHealthBut.Font = Enum.Font.SourceSans
           ShowHealthBut.Text = "Show Health: "..tostring(_G.ShowHp)
-     end)
-    
-     UsePercentageHealthBut.Name = "UsePercentageHealthBut"
-     UsePercentageHealthBut.Parent = Main
-     UsePercentageHealthBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     UsePercentageHealthBut.Position = UDim2.new(0.125, 0, 0.320143878, 0)
-     UsePercentageHealthBut.Size = UDim2.new(0, 149, 0, 29)
-     UsePercentageHealthBut.Font = Enum.Font.SourceSans
-     UsePercentageHealthBut.Text = "Use Percentage: "..tostring(_G.UsePercentage)
-     UsePercentageHealthBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     UsePercentageHealthBut.TextScaled = true
-     UsePercentageHealthBut.TextSize = 14.000
-     UsePercentageHealthBut.TextWrapped = true
-     UsePercentageHealthBut.MouseButton1Click:connect(function()
-          _G.UsePercentage = not _G.UsePercentage
-          UsePercentageHealthBut.Text = "Use Percentage: "..tostring(_G.UsePercentage)
-     end)
+          ShowHealthBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          ShowHealthBut.TextScaled = true
+          ShowHealthBut.TextSize = 14.000
+          ShowHealthBut.TextWrapped = true
 
-
-     ShowLifeForceBut.Name = "ShowLifeForceBut"
-     ShowLifeForceBut.Parent = Main
-     ShowLifeForceBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     ShowLifeForceBut.Position = UDim2.new(0.125, 0, 0.446043164, 0)
-     ShowLifeForceBut.Size = UDim2.new(0, 149, 0, 29)
-     ShowLifeForceBut.Font = Enum.Font.SourceSans
-     ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
-     ShowLifeForceBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     ShowLifeForceBut.TextScaled = true
-     ShowLifeForceBut.TextSize = 14.000
-     ShowLifeForceBut.TextWrapped = true
-     ShowLifeForceBut.MouseButton1Click:connect(function()
-          _G.ShowLethalBlow = not _G.ShowLethalBlow
-          ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
-     end)
-
-
-
-     LagServerBut.Name = "LagServerBut"
-     LagServerBut.Parent = Main
-     LagServerBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     LagServerBut.Position = UDim2.new(0.125, 0, 0.571942449, 0)
-     LagServerBut.Size = UDim2.new(0, 149, 0, 29)
-     LagServerBut.Font = Enum.Font.SourceSans
-     LagServerBut.Text = "Lag The Server :D: "..tostring(_G.LagServer)
-     LagServerBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     LagServerBut.TextScaled = true
-     LagServerBut.TextSize = 14.000
-     LagServerBut.TextWrapped = true
-     LagServerBut.MouseButton1Click:connect(function()
-          _G.LagServer = not _G.LagServer
-          LagServerBut.Text = "Lag The Server :D: "..tostring(_G.LagServer)
-     end)
-
-
-     FlYSpeedLab.Name = "FLYSpeedLab"
-     FlYSpeedLab.Parent = Main
-     FlYSpeedLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     FlYSpeedLab.Position = UDim2.new(0.125, 0, 0.697841763, 0)
-     FlYSpeedLab.Size = UDim2.new(0, 112, 0, 29)
-     FlYSpeedLab.Font = Enum.Font.SourceSans
-     FlYSpeedLab.Text = "FLY Speed"
-     FlYSpeedLab.TextColor3 = Color3.fromRGB(0, 0, 0)
-     FlYSpeedLab.TextScaled = true
-     FlYSpeedLab.TextSize = 14.000
-     FlYSpeedLab.TextWrapped = true
-
-     FlyspeedBox.Name = "FlyspeedBox"
-     FlyspeedBox.Parent = FlYSpeedLab
-     FlyspeedBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     FlyspeedBox.Position = UDim2.new(1.07142854, 0, 0, 0)
-     FlyspeedBox.Size = UDim2.new(0, 29, 0, 29)
-     FlyspeedBox.Font = Enum.Font.SourceSans
-     FlyspeedBox.Text = "10"
-     FlyspeedBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-     FlyspeedBox.TextScaled = true
-     FlyspeedBox.TextSize = 14.000
-     FlyspeedBox.TextWrapped = true
-     FlyspeedBox.Changed:connect(function()
-          if FlyspeedBox.Text == "" then return end 
-          if tonumber(FlyspeedBox.Text) == nil then return end
-          _G.FlySpeed = tonumber(FlyspeedBox.Text)
-          game.Players.LocalPlayer.Character.Config.SpeedBoost.Value = _G.FlySpeed
+          ShowHealthBut.MouseButton1Click:connect(function()
+               _G.ShowHp = not _G.ShowHp
+               ShowHealthBut.Text = "Show Health: "..tostring(_G.ShowHp)
+          end)
      
-     end)
-     CanAttackDisablerBut.Name = "LagServerBut"
-     CanAttackDisablerBut.Parent = Main
-     CanAttackDisablerBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-     CanAttackDisablerBut.Position = UDim2.new(0.125, 0, 0.823741019, 0)
-     CanAttackDisablerBut.Size = UDim2.new(0, 149, 0, 29)
-     CanAttackDisablerBut.Font = Enum.Font.SourceSans
-     CanAttackDisablerBut.Text = "Always Attack: "..tostring(_G.CanAttackDisabler)
-     CanAttackDisablerBut.TextColor3 = Color3.fromRGB(0, 0, 0)
-     CanAttackDisablerBut.TextScaled = true
-     CanAttackDisablerBut.TextSize = 14.000
-     CanAttackDisablerBut.TextWrapped = true
-     CanAttackDisablerBut.MouseButton1Click:connect(function()
-          _G.CanAttackDisabler = not _G.CanAttackDisabler
+          UsePercentageHealthBut.Name = "UsePercentageHealthBut"
+          UsePercentageHealthBut.Parent = Main
+          UsePercentageHealthBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          UsePercentageHealthBut.Position = UDim2.new(0.125, 0, 0.320143878, 0)
+          UsePercentageHealthBut.Size = UDim2.new(0, 149, 0, 29)
+          UsePercentageHealthBut.Font = Enum.Font.SourceSans
+          UsePercentageHealthBut.Text = "Use Percentage: "..tostring(_G.UsePercentage)
+          UsePercentageHealthBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          UsePercentageHealthBut.TextScaled = true
+          UsePercentageHealthBut.TextSize = 14.000
+          UsePercentageHealthBut.TextWrapped = true
+          UsePercentageHealthBut.MouseButton1Click:connect(function()
+               _G.UsePercentage = not _G.UsePercentage
+               UsePercentageHealthBut.Text = "Use Percentage: "..tostring(_G.UsePercentage)
+          end)
+
+
+          ShowLifeForceBut.Name = "ShowLifeForceBut"
+          ShowLifeForceBut.Parent = Main
+          ShowLifeForceBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          ShowLifeForceBut.Position = UDim2.new(0.125, 0, 0.446043164, 0)
+          ShowLifeForceBut.Size = UDim2.new(0, 149, 0, 29)
+          ShowLifeForceBut.Font = Enum.Font.SourceSans
+          ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
+          ShowLifeForceBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          ShowLifeForceBut.TextScaled = true
+          ShowLifeForceBut.TextSize = 14.000
+          ShowLifeForceBut.TextWrapped = true
+          ShowLifeForceBut.MouseButton1Click:connect(function()
+               _G.ShowLethalBlow = not _G.ShowLethalBlow
+               ShowLifeForceBut.Text = "Show Lethal Blows: "..tostring(_G.ShowLethalBlow)
+          end)
+
+
+
+          LagServerBut.Name = "LagServerBut"
+          LagServerBut.Parent = Main
+          LagServerBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          LagServerBut.Position = UDim2.new(0.125, 0, 0.571942449, 0)
+          LagServerBut.Size = UDim2.new(0, 149, 0, 29)
+          LagServerBut.Font = Enum.Font.SourceSans
+          LagServerBut.Text = "Lag The Server :D: "..tostring(_G.LagServer)
+          LagServerBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          LagServerBut.TextScaled = true
+          LagServerBut.TextSize = 14.000
+          LagServerBut.TextWrapped = true
+          LagServerBut.MouseButton1Click:connect(function()
+               _G.LagServer = not _G.LagServer
+               LagServerBut.Text = "Lag The Server :D: "..tostring(_G.LagServer)
+          end)
+
+
+          FlYSpeedLab.Name = "FLYSpeedLab"
+          FlYSpeedLab.Parent = Main
+          FlYSpeedLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          FlYSpeedLab.Position = UDim2.new(0.125, 0, 0.697841763, 0)
+          FlYSpeedLab.Size = UDim2.new(0, 112, 0, 29)
+          FlYSpeedLab.Font = Enum.Font.SourceSans
+          FlYSpeedLab.Text = "FLY Speed"
+          FlYSpeedLab.TextColor3 = Color3.fromRGB(0, 0, 0)
+          FlYSpeedLab.TextScaled = true
+          FlYSpeedLab.TextSize = 14.000
+          FlYSpeedLab.TextWrapped = true
+
+          FlyspeedBox.Name = "FlyspeedBox"
+          FlyspeedBox.Parent = FlYSpeedLab
+          FlyspeedBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          FlyspeedBox.Position = UDim2.new(1.07142854, 0, 0, 0)
+          FlyspeedBox.Size = UDim2.new(0, 29, 0, 29)
+          FlyspeedBox.Font = Enum.Font.SourceSans
+          FlyspeedBox.Text = "10"
+          FlyspeedBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+          FlyspeedBox.TextScaled = true
+          FlyspeedBox.TextSize = 14.000
+          FlyspeedBox.TextWrapped = true
+          FlyspeedBox.Changed:connect(function()
+               if FlyspeedBox.Text == "" then return end 
+               if tonumber(FlyspeedBox.Text) == nil then return end
+               _G.FlySpeed = tonumber(FlyspeedBox.Text)
+               game.Players.LocalPlayer.Character.Config.SpeedBoost.Value = _G.FlySpeed
+          
+          end)
+          CanAttackDisablerBut.Name = "LagServerBut"
+          CanAttackDisablerBut.Parent = Main
+          CanAttackDisablerBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+          CanAttackDisablerBut.Position = UDim2.new(0.125, 0, 0.823741019, 0)
+          CanAttackDisablerBut.Size = UDim2.new(0, 149, 0, 29)
+          CanAttackDisablerBut.Font = Enum.Font.SourceSans
           CanAttackDisablerBut.Text = "Always Attack: "..tostring(_G.CanAttackDisabler)
-     end)
+          CanAttackDisablerBut.TextColor3 = Color3.fromRGB(0, 0, 0)
+          CanAttackDisablerBut.TextScaled = true
+          CanAttackDisablerBut.TextSize = 14.000
+          CanAttackDisablerBut.TextWrapped = true
+          CanAttackDisablerBut.MouseButton1Click:connect(function()
+               _G.CanAttackDisabler = not _G.CanAttackDisabler
+               CanAttackDisablerBut.Text = "Always Attack: "..tostring(_G.CanAttackDisabler)
+          end)
 
 
 
 
 
 
-end
-CreateSetting()
-function LagServer()
-     game:GetService("RunService").RenderStepped:Connect(function()
-          if _G.LagServer == true then 
-              
-               fireproximityprompt(workspace.Capture.CapturePart.ProximityPrompt)
-          end 
-     end)
-end 
-for i = 1, 50 do
-    coroutine.wrap(LagServer)()
-end
+     end
+     CreateSetting()
+     function LagServer()
+          game:GetService("RunService").RenderStepped:Connect(function()
+               if _G.LagServer == true then 
+               
+                    fireproximityprompt(workspace.Capture.CapturePart.ProximityPrompt)
+               end 
+          end)
+     end 
+     for i = 1, 50 do
+     coroutine.wrap(LagServer)()
+     end
