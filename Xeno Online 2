@@ -175,12 +175,16 @@ function CreateBPCounter()
          
      end)
      config.BattlePower.Changed:connect(function()
-        TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
+        if Checks(game.Players.LocalPlayer) == true then
+            TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
+        end
+       
      end)
      while wait(0.5) do  
-          TextLabel.Text = "BP: "..tostring(config.BattlePower.Value)  
+        if Checks(game.Players.LocalPlayer) == true then
+            TextLabel.Text = "BP: "..tostring(config.BattlePower.Value)
+        end
      end
-     
 end
 coroutine.wrap(CreateBPCounter)()
 
