@@ -182,7 +182,7 @@
                end
           
           end)
-          config.BattlePower.Changed:connect(function()
+          config:WaitForChild("BattlePower").Changed:connect(function()
                TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
           end)
      end
