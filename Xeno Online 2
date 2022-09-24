@@ -161,20 +161,20 @@
           TextLabel.Position = UDim2.new(-0.00415891409, 0, -0.0152256787, 0)
           TextLabel.Size = UDim2.new(0, 150, 0, 30)
           TextLabel.Font = Enum.Font.SourceSans
-          TextLabel.Text = "BP: "..tostring(player.Character.Config.BattlePower.Value)
+          TextLabel.Text = "BP: "..tostring(player.Character.Config:WaitForChild("BattlePower").Value)
           TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
           TextLabel.TextScaled = true
           TextLabel.TextSize = 14.000
           TextLabel.TextWrapped = true
      
-          config.SpeedBoost.Changed:connect(function()
+          config:WaitForChild("SpeedBoost").Changed:connect(function()
                if config:FindFirstChild("SpeedBoost") == true then
                config.SpeedBoost.Value = _G.FlySpeed
                
                end
           end)
           config.SpeedBoost.Value = _G.FlySpeed
-          config.AttackCooldown.Changed:connect(function()
+          config:WaitForChild("Changed"):connect(function()
                if _G.CanAttackDisabler == true then
                     print("Changed Attack")
                     config.AttackCooldown.Value = false
@@ -185,6 +185,18 @@
           config:WaitForChild("BattlePower").Changed:connect(function()
                TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
           end)
+          local function cfgcheck()
+               if player.Character:FindFirstChild("Config") == true and player.Character.Config:FindFirstChild("BattlePower") == true then
+                    return true
+
+               end
+               
+          end
+          while wait(0.5) do
+               if cfgcheck() == true then
+                    TextLabel.Text = "BP: "..tostring(config.BattlePower.Value) 
+               end
+          end
      end
      coroutine.wrap(CreateBPCounter)()
 
