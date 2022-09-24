@@ -36,7 +36,7 @@
      end
      end
      local function round(n)
-          if n < 0 then return math.floor(n - 0.5) end
+          if n < 0 then return math.floor(n) end
           return math.floor(n + 0.5)
      end
      function GetPercent(i,v)
