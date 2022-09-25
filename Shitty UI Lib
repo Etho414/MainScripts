@@ -1,0 +1,97 @@
+--[[
+	Things to add,
+	Slider Object
+	Textbox Object
+]]
+local lib = {}
+function lib:CreateWindow(Spacing)
+	local PerButtonOffset = Spacing
+	local function OffsetButton(Foreground,Background)
+		local ChildrenOfBack = Background:GetChildren()
+		local CurrentOffset = PerButtonOffset
+		for i,v in pairs(ChildrenOfBack) do
+			CurrentOffset = CurrentOffset + PerButtonOffset
+			CurrentOffset = CurrentOffset + v.AbsoluteSize.Y
+		end
+		Foreground.Position = Foreground.Position + UDim2.new(0,0,0,CurrentOffset)
+	end
+	local function CenterObj(Foreground,Background)
+		Foreground.Position = UDim2.new(0,Background.Position.X.Scale + ((Background.AbsoluteSize.X - Foreground.AbsoluteSize.X) / 2),Background.Position.Y)
+	end
+
+	local function DetermineObjPosition(Foreground,Background)
+		CenterObj(Foreground,Background)
+		OffsetButton(Foreground,Background)
+	end
+	local ScreenGui = Instance.new("ScreenGui",game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+	local MainDisplayFrame = Instance.new("Frame")
+	local ReplicateHolderFrame = Instance.new("Frame")
+
+	MainDisplayFrame.Name = "MainDisplayFrame"
+	MainDisplayFrame.Parent = ScreenGui
+	MainDisplayFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MainDisplayFrame.Position = UDim2.new(0.352763057, 0, 0.13376835, 0)
+	MainDisplayFrame.Size = UDim2.new(0, 189, 0, PerButtonOffset)
+	
+	local function dragify(MainFrame)
+		local dragging
+		local dragInput
+		local dragStart
+		local startPos
+		local function update(input)
+			Delta = input.Position - dragStart
+			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+			game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
+		end
+		MainFrame.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = MainFrame.Position
+
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+					end
+				end)
+			end
+		end)
+		MainFrame.InputChanged:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+				dragInput = input
+			end
+		end)
+		game:GetService("UserInputService").InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				update(input)
+			end
+		end)
+	end
+	dragify(MainDisplayFrame)
+	
+	
+	
+	local NextTable = {}
+	function NextTable:CreateButton()
+		local MainFrame = MainDisplayFrame
+		local ReplicateHolderFrame = Instance.new("Frame")
+		ReplicateHolderFrame.Name = ""
+		ReplicateHolderFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ReplicateHolderFrame.Position = UDim2.new(1.21052635, 0, 0.527027011, 0)
+		ReplicateHolderFrame.Size = UDim2.new(0, 150, 0, 35)
+		local TextButton = Instance.new("TextButton")
+		TextButton.Parent = ReplicateHolderFrame
+		TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextButton.Size = UDim2.new(0, 76, 0, 35)
+		TextButton.Font = Enum.Font.SourceSans
+		TextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+		TextButton.TextSize = 14.000
+		MainFrame.Size = MainFrame.Size + UDim2.new(0,0,0,ReplicateHolderFrame.AbsoluteSize.Y + PerButtonOffset)
+		DetermineObjPosition(ReplicateHolderFrame,MainFrame)
+		ReplicateHolderFrame.Parent = MainFrame
+		return TextButton
+	end
+	return NextTable
+end
+
+return lib
