@@ -4,7 +4,7 @@ local player = game.Players.LocalPlayer
 local Lib =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/DropDownUI", true))()
 local Window = Lib:CreateWindow("Settings")
 local InfoWindow = Lib:CreateInfoWin()
-
+game.Players.LocalPlayer.Character:WaitForChild("Config")
 local options = {
     Start = 10,
     Min = 1,
@@ -41,7 +41,9 @@ local AttackToggle = Window:CreateButton("Attack Cooldown")
 local BpLabel = InfoWindow:CreateInfoTab("BP:")
 BpLabel.Value = tostring(player.Character:WaitForChild("Config"):WaitForChild("BattlePower").Value)
 local EspToggle = Window:CreateButton("Esp")
+EspToggle.Value = true
 local HealthPercentageToggle = Window:CreateButton("Use Percentage")
+HealthPercentageToggle.Value = true
 local ShowLethalBlowToggle = Window:CreateButton("Show LethalBlow")
 local LagServerToggle = Window:CreateButton("Lag Server")
 local TeleportBack = Window:CreateButton("TP Back On Reset")
@@ -50,7 +52,7 @@ local ResetButton = Window:CreateButton("Reset Character",function(p1)
     reset(TeleportBack.Value,p1)
 end)
 ResetButton.Changed:connect(function()
-    wait(1)
+    wait(0.1)
     ResetButton.Value = false
 
 end)
