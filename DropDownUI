@@ -1,0 +1,338 @@
+-- Made by Etho :D
+local libary = {}
+
+function libary:CreateWindow(Name)
+	local Name = Name or "U forgot the game of the name"
+
+	local DropDownUi = Instance.new("ScreenGui")
+	local WindowMain = Instance.new("Frame")
+	local NameLabelWindow = Instance.new("TextLabel")
+	local CloseWindow = Instance.new("TextButton")
+	local UICorner = Instance.new("UICorner")
+	local DropDownWindow = Instance.new("Frame")
+	local UIListLayout = Instance.new("UIListLayout")
+
+	
+	local UiIconLib = {
+		Toggle = {}
+	}
+
+	UiIconLib.Toggle["true"] = "rbxassetid://11076353129"
+	UiIconLib.Toggle["false"] = "rbxassetid://11076342060"
+
+
+	DropDownUi.Name = "DropDownUi"
+	DropDownUi.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+	WindowMain.Name = "WindowMain"
+	WindowMain.Parent = DropDownUi
+	WindowMain.BackgroundColor3 = Color3.fromRGB(45, 52, 54)
+	WindowMain.BorderSizePixel = 0
+	WindowMain.Position = UDim2.new(0.358062088, 0, 0.217687085, 0)
+	WindowMain.Size = UDim2.new(0, 170, 0, 35)
+	WindowMain.ZIndex = 0
+	NameLabelWindow.Name = "NameLabelWindow"
+	NameLabelWindow.Parent = WindowMain
+	NameLabelWindow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	NameLabelWindow.BackgroundTransparency = 1.000
+	NameLabelWindow.Size = UDim2.new(0, 134, 0, 28)
+	NameLabelWindow.Font = Enum.Font.SourceSans
+
+	NameLabelWindow.TextColor3 = Color3.fromRGB(255, 248, 238)
+	NameLabelWindow.TextScaled = true
+	NameLabelWindow.TextSize = 14.000
+	NameLabelWindow.TextWrapped = true
+	NameLabelWindow.TextXAlignment = Enum.TextXAlignment.Left
+
+	CloseWindow.Name = "CloseWindow"
+	CloseWindow.Parent = WindowMain
+	CloseWindow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CloseWindow.BackgroundTransparency = 1.000
+	CloseWindow.Position = UDim2.new(0.824000001, 0, 0, 3)
+	CloseWindow.Size = UDim2.new(0, 22, 0, 18)
+	CloseWindow.Font = Enum.Font.SourceSans
+	CloseWindow.Text = "X"
+	CloseWindow.TextColor3 = Color3.fromRGB(21, 25, 26)
+	CloseWindow.TextSize = 44.000
+	CloseWindow.TextWrapped = true
+	
+	UICorner.CornerRadius = UDim.new(0, 12)
+	UICorner.Parent = WindowMain
+	
+	DropDownWindow.Name = "DropDownWindow"
+	DropDownWindow.Parent = WindowMain
+	DropDownWindow.BackgroundColor3 = Color3.fromRGB(81, 81, 81)
+	DropDownWindow.BorderSizePixel = 0
+	DropDownWindow.Position = UDim2.new(0, 0, 0.7, 0)
+	DropDownWindow.Size = UDim2.new(0, 170, 0, 1)
+	
+	UIListLayout.Parent = DropDownWindow
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	local function dragify(MainFrame)
+		local dragging
+		local dragInput
+		local dragStart
+		local startPos
+		local function update(input)
+			Delta = input.Position - dragStart
+			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+			game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
+		end
+		MainFrame.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = MainFrame.Position
+
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+					end
+				end)
+			end
+		end)
+		MainFrame.InputChanged:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+				dragInput = input
+			end
+		end)
+		game:GetService("UserInputService").InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				update(input)
+			end
+		end)
+	end
+	dragify(WindowMain)
+	
+	NameLabelWindow.Text = " "..Name
+	CloseWindow.MouseButton1Down:Connect(function()
+		DropDownUi.Enabled = false
+
+	end)
+	game:GetService("UserInputService").InputBegan:Connect(function(i)
+		if i.KeyCode == Enum.KeyCode.RightShift then
+			DropDownUi.Enabled = not DropDownUi.Enabled
+		end
+	end)
+	local Libary2 = {}
+	function Libary2:CreateButton(NameButton,Callback)
+		NameButton = NameButton or "U forgor name dumby LOloLolOl"
+		Callback = Callback or function() end
+		local ToggleFrame = Instance.new("Frame")
+		local ToggleFrameLab = Instance.new("TextLabel")
+		local ToggleImageBut = Instance.new("ImageButton")
+		
+		ToggleFrame.Name = "ToggleFrame"
+		ToggleFrame.Parent = DropDownWindow
+		ToggleFrame.BackgroundColor3 = Color3.fromRGB(56, 64, 67)
+		ToggleFrame.BorderSizePixel = 0
+		ToggleFrame.Size = UDim2.new(0, 170, 0, 30)
+
+		ToggleFrameLab.Name = "ToggleFrameLab"
+		ToggleFrameLab.Parent = ToggleFrame
+		ToggleFrameLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleFrameLab.BackgroundTransparency = 1.000
+		ToggleFrameLab.Position = UDim2.new(0, 0, 0.046666462, 0)
+		ToggleFrameLab.Size = UDim2.new(0, 134, 0, 28)
+		ToggleFrameLab.Font = Enum.Font.SourceSans
+		ToggleFrameLab.TextColor3 = Color3.fromRGB(255, 248, 238)
+		ToggleFrameLab.TextScaled = true
+		ToggleFrameLab.TextSize = 14.000
+		ToggleFrameLab.TextWrapped = true
+		ToggleFrameLab.TextXAlignment = Enum.TextXAlignment.Left
+	
+		
+		ToggleImageBut.Name = "ToggleImageBut"
+		ToggleImageBut.Parent = ToggleFrame
+		ToggleImageBut.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleImageBut.BackgroundTransparency = 1.000
+		ToggleImageBut.BorderSizePixel = 0
+		ToggleImageBut.Position = UDim2.new(0.823529363, 0, 0.146666452, 0)
+		ToggleImageBut.Size = UDim2.new(0, 22, 0, 22)
+		
+		ToggleImageBut.Image = UiIconLib.Toggle["false"]
+		ToggleFrameLab.Text = " "..NameButton
+		
+		
+		local ToggleVal = Instance.new("BoolValue",ToggleFrame)
+		
+		ToggleImageBut.MouseButton1Down:Connect(function()
+			ToggleVal.Value = not ToggleVal.Value
+			
+		end)	
+		ToggleVal:GetPropertyChangedSignal("Value"):Connect(function()
+			ToggleImageBut.Image = UiIconLib.Toggle[tostring(ToggleVal.Value)]
+			Callback(ToggleVal.Value)
+			
+		end)
+		return ToggleVal
+		
+	end
+	function Libary2:CreateSlider(Name,Options,Callback)
+		local SliderFrame = Instance.new("Frame")
+		local SliderNameLab = Instance.new("TextLabel")
+		local SliderInfoLab = Instance.new("TextLabel")
+		local SliderBackDrop = Instance.new("TextButton")
+		local UICorner = Instance.new("UICorner")
+		local GrayBack = Instance.new("Frame")
+		local UICorner_2 = Instance.new("UICorner")
+		local WhiteButton = Instance.new("Frame")
+		local UICorner_3 = Instance.new("UICorner")
+		local SliderBackDrop2 = Instance.new("Frame")
+		local UICorner_4 = Instance.new("UICorner")
+		SliderFrame.Name = "SliderFrame"
+		SliderFrame.Parent = DropDownWindow
+		SliderFrame.BackgroundColor3 = Color3.fromRGB(56, 64, 67)
+		SliderFrame.BorderSizePixel = 0
+		SliderFrame.Position = UDim2.new(0, 0, 30, 0)
+		SliderFrame.Size = UDim2.new(0, 170, 0, 45)
+
+		SliderNameLab.Name = "SliderNameLab"
+		SliderNameLab.Parent = SliderFrame
+		SliderNameLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderNameLab.BackgroundTransparency = 1.000
+		SliderNameLab.Position = UDim2.new(0, 0, 0.046666462, 0)
+		SliderNameLab.Size = UDim2.new(0, 134, 0, 28)
+		SliderNameLab.Font = Enum.Font.SourceSans
+		SliderNameLab.TextColor3 = Color3.fromRGB(255, 248, 238)
+		SliderNameLab.TextScaled = true
+		SliderNameLab.TextSize = 14.000
+		SliderNameLab.TextWrapped = true
+		SliderNameLab.TextXAlignment = Enum.TextXAlignment.Left
+
+		SliderInfoLab.Name = "SliderInfoLab"
+		SliderInfoLab.Parent = SliderFrame
+		SliderInfoLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderInfoLab.BackgroundTransparency = 1.000
+		SliderInfoLab.Position = UDim2.new(0.788235307, 0, 0.0444444455, 0)
+		SliderInfoLab.Size = UDim2.new(0, 36, 0, 28)
+		SliderInfoLab.Font = Enum.Font.SourceSans
+	
+		SliderInfoLab.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SliderInfoLab.TextScaled = true
+		SliderInfoLab.TextSize = 14.000
+		SliderInfoLab.TextWrapped = true
+
+		SliderBackDrop.Name = "SliderBackDrop"
+		SliderBackDrop.Parent = SliderFrame
+		SliderBackDrop.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderBackDrop.BorderSizePixel = 0
+		SliderBackDrop.Position = UDim2.new(0.0240000002, 0, 0.680000007, 0)
+		SliderBackDrop.Size = UDim2.new(0, 162, 0, 10)
+		SliderBackDrop.Text = ""
+		SliderBackDrop.BackgroundTransparency = 1
+		SliderBackDrop.ZIndex = 2
+		
+		SliderBackDrop2.Name = "SliderBackDrop2"
+		SliderBackDrop2.Parent = SliderFrame
+		SliderBackDrop2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderBackDrop2.BorderSizePixel = 0
+		SliderBackDrop2.Position = UDim2.new(0.0240000002, 0, 0.680000007, 0)
+		SliderBackDrop2.Size = UDim2.new(0, 162, 0, 10)
+		SliderBackDrop2.ZIndex = 1
+		SliderBackDrop2.BackgroundTransparency =0
+
+		
+		
+		
+		
+		
+		
+		UICorner.CornerRadius = UDim.new(10000, 10000)
+		UICorner.Parent = SliderBackDrop
+
+		GrayBack.Name = "GrayBack"
+		GrayBack.Parent = SliderBackDrop
+		GrayBack.BackgroundColor3 = Color3.fromRGB(103, 103, 104)
+		GrayBack.Position = UDim2.new(-0.00499999989, 0, 0, 0)
+		GrayBack.Size = UDim2.new(0, 164, 0, 10)
+		GrayBack.ZIndex = 2
+		
+		UICorner_2.CornerRadius = UDim.new(10000, 10000)
+		UICorner_2.Parent = GrayBack
+
+		WhiteButton.Name = "WhiteButton"
+		WhiteButton.Parent = SliderBackDrop
+		WhiteButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		WhiteButton.Position = UDim2.new(0.567901254, 0, -0.200000003, 0)
+		WhiteButton.Size = UDim2.new(0, 14, 0, 14)
+		WhiteButton.ZIndex = 2
+		
+		UICorner_3.CornerRadius = UDim.new(10000, 10000)
+		UICorner_3.Parent = WhiteButton
+		UICorner_4.CornerRadius = UDim.new(10000, 10000)
+		UICorner_4.Parent = SliderBackDrop2
+		
+		
+		local Inc = Options.Inc
+		local Min = Options.Min
+		local Max = Options.Max
+		local Start = Options.Start
+		if Min > Start then Start = Min end
+		SliderInfoLab.Text = tostring(Start)
+		local function CalculateStartPos(Mine,Maxe,Starte)
+			if Mine ~= 1 then
+				local n = ((Starte - Mine ) / (Maxe - Mine))
+				return n	
+			else 
+				local n  = Starte / Maxe
+				return n
+			end
+			
+			
+			
+			
+		end
+		SliderNameLab.Text = " "..Name
+		WhiteButton.Position = UDim2.new(CalculateStartPos(Min,Max,Start),0,-0.2,0) - UDim2.new(0,WhiteButton.Size.X.Offset / 2,0,0)
+		GrayBack.Size = UDim2.new(CalculateStartPos(Min,Max,Start),0,0,10)
+		if Inc ~= 1 then
+			Max = Max / Inc
+			Min = Min / Inc
+			Max = Max - Min
+
+		else
+			Max = Max - Min	
+		end
+		
+		local SliderAmount = Instance.new("NumberValue",SliderFrame)
+		SliderAmount:GetPropertyChangedSignal("Value"):Connect(function()
+			SliderInfoLab.Text = " "..tostring(math.round(SliderAmount.Value))
+			Callback(SliderAmount.Value)
+		end)
+		local drag = false
+		local UIS = game:GetService("UserInputService")
+		SliderBackDrop.MouseButton1Down:Connect(function()
+			drag = true
+		end)
+		UIS.InputEnded:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 then
+				drag = false
+				
+				
+			end
+			
+		end)
+		UIS.InputChanged:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseMovement and drag == true then
+				local MousePos =  UIS:GetMouseLocation() - SliderBackDrop.AbsolutePosition
+				local percent = math.clamp(MousePos.X/SliderBackDrop.AbsoluteSize.X,0,1)
+				WhiteButton.Position = UDim2.new(percent,0,-0.2,0) - UDim2.new(0,WhiteButton.Size.X.Offset / 2,0,0)
+				GrayBack.Size = UDim2.new(percent,0,0,10)
+				local ValueOfSlider = (math.round(percent * Max) + Min) * Inc
+				SliderAmount.Value = ValueOfSlider
+			end
+		end)
+		
+	end
+	
+	
+	
+	
+	
+	return Libary2
+end
+
+return libary
+
+
