@@ -1,5 +1,6 @@
 -- Made by Etho :D
 local libary = {}
+
  function dragify(MainFrame)
 	local dragging
 	local dragInput
@@ -35,7 +36,21 @@ local libary = {}
 	end)
 end
 
+ function check(v)
+	if v and v.Character and v.Character.HumanoidRootPart then
+		return true
+	else
+		return false
+	end
 
+end
+function TPTo(v)
+	local player = game.Players.LocalPlayer
+	if check(v) == true then
+		player.Character.HumanoidRootpart.CFrame = v.Character.HumanoidRootPart.CFrame
+	end
+
+end
 
 function libary:CreateWindow(Name)
 	local Name = Name or "U forgot the game of the name"
@@ -377,5 +392,146 @@ function libary:CreateInfoWin()
 	end
 	return libary2
 end
+
+function libary:CreateTp(Name)
+	local TpPlayerGui = Instance.new("ScreenGui")
+	local MainFrame = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local FixFrame = Instance.new("Frame")
+	local DropDownTpUI = Instance.new("Frame")
+	local UIGridLayout = Instance.new("UIGridLayout")
+	local TpPlayerInfoLab = Instance.new("TextLabel")
+	local CloseTpPlayerUI = Instance.new("TextButton")
+	TpPlayerGui.Name = "TpPlayerGui"
+	TpPlayerGui.Parent = game.CoreGui
+	TpPlayerGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	MainFrame.Name = "MainFrame"
+	MainFrame.Parent = TpPlayerGui
+	MainFrame.BackgroundColor3 = Color3.fromRGB(56, 64, 67)
+	MainFrame.BorderSizePixel = 0
+	MainFrame.Position = UDim2.new(0.0647372454, 0, 0.278911591, 0)
+	MainFrame.Size = UDim2.new(0, 200, 0, 30)
+
+	UICorner.Parent = MainFrame
+
+	FixFrame.Name = "FixFrame"
+	FixFrame.Parent = MainFrame
+	FixFrame.BackgroundColor3 = Color3.fromRGB(56, 64, 67)
+	FixFrame.BorderSizePixel = 0
+	FixFrame.Position = UDim2.new(0, 0, 0.699999988, 1)
+	FixFrame.Size = UDim2.new(0, 200, 0, 8)
+
+	DropDownTpUI.Name = "DropDownTpUI"
+	DropDownTpUI.Parent = MainFrame
+	DropDownTpUI.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	DropDownTpUI.BorderSizePixel = 0
+	DropDownTpUI.Position = UDim2.new(0, 0, 1, 0)
+	DropDownTpUI.Size = UDim2.new(0, 200, 0, 0)
+
+	UIGridLayout.Parent = DropDownTpUI
+	UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
+	UIGridLayout.CellSize = UDim2.new(0, 100, 0, 20)
+	UIGridLayout.FillDirectionMaxCells = 2
+	UIGridLayout.StartCorner = Enum.StartCorner.BottomLeft
+	
+	TpPlayerInfoLab.Name = "TpPlayerInfoLab"
+	TpPlayerInfoLab.Parent = MainFrame
+	TpPlayerInfoLab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TpPlayerInfoLab.BackgroundTransparency = 1.000
+	TpPlayerInfoLab.Size = UDim2.new(0, 170, 0, 30)
+	TpPlayerInfoLab.Font = Enum.Font.SourceSans
+	TpPlayerInfoLab.Text = " Info Name!!"
+	TpPlayerInfoLab.TextColor3 = Color3.fromRGB(255, 255, 255)
+	TpPlayerInfoLab.TextScaled = true
+	TpPlayerInfoLab.TextSize = 14.000
+	TpPlayerInfoLab.TextWrapped = true
+	TpPlayerInfoLab.TextXAlignment = Enum.TextXAlignment.Left
+
+	CloseTpPlayerUI.Name = "CloseTpPlayerUI"
+	CloseTpPlayerUI.Parent = MainFrame
+	CloseTpPlayerUI.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CloseTpPlayerUI.BackgroundTransparency = 1.000
+	CloseTpPlayerUI.BorderSizePixel = 0
+	CloseTpPlayerUI.Position = UDim2.new(0.850000024, 0, 0.0333333351, 0)
+	CloseTpPlayerUI.Size = UDim2.new(0, 30, 0, 29)
+	CloseTpPlayerUI.Font = Enum.Font.SourceSans
+	CloseTpPlayerUI.Text = "X"
+	CloseTpPlayerUI.TextColor3 = Color3.fromRGB(0, 0, 0)
+	CloseTpPlayerUI.TextSize = 40.000
+	
+	local ReplicateButton = Instance.new("TextButton")
+	ReplicateButton.Name = "ReplicateButton"
+	ReplicateButton.Parent = DropDownTpUI
+	ReplicateButton.BackgroundColor3 = Color3.fromRGB(74, 79, 88)
+	ReplicateButton.BorderSizePixel = 0
+	ReplicateButton.Size = UDim2.new(0, 200, 0, 50)
+	ReplicateButton.Font = Enum.Font.SourceSans
+	ReplicateButton.Text = "RapiddRobbiee"
+	ReplicateButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	ReplicateButton.TextScaled = true
+	ReplicateButton.TextSize = 14.000
+	ReplicateButton.TextWrapped = true
+	
+	
+	game:GetService("UserInputService").InputBegan:Connect(function(i)
+		if i.KeyCode == Enum.KeyCode.RightShift then
+			TpPlayerGui.Enabled = not TpPlayerGui.Enabled	
+		end
+	end)
+	CloseTpPlayerUI.MouseButton1Click:Connect(function()
+		TpPlayerGui.Enabled = false
+	end)
+	local function AddPlayer(v)
+		if v == game.Players.LocalPlayer then return end
+		local RepButton = ReplicateButton:Clone()
+		RepButton.Name = v.Name
+		RepButton.Text = v.Name
+		local TpBind = ""
+		local player = game.Players.LocalPlayer	
+		local binding = false
+		RepButton.MouseButton1Click:connect(function()
+			TPTo(v)
+		end)
+		game:GetService("UserInputService").InputBegan:connect(function(i)
+			if RepButton.Parent == nil then return end
+			if RepButton == nil then return end
+			if TpBind ~= "" then
+				if i.KeyCode == Enum.KeyCode[TpBind] then
+					TPTo(v)
+				end
+			elseif binding == true then
+				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType.MouseButton2 or i.KeyCode == Enum.KeyCode.Unknown then
+					binding = false
+				else
+					TpBind = i.KeyCode.Name
+					RepButton.Text = v.Name
+				end
+				
+			end
+		end)
+		RepButton.MouseButton2Click:connect(function()
+			RepButton.Text = "Changing Bind to TP"
+			binding = true			
+		end)
+		game.Players.PlayerRemoving:connect(function(RemovedPlayer)
+			if RemovedPlayer.Name == v.Name then
+				RepButton:Destroy()
+			end
+		end)
+	end
+	for i,v in pairs(game.Players:GetChildren()) do
+		AddPlayer(v)
+	end
+	game.Players.PlayerAdded:connect(function(v)
+		AddPlayer(v)
+	end)
+end
+
+
+
+
+
 
 return libary
