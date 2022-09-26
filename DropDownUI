@@ -47,7 +47,7 @@ end
 function TPTo(v)
 	local player = game.Players.LocalPlayer
 	if check(v) == true then
-		player.Character.HumanoidRootpart.CFrame = v.Character.HumanoidRootPart.CFrame
+		player.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
 	end
 
 end
@@ -434,7 +434,7 @@ function libary:CreateTp(Name)
 	UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
 	UIGridLayout.CellSize = UDim2.new(0, 100, 0, 20)
 	UIGridLayout.FillDirectionMaxCells = 2
-	UIGridLayout.StartCorner = Enum.StartCorner.BottomLeft
+	UIGridLayout.StartCorner = Enum.StartCorner.TopLeft
 	
 	TpPlayerInfoLab.Name = "TpPlayerInfoLab"
 	TpPlayerInfoLab.Parent = MainFrame
@@ -503,7 +503,7 @@ function libary:CreateTp(Name)
 					TPTo(v)
 				end
 			elseif binding == true then
-				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType.MouseButton2 or i.KeyCode == Enum.KeyCode.Unknown then
+				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.MouseButton2 or i.KeyCode == Enum.KeyCode.Unknown then
 					binding = false
 				else
 					TpBind = i.KeyCode.Name
