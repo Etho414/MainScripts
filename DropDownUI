@@ -323,7 +323,7 @@ function libary:CreateWindow(Name)
 				SliderAmount.Value = ValueOfSlider
 			end
 		end)
-		
+		return SliderAmount
 	end
 	
 	
