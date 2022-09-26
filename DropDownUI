@@ -442,7 +442,7 @@ function libary:CreateTp(Name)
 	TpPlayerInfoLab.BackgroundTransparency = 1.000
 	TpPlayerInfoLab.Size = UDim2.new(0, 170, 0, 30)
 	TpPlayerInfoLab.Font = Enum.Font.SourceSans
-	TpPlayerInfoLab.Text = " Info Name!!"
+	TpPlayerInfoLab.Text = " "..v.Name
 	TpPlayerInfoLab.TextColor3 = Color3.fromRGB(255, 255, 255)
 	TpPlayerInfoLab.TextScaled = true
 	TpPlayerInfoLab.TextSize = 14.000
@@ -505,6 +505,7 @@ function libary:CreateTp(Name)
 			elseif binding == true then
 				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.MouseButton2 or i.KeyCode == Enum.KeyCode.Unknown then
 					binding = false
+					RepButton.Text = v.Name
 				else
 					TpBind = i.KeyCode.Name
 					RepButton.Text = v.Name
