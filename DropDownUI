@@ -1,5 +1,41 @@
 -- Made by Etho :D
 local libary = {}
+ function dragify(MainFrame)
+	local dragging
+	local dragInput
+	local dragStart
+	local startPos
+	local function update(input)
+		Delta = input.Position - dragStart
+		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+		game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
+	end
+	MainFrame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = MainFrame.Position
+
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+	MainFrame.InputChanged:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			dragInput = input
+		end
+	end)
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			update(input)
+		end
+	end)
+end
+
+
 
 function libary:CreateWindow(Name)
 	local Name = Name or "U forgot the game of the name"
@@ -68,40 +104,7 @@ function libary:CreateWindow(Name)
 	
 	UIListLayout.Parent = DropDownWindow
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	local function dragify(MainFrame)
-		local dragging
-		local dragInput
-		local dragStart
-		local startPos
-		local function update(input)
-			Delta = input.Position - dragStart
-			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-			game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
-		end
-		MainFrame.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging = true
-				dragStart = input.Position
-				startPos = MainFrame.Position
-
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then
-						dragging = false
-					end
-				end)
-			end
-		end)
-		MainFrame.InputChanged:Connect(function(input)
-			if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-				dragInput = input
-			end
-		end)
-		game:GetService("UserInputService").InputChanged:Connect(function(input)
-			if input == dragInput and dragging then
-				update(input)
-			end
-		end)
-	end
+	
 	dragify(WindowMain)
 	
 	NameLabelWindow.Text = " "..Name
@@ -264,10 +267,10 @@ function libary:CreateWindow(Name)
 		UICorner_4.Parent = SliderBackDrop2
 		
 		
-		local Inc = Options.Inc
-		local Min = Options.Min
-		local Max = Options.Max
-		local Start = Options.Start
+		local Inc = Options.Inc or 1
+		local Min = Options.Min or 1
+		local Max = Options.Max or 100
+		local Start = Options.Start or 1
 		if Min > Start then Start = Min end
 		SliderInfoLab.Text = tostring(Start)
 		local function CalculateStartPos(Mine,Maxe,Starte)
@@ -286,14 +289,12 @@ function libary:CreateWindow(Name)
 		SliderNameLab.Text = " "..Name
 		WhiteButton.Position = UDim2.new(CalculateStartPos(Min,Max,Start),0,-0.2,0) - UDim2.new(0,WhiteButton.Size.X.Offset / 2,0,0)
 		GrayBack.Size = UDim2.new(CalculateStartPos(Min,Max,Start),0,0,10)
-		if Inc ~= 1 then
-			Max = Max / Inc
-			Min = Min / Inc
-			Max = Max - Min
+		
+		Max = Max / Inc
+		Min = Min / Inc
+		Max = Max - Min
 
-		else
-			Max = Max - Min	
-		end
+		
 		
 		local SliderAmount = Instance.new("NumberValue",SliderFrame)
 		SliderAmount:GetPropertyChangedSignal("Value"):Connect(function()
@@ -332,7 +333,49 @@ function libary:CreateWindow(Name)
 	
 	return Libary2
 end
+function libary:CreateInfoWin()
+	local InfoGui = Instance.new("ScreenGui")
+	local InfoMainFrame = Instance.new("Frame")
+	InfoGui.Name = "InfoGui"
+	InfoGui.Parent = game.CoreGui
+
+	InfoMainFrame.Name = "InfoMainFrame"
+	InfoMainFrame.Parent = InfoGui
+	InfoMainFrame.BackgroundColor3 = Color3.fromRGB(47, 47, 47)
+	InfoMainFrame.BackgroundTransparency = 1.000
+	InfoMainFrame.BorderSizePixel = 0
+	InfoMainFrame.Position = UDim2.new(0.0653788969, 0, 0.0822510868, 0)
+	InfoMainFrame.Size = UDim2.new(0, 100, 0, 20)
+	dragify(InfoMainFrame)
+	local libary2 = {}
+	
+	function libary2:CreateInfoTab(Name)
+
+		local ReplicateLabel = Instance.new("TextLabel")
+		local UIListLayout = Instance.new("UIListLayout")
+		ReplicateLabel.Name = "ReplicateLabel"
+		ReplicateLabel.Parent = InfoMainFrame
+		ReplicateLabel.BackgroundColor3 = Color3.fromRGB(103, 103, 104)
+		ReplicateLabel.BackgroundTransparency = 0.250
+		ReplicateLabel.BorderSizePixel = 0
+		ReplicateLabel.Size = UDim2.new(0, 100, 0, 20)
+		ReplicateLabel.Font = Enum.Font.SourceSans
+		ReplicateLabel.Text =  " "..Name
+		ReplicateLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		ReplicateLabel.TextScaled = true
+		ReplicateLabel.TextSize = 14.000
+		ReplicateLabel.TextWrapped = true
+		ReplicateLabel.TextXAlignment = Enum.TextXAlignment.Left
+		InfoMainFrame.Size = UDim2.new(0, 100, 0, #InfoMainFrame:GetChildren() * 10)
+		UIListLayout.Parent = InfoMainFrame
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		local InfoStringName = Instance.new("StringValue")
+		InfoStringName:GetPropertyChangedSignal("Value"):Connect(function()
+			ReplicateLabel.Text = " "..Name.." "..InfoStringName.Value
+		end)
+		return InfoStringName
+	end
+	return libary2
+end
 
 return libary
-
-
