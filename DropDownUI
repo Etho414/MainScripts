@@ -412,7 +412,7 @@ function libary:CreateTp(Name)
 	MainFrame.BorderSizePixel = 0
 	MainFrame.Position = UDim2.new(0.0647372454, 0, 0.278911591, 0)
 	MainFrame.Size = UDim2.new(0, 200, 0, 30)
-
+	dragify(MainFrame)
 	UICorner.Parent = MainFrame
 
 	FixFrame.Name = "FixFrame"
@@ -463,7 +463,7 @@ function libary:CreateTp(Name)
 	
 	local ReplicateButton = Instance.new("TextButton")
 	ReplicateButton.Name = "ReplicateButton"
-	ReplicateButton.Parent = DropDownTpUI
+	ReplicateButton.Parent = nil
 	ReplicateButton.BackgroundColor3 = Color3.fromRGB(74, 79, 88)
 	ReplicateButton.BorderSizePixel = 0
 	ReplicateButton.Size = UDim2.new(0, 200, 0, 50)
@@ -486,6 +486,7 @@ function libary:CreateTp(Name)
 	local function AddPlayer(v)
 		if v == game.Players.LocalPlayer then return end
 		local RepButton = ReplicateButton:Clone()
+		RepButton.Parent = DropDownTpUI
 		RepButton.Name = v.Name
 		RepButton.Text = v.Name
 		local TpBind = ""
