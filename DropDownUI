@@ -22,7 +22,7 @@ function libary:CreateWindow(Name)
 
 
 	DropDownUi.Name = "DropDownUi"
-	DropDownUi.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	DropDownUi.Parent = game.CoreGui
 
 	WindowMain.Name = "WindowMain"
 	WindowMain.Parent = DropDownUi
