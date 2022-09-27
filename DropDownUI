@@ -144,7 +144,7 @@ function libary:CreateWindow(Name)
 		
 		ToggleImageBut.MouseButton1Down:Connect(function()
 			ToggleVal.Value = not ToggleVal.Value
-			UIFunctions:Ripple(ToggleFrame,1)
+			UIFunctions:Ripple(ToggleFrame,2)
 		end)	
 		ToggleVal:GetPropertyChangedSignal("Value"):Connect(function()
 			ToggleImageBut.Image = UiIconLib.Toggle[tostring(ToggleVal.Value)]
@@ -472,11 +472,14 @@ function libary:CreateTp(Name)
 				end
 			elseif binding == true then
 				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.MouseButton2 or i.KeyCode == Enum.KeyCode.Unknown then
-					binding = false
 					RepButton.Text = v.Name
+					TpBind = ""
+					binding = false
+					
 				else
 					TpBind = i.KeyCode.Name
 					RepButton.Text = v.Name
+					binding = false
 				end
 				
 			end
