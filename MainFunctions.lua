@@ -1,10 +1,47 @@
 local tab = {
 	UIFunctions = {},
 	MathOperation = {},
-	StringManip = {}
+	StringManip = {},
+	Misc = {}
 	
 	
 }
+function tab.Misc:SendChat(str)
+
+		local vim = game:GetService("VirtualInputManager")
+		local plrs = game:GetService("Players")
+		local bar = plrs.LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
+	   
+		bar.Text = ""
+		bar:CaptureFocus()
+		for i = 1, #str do
+			vim:SendTextInputCharacterEvent(string.sub(str, i, i), nil)
+		end
+		task.wait(0.06)
+		keypress(0x0D)
+	
+
+end
+
+
+function tab.Misc:Check(v,...)
+	if v and v.Character and v.Character:FindFirstChild("Humanoid") == true then
+		local args = {...}
+		if #args == 0 then
+			return true
+		end
+		local val = true 
+		for i,v in pairs(args) do
+			if not v then
+				val = false
+			end
+		end		
+		return val
+	else
+		return false
+	end
+end
+
 
 
 function tab.UIFunctions:Ripple(UIInstance,Duration,Color,Zin)
