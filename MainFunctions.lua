@@ -46,8 +46,8 @@ function tab.UIFunctions:Dragify(MainFrame)
 	local dragInput
 	local dragStart
 	local startPos
-    local Delta;
-    local Position;
+    local Delta
+    local Position
 	local function update(input)
 		Delta = input.Position - dragStart
 		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
