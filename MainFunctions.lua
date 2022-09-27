@@ -91,4 +91,8 @@ end
 function tab.StringManip:SortLength(tab)
 	table.sort(tab, function(a,b) return #a>#b end)
 end
+<<<<<<< HEAD
 return tab
+=======
+return tab
+>>>>>>> f7022a42d153cbdd2ba1ca38ba189f1140a30bb2
