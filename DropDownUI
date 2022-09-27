@@ -1,40 +1,8 @@
 -- Made by Etho :D
 local libary = {}
-
- function dragify(MainFrame)
-	local dragging
-	local dragInput
-	local dragStart
-	local startPos
-	local function update(input)
-		Delta = input.Position - dragStart
-		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-		game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(.15), {Position = Position}):Play()
-	end
-	MainFrame.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = MainFrame.Position
-
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-	MainFrame.InputChanged:Connect(function(input)
-		if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			dragInput = input
-		end
-	end)
-	game:GetService("UserInputService").InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			update(input)
-		end
-	end)
-end
+local Functionlib =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainFunctions.lua", true))() 
+local UIFunctions = Functionlib.UIFunctions
+ 
 
  function check(v)
 	if v and v.Character and v.Character.HumanoidRootPart then
@@ -120,7 +88,7 @@ function libary:CreateWindow(Name)
 	UIListLayout.Parent = DropDownWindow
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	
-	dragify(WindowMain)
+	UIFunctions:Dragify(WindowMain)
 	
 	NameLabelWindow.Text = " "..Name
 	CloseWindow.MouseButton1Down:Connect(function()
@@ -176,12 +144,12 @@ function libary:CreateWindow(Name)
 		
 		ToggleImageBut.MouseButton1Down:Connect(function()
 			ToggleVal.Value = not ToggleVal.Value
-			
+			UIFunctions:Ripple(ToggleFrame,1)
 		end)	
 		ToggleVal:GetPropertyChangedSignal("Value"):Connect(function()
 			ToggleImageBut.Image = UiIconLib.Toggle[tostring(ToggleVal.Value)]
 			Callback(ToggleVal.Value)
-			
+
 		end)
 		return ToggleVal
 		
@@ -361,7 +329,7 @@ function libary:CreateInfoWin()
 	InfoMainFrame.BorderSizePixel = 0
 	InfoMainFrame.Position = UDim2.new(0.0653788969, 0, 0.0822510868, 0)
 	InfoMainFrame.Size = UDim2.new(0, 100, 0, 20)
-	dragify(InfoMainFrame)
+	UIFunctions:Dragify(InfoMainFrame)
 	local libary2 = {}
 	
 	function libary2:CreateInfoTab(Name)
@@ -412,7 +380,7 @@ function libary:CreateTp(Name)
 	MainFrame.BorderSizePixel = 0
 	MainFrame.Position = UDim2.new(0.0647372454, 0, 0.278911591, 0)
 	MainFrame.Size = UDim2.new(0, 200, 0, 30)
-	dragify(MainFrame)
+	UIFunctions:Dragify(MainFrame)
 	UICorner.Parent = MainFrame
 
 	FixFrame.Name = "FixFrame"

@@ -7,7 +7,8 @@ local tab = {
 }
 
 
-function tab.UIFunctions:Ripple(UIInstance,Duration,Zin)
+function tab.UIFunctions:Ripple(UIInstance,Duration,Color,Zin)
+	Color = Color or Color3.fromRGB(0,0,0)
 	local Mouse = game.Players.LocalPlayer:GetMouse()
 	local function Tween(Obj,Goal)
 		game:GetService("TweenService"):Create(Obj,TweenInfo.new(Duration),Goal):Play()
@@ -21,9 +22,9 @@ function tab.UIFunctions:Ripple(UIInstance,Duration,Zin)
 	local UR,UG,UB = UBC3.R, UBC3.G, UBC3.B
 
 	local UI = Instance.new("Frame",UIInstance)
-	UI.BackgroundColor3 = Color3.fromRGB(0,0,0)
+	UI.BackgroundColor3 = Color
 	UI.Name = "Ripple"
-	Zin = Zin or 1
+	Zin = Zin or 2
 	UI.ZIndex = Zin
 
 	local Corner = Instance.new("UICorner",UI)
@@ -91,8 +92,6 @@ end
 function tab.StringManip:SortLength(tab)
 	table.sort(tab, function(a,b) return #a>#b end)
 end
-<<<<<<< HEAD
+
 return tab
-=======
-return tab
->>>>>>> f7022a42d153cbdd2ba1ca38ba189f1140a30bb2
+
