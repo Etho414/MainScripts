@@ -7,7 +7,7 @@ local tab = {
 	
 }
 function tab.Misc:SendChat(str)
-
+		wait(0.1)
 		local vim = game:GetService("VirtualInputManager")
 		local plrs = game:GetService("Players")
 		local bar = plrs.LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
