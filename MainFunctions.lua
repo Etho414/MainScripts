@@ -6,6 +6,40 @@ local tab = {
 	
 	
 }
+
+local HoldInstance = {}
+local CollideAll = false
+function tab.Misc:CollideAllTog()
+	if CollideAll == false then
+		CollideAll = true
+		for i,v in pairs(game.Workspace:GetDescendants()) do
+			if v.CanCollide == true and v:IsA("BasePart") then
+				HoldInstance[#HoldInstance+1] = v
+				v.CanCollide = false
+
+			end
+
+		end
+	else
+		CollideAll = false
+		wait(0.1)
+		for i,v in pairs(HoldInstance) do
+			v.CanCollide = true
+			
+		end
+		HoldInstance = {}
+	end
+
+
+end
+game.Workspace.DescendantAdded:Connect(function(descendant)
+	if CollideAll == true then
+		if descendant.CanCollide == true and descendant:IsA("BasePart") then
+			HoldInstance[#HoldInstance+1] = descendant
+			descendant.CanCollide = false
+		end
+	end
+end)
 function tab.Misc:SendChat(str)
 		wait(0.1)
 		local vim = game:GetService("VirtualInputManager")
