@@ -326,8 +326,7 @@ end)
 
 game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
     if  gameProcessedEvent then return end
-    local e,r = pcall(function()
-        if input.UserInputType == Enum.UserInputType[AimbotOp.BotBind] or input.KeyCode == Enum.KeyCode[AimbotOp.BotBind]  and ChangingBind == false then
+        if  ChangingBind == false  and (input.UserInputType == Enum.UserInputType[AimbotOp.BotBind] or input.KeyCode == Enum.KeyCode[AimbotOp.BotBind])   then
             if AimbotOp.TreatAimAsTog == true then
                 AimbotOp.AimBotToggle = not AimbotOp.AimBotToggle
             else
@@ -345,9 +344,6 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
             ChangingBind = false
             MousePressing = false
         end
-
-    end)
-    
 end)
 
 game:GetService("UserInputService").InputEnded:Connect(function(input, gameProcessedEvent)
