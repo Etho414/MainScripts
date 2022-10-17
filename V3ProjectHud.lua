@@ -1,4 +1,4 @@
-local Window = RenderWindow.new("Universal Menu")
+local Window = RenderWindow.new("Project Menu")
 --[[ V 1.3.5
     Aimbot Functionality
     - AimPart Choser
@@ -11,9 +11,9 @@ local Window = RenderWindow.new("Universal Menu")
     - Rebind Aimbot
     - Aimtbot toggle
     ESP Functionality
-    - Target Hud
-    - Well the esp (Skeleton if possible, Box, Chams if possible, HeadDot (can be added on))
-    - Change Color of name for aimbot locked on
+    - Target Hud / .. Add more then just flux,
+    - Well the esp (Skeleton if possible, Box, Chams if possible, HeadDot (can be added on)) / .. Name, Hp, HpPercentage, Chams All compelted
+    - Change Color of name for aimbot locked on / .. Compeleted (added chams to it)
 
     Code Insights
     - More Function Structered Code
@@ -22,15 +22,15 @@ local Window = RenderWindow.new("Universal Menu")
 
     List of Options
         ESP
-            Toggle On / Off
-            DropDown for Skeleton,Chams,Box,None
-            Show Target Hud
-            Show Name
-            Show HP
-            Hp Display Type (Pecentage / non percentage)
+            Toggle On / Off /
+            DropDown for Skeleton,Chams,Box,None ~/ Need to add skeleton and box
+            Show Target Hud / 
+            Show Name / 
+            Show HP / 
+            Hp Display Type (Pecentage / non percentage) / 
             Show HeadDot
         AimBot
-            Rebind For Aimbot will say (Aimbot: R.Click)    /
+            Rebind For Aimbot will say (Aimbot: R.Click)    ~/ (Fucking bugged idk wtf i did wrong >:())
             Toggle On / off / 
             Aimpart DropDown for Head, Torso, Middled of Legs / 
             Visible Check On / off / 
@@ -329,20 +329,21 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
     local e,r = pcall(function()
         if input.UserInputType == Enum.UserInputType[AimbotOp.BotBind] or input.KeyCode == Enum.KeyCode[AimbotOp.BotBind]  and ChangingBind == false then
             if AimbotOp.TreatAimAsTog == true then
-                AimbotOp.AimBotToggle =  not  AimbotOp.AimBotToggle
+                AimbotOp.AimBotToggle = not AimbotOp.AimBotToggle
             else
                 AimbotOp.AimBotToggle = true
             end
            
         elseif ChangingBind == true then
-            
-            if input.KeyCode == Enum.KeyCode.Unknown then 
-                AimbotOp.BotBind = Enum.UserInputType.Name
+            local keyhold = input.KeyCode
+            if keyhold  == Enum.KeyCode.Unknown then 
+                AimbotOp.BotBind = input.UserInputType.Name
             else
-                AimbotOp.BotBind = Enum.KeyCode.Name
+                AimbotOp.BotBind = input.KeyCode.Name
             end
             ChangeAimBotBind.Label = "Aimbot Bind: "..AimbotOp.BotBind
             ChangingBind = false
+            MousePressing = false
         end
 
     end)
