@@ -840,21 +840,23 @@ Dist.TextXAlignment = Enum.TextXAlignment.Left
 
 
 Dragify(Flux)
-local TargetHuds = {
+local Huds = {
     "Flux",
     "None"
 
 }
 
 function InvisHud()
-    Flux.Visible = false
+    for i,v in pairs(TargetHuds:GetChildren()) do
+        v.Visible = false
+    end
 end
 local TargetHudCombo = ESPTab:Combo()
 TargetHudCombo.Items = TargetHuds
 TargetHudCombo.Label = "Target Huds"
 TargetHudCombo.SelectedItem = 1
 TargetHudCombo.OnUpdated:Connect(function(i)
-    ESPOp.TargetHud = TargetHudCombo[i]
+    ESPOp.TargetHud = Huds[i]
     InvisHud()
 end)
 Avatar.BackgroundTransparency = 1
