@@ -83,6 +83,7 @@ local ChangingBind = false
 local globtar = nil
 local AimbotOp = {
     OverallEnabled = true,
+    GlobalAimPart = nil,
     AimPart = "HumanoidRootPart", -- Head, HumanoidRootPart
     AimType = "Cframe", -- Cframe, MouseAbs, Silent Aim
     TriggerBot = true,
@@ -148,12 +149,6 @@ game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
             end
         end
     end
-    --[[for i,v in pairs(Teams) do
-        if v.Safe == false then
-            table.remove(Teams,i)
-        end
-
-    end]]
 end)
 
 function TeamCheck(v) -- Returning True == Passed the check
@@ -207,17 +202,57 @@ function FindHumanoid(v)
 		end
 	end
 end
-function CheckVisiblity(v)
-    -- Returning true == visible
+
+function AllVisibleCheck()
+    
+
+end
+
+
+function CheckVisiblity(v) -- Return true == Visible to part
+    if AimbotOp.AimPart == "All" then
+        if AimbotOp.VisiblyCheck == "ObscuringParts" then
+            local R15Character = false
+            if v.Character:FindFirstChild("LeftLowerArm") then R15Character = true end
+            local cam = game.Workspace.CurrentCamera
+            local HeadVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.Head.Position}, IgnoreObscureTable))
+            if HeadVis == true then return true, v.Character.Head end
+            local TorsoVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.HumanoidRootPart.Position}, IgnoreObscureTable))
+            if TorsoVis == true then  return true, v.Character.HumanoidRootPart end
+            if R15Character == true then
+                local RightArmVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.RightLowerArm.Position}, IgnoreObscureTable))
+                if RightArmVis == true then return true, v.Character.RightLowerArm end
+                local LeftArmVis =  not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.LeftLowerArm.Position}, IgnoreObscureTable))
+                if LeftArmVis == true then return true, v.Character.LeftLowerArm end
+                local RightLegVis =  not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.RightLowerLeg.Position}, IgnoreObscureTable))
+                if RightLegVis == true then return true, v.Character.RightLowerLeg end
+                local LeftLegVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character.LeftLowerLeg.Position}, IgnoreObscureTable))
+                if LeftLegVis == true then return true, v.Character.LeftLowerLeg end
+            else
+                local RightArmVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character["Right Arm"].Position}, IgnoreObscureTable))
+                if RightArmVis == true then return true, v.Character["Right Arm"] end
+                local LeftArmVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character["Left Arm"].Position}, IgnoreObscureTable))
+                if LeftArmVis == true then return true, v.Character["Left Arm"] end
+                local RightLegVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character["Right Leg"].Position}, IgnoreObscureTable))
+                if RightLegVis == true then return true, v.Character["Right Leg"] end
+                local LeftLegVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character["Left Leg"].Position}, IgnoreObscureTable))
+                if LeftLegVis == true then return true, v.Character["Left Leg"] end
+            end
+            
+        end  
+        return false
+    end
+     
+    
     if AimbotOp.VisiblyCheck == "ObscuringParts" then
         local cam = game.Workspace.CurrentCamera
-	    return not unpack(cam:GetPartsObscuringTarget({player.Character[AimbotOp.AimPart].Position, v.Character[AimbotOp.AimPart].Position}, IgnoreObscureTable))
+	    return not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character[AimbotOp.AimPart].Position}, IgnoreObscureTable)), v.Character[AimbotOp.AimPart]
     else
         local ray = Ray.new(player.Character.Head.Position, (v.Character[AimbotOp.AimPart].Position - player.Character.Head.Position).unit * 30000)
         local part, position = workspace:FindPartOnRayWithIgnoreList(ray, IgnoreRayTable, false, true)
         if part then
             if FindHumanoid(part) == true then
-                return true
+                return true, v.Character[AimbotOp.AimPart]
             elseif part.Transparency == 1   or part.CanCollide == false then
                 IgnoreRayTable[#IgnoreRayTable+1] = part   
 
@@ -254,13 +289,19 @@ end
 function FindClosestPlayer()
     if AimbotOp.OverallEnabled == false then Debugged("Overall","Not Enabled"); return end 
     local CurrentTarget;
+
     for i,v in pairs(game.Players:GetChildren()) do 
         if Checks(v) == true then
             if AimbotOp.UseFov == false or AimbotOp.UseFov == true and InFOV(v) == true then
                 if AimbotOp.CheckTeam == true and TeamCheck(v) == true or AimbotOp.CheckTeam == false then
-                    if AimbotOp.VisiblyCheck ~= "None" and CheckVisiblity(v) == true or AimbotOp.VisiblyCheck == "None" then
+                    local Visible, AimPart = CheckVisiblity(v)
+                    if AimbotOp.VisiblyCheck ~= "None" and Visible == true  or AimbotOp.VisiblyCheck == "None" then
                         if CompareMag(CurrentTarget,v) == true then
                             CurrentTarget = v
+                            if AimPart then
+                                AimbotOp.GlobalAimPart = AimPart
+                            end
+                            
                         end
                     end
                 end
@@ -268,18 +309,18 @@ function FindClosestPlayer()
             end
         end
     end
-    UsedTeamCheck = false
     return CurrentTarget
 end
 
 function SetCamera()
     local camera = game.Workspace.CurrentCamera
     if AimbotOp.AimType == "Cframe" then
-        camera.CFrame = CFrame.new(camera.CFrame.Position, globtar.Character[AimbotOp.AimPart].Position)
+        camera.CFrame = CFrame.new(camera.CFrame.Position, AimbotOp.GlobalAimPart.Position)
     end
     
 end
-print(FindClosestPlayer())
+local o,i = FindClosestPlayer()
+print(o,i)
 
 local MousePressing = false
 game:GetService("RunService").RenderStepped:connect(function()
@@ -553,7 +594,7 @@ function Cham(v)
 
     serv2 = game.Players.PlayerRemoving:connect(function(removed)
         if removed == v then
-            serv:Disconnect()    
+            serv:Disconnect()
             serv3:Disconnect()
             serv2:Disconnect()
         end  
@@ -852,7 +893,7 @@ function InvisHud()
     end
 end
 local TargetHudCombo = ESPTab:Combo()
-TargetHudCombo.Items = TargetHuds
+TargetHudCombo.Items = Huds
 TargetHudCombo.Label = "Target Huds"
 TargetHudCombo.SelectedItem = 1
 TargetHudCombo.OnUpdated:Connect(function(i)
