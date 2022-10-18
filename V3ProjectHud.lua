@@ -422,7 +422,8 @@ end)
 
 local Aimparts = {
     "Head",
-    "HumanoidRootPart"
+    "HumanoidRootPart",
+    "All"
 }
 local SelectedItem = table.find(Aimparts,AimbotOp.AimPart)
 if SelectedItem == nil then
