@@ -23,14 +23,16 @@ local Window = RenderWindow.new("Project Menu")
     List of Options
         ESP
             Toggle On / Off /
-            DropDown for Skeleton,Chams,Box,None ~/ Need to add skeleton and box
+            Skeleton
+            Chams /
+            Box
             Show Target Hud / 
             Show Name / 
             Show HP / 
             Hp Display Type (Pecentage / non percentage) / 
             Show HeadDot
         AimBot
-            Rebind For Aimbot will say (Aimbot: R.Click)    ~/ (Fucking bugged idk wtf i did wrong >:())
+            Rebind For Aimbot will say (Aimbot: R.Click)    / 
             Toggle On / off / 
             Aimpart DropDown for Head, Torso, Middled of Legs / 
             Visible Check On / off / 
@@ -38,9 +40,9 @@ local Window = RenderWindow.new("Project Menu")
             
             Dropdown For Method Type - With Silent AIm /
             TeamCheck (Hover should include how it is Hopefully automatic) -- May not be needed to be added depends on how good it works /
-            Use FOV On / Off 
+            Use FOV On / Off /
             FOV Size Slider /
-            Show FOV On / off/
+            Show FOV On / off//
         Misc
             Tp to Aimbot Target (Use a tp function so i can add checks for Deathzone Tp Bypass)
             Panic Module
@@ -49,7 +51,7 @@ local Window = RenderWindow.new("Project Menu")
             Open Tp Player GUi
     AfterThoughts to add
         Aimbot
-            Add a ray for each limb, Make a target feature in aimpart "All"
+            Add a ray for each limb, Make a target feature in aimpart "All" /
 
 ]]
 local ChamColor = {
@@ -73,7 +75,9 @@ local OutlineColors = {
 
 }
 
-
+local MiscOp = {
+    ShowTpTab = false
+}
 local EspTextOption = {
     Size = 24
 }
@@ -203,10 +207,6 @@ function FindHumanoid(v)
 	end
 end
 
-function AllVisibleCheck()
-    
-
-end
 
 
 function CheckVisiblity(v) -- Return true == Visible to part
@@ -319,8 +319,8 @@ function SetCamera()
     end
     
 end
-local o,i = FindClosestPlayer()
-print(o,i)
+
+print(FindClosestPlayer(),AimbotOp.GlobalAimPart)
 
 local MousePressing = false
 game:GetService("RunService").RenderStepped:connect(function()
@@ -341,14 +341,14 @@ game:GetService("RunService").RenderStepped:connect(function()
     -- Circle Position
     if Circle.Visible == true then
         local mouse = player:GetMouse()
-        Circle.Position =  Vector2.new(mouse.X, mouse.Y + 45)
+        Circle.Position =  Vector2.new(mouse.X, mouse.Y + 36)
 
     end
 -- Circle Colour
     if AimbotOp.AimBotToggle == true  then
         Circle.Color = Color3.fromRGB(0,255,0)    
     else
-        Circle.Color = Color3.fromRGB(255,255,255)
+        Circle.Color = Color3.fromRGB(201, 167, 240)
     end
 
 end)
@@ -356,8 +356,15 @@ end)
 local TabMenu = Window:TabMenu()
 local AimbotTab = TabMenu:Add("Aimbot")
 
-local ChangeAimBotBind = AimbotTab:Button()
+AimbotTab:Label("Aimbot Settings")
+AimbotTab:Separator()
 
+local ChangeAimBotBind = AimbotTab:Button()
+ChangeAimBotBind.Label = "Aimbot Bind: MouseButton2"
+ChangeAimBotBind.OnUpdated:Connect(function()
+    ChangeAimBotBind.Label = "Changing Bind"
+    ChangingBind = true
+end)
 local AimbotToggleUi = AimbotTab:CheckBox()
 AimbotToggleUi.Label = "Toggle Aimbot"
 AimbotToggleUi.Value = AimbotOp.OverallEnabled
@@ -367,6 +374,7 @@ end)
 
 game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
     if  gameProcessedEvent then return end
+    if  input.UserInputType == Enum.UserInputType.Focus then return end
     local e,r = pcall(function()
         if  ChangingBind == false  and (input.UserInputType == Enum.UserInputType[AimbotOp.BotBind] or input.KeyCode == Enum.KeyCode[AimbotOp.BotBind])   then
             if AimbotOp.TreatAimAsTog == true then
@@ -405,11 +413,7 @@ end)
 
 
 
-ChangeAimBotBind.Label = "Aimbot Bind: MouseButton2"
-ChangeAimBotBind.OnUpdated:Connect(function()
-    ChangeAimBotBind.Label = "Changing Bind"
-    ChangingBind = true
-end)
+
 local UseAimbotASToggle = AimbotTab:CheckBox()
 UseAimbotASToggle.Label = "Aimbot As Toggle"
 UseAimbotASToggle.Value = AimbotOp.TreatAimAsTog
@@ -417,6 +421,7 @@ UseAimbotASToggle.OnUpdated:Connect(function(v)
     AimbotOp.TreatAimAsTog = v
 
 end)
+
 
 
 
@@ -446,6 +451,10 @@ local SelectedItem = table.find(AimTypes,AimbotOp.AimType)
 if SelectedItem == nil then
     error(AimbotOp.AimType,"Not part of Aim Types Table")
 end
+
+AimbotTab:Label("Moving Camera Method")
+AimbotTab:Separator()
+
 local ComboAimType = AimbotTab:Combo()
 ComboAimType.Label = "Select AimType"
 ComboAimType.Items = AimTypes
@@ -453,6 +462,18 @@ ComboAimType.SelectedItem = SelectedItem
 ComboAimType.OnUpdated:Connect(function(i)
     AimbotOp.AimType = AimTypes[i]
 end)
+
+AimbotTab:Label("Will detect if the gamemode is FFA, Turn it off to shoot teamates")
+AimbotTab:Separator()
+local TeamCheckBut = AimbotTab:CheckBox()
+TeamCheckBut.Label = "Automatic TeamCheck"
+TeamCheckBut.Value = AimbotOp.CheckTeam
+TeamCheckBut.OnUpdated:Connect(function(v)
+    AimbotOp.CheckTeam = v
+end)
+
+
+
 local RayTypes = {
     "Raycast",
     "ObscuringParts",
@@ -462,6 +483,12 @@ local SelectedItem = table.find(RayTypes,AimbotOp.VisiblyCheck)
 if SelectedItem == nil then
     error(AimbotOp.VisiblyCheck,"Not part of Visibly Table")
 end
+
+
+
+
+AimbotTab:Label("AimBot Check Options")
+AimbotTab:Separator()
 local VisibleCheckBut = AimbotTab:Combo()
 VisibleCheckBut.Label = "Visibility Check"
 VisibleCheckBut.SelectedItem = SelectedItem
@@ -472,12 +499,6 @@ VisibleCheckBut.OnUpdated:Connect(function(i)
 end)
 
 
-local TeamCheckBut = AimbotTab:CheckBox()
-TeamCheckBut.Label = "Automatic TeamCheck"
-TeamCheckBut.Value = AimbotOp.CheckTeam
-TeamCheckBut.OnUpdated:Connect(function(v)
-    AimbotOp.CheckTeam = v
-end)
 
 
 local TriggerBotBut = AimbotTab:CheckBox()
@@ -488,6 +509,8 @@ TriggerBotBut.OnUpdated:Connect(function(v)
 end)
 
 
+AimbotTab:Label("FOV Settings")
+AimbotTab:Separator()
 local UseFOVUI = AimbotTab:CheckBox()
 UseFOVUI.Label = "Use FOV"
 UseFOVUI.Value = AimbotOp.UseFov
@@ -528,15 +551,24 @@ local ESPOp = {
     TargetHud = "Flux"
 
 }
+
+
+
 local ChamsFolder = Instance.new("Folder",game.CoreGui)
 
+
+
 local ESPTab = TabMenu:Add("ESP")
+ESPTab:Label("ESP Settings")
+ESPTab:Separator()
 local ToggleEspBut = ESPTab:CheckBox()
 ToggleEspBut.Label = "Enable ESP"
 ToggleEspBut.Value = ESPOp.ESPEnabled
 ToggleEspBut.OnUpdated:Connect(function(v)
     ESPOp.ESPEnabled = v
 end)
+ESPTab:Label("Edit Text Esp Options")
+ESPTab:Separator()
 local ToggleShowName = ESPTab:CheckBox()
 ToggleShowName.Label = "Show Name"
 ToggleShowName.Value = ESPOp.ShowName
@@ -557,7 +589,8 @@ ToggleUsePercentage.Value = ESPOp.UsePercentage
 ToggleUsePercentage.OnUpdated:Connect(function(v)
     ESPOp.UsePercentage = v
 end)
-
+ESPTab:Label("Misc ESP Types")
+ESPTab:Separator()
 local Chams = ESPTab:CheckBox()
 Chams.Label = "Chams"
 Chams.Value = false
@@ -664,9 +697,14 @@ local function Round(v)
     return math.floor(v + 0.5)
 end
 local function GetHp(v)
-    if game.PlaceId == 286090429 then -- Aresenal HP
+    if game.PlaceId == 286090429 then -- Aresenal HP 
+        if v:FindFirstChild("NRPBS") == nil then return false end
         return {Health = v.NRPBS.Health.Value, MaxHealth = v.NRPBS.MaxHealth.Value}
+    elseif game.PlaceId == 3785125742 then -- Xeno Online 2
+        if (v.Character:FindFirstChild("Health") or v.Character.Health:FindFirstChild("Max")) == nil then return false end
+        return {Health = v.Character.Health.Value, MaxHealth = v.Character.Health.Max.Value}
     else -- Universal
+        if v.Character:FindFirstChild("Humanoid") == nil then return false end
         return {Health = v.Character.Humanoid.Health, MaxHealth = v.Character.Humanoid.MaxHealth}
     end
 
@@ -718,10 +756,19 @@ local function ESP(v)
                 if ESPOp.ShowHP == true then
                     if ESPOp.UsePercentage == false then
                         local hp = GetHp(v)
-                        StringRender = StringRender.. " "..tostring(hp.Health).." / "..tostring(hp.MaxHealth)
+                        if hp ~= false then
+                            StringRender = StringRender.. " "..tostring(hp.Health).." / "..tostring(hp.MaxHealth)
+                        else
+                            StringRender = StringRender.." Cannot find HP"
+                        end
+                        
                     else
                         local hp = GetHp(v)
-                        StringRender = StringRender.." "..tostring(Round(GetPercent(hp.Health,hp.MaxHealth))).."%"
+                        if hp ~= false then
+                            StringRender = StringRender.." "..tostring(Round(GetPercent(hp.Health,hp.MaxHealth))).."%"
+                        else
+                            StringRender = StringRender.." Cannot find HP"
+                        end
                     end
                 end
                 ModdedText(StringRender,v)
@@ -789,10 +836,6 @@ function Dragify(MainFrame)
 end
 
 
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
 
 local TargetHuds = Instance.new("ScreenGui")
 local Flux = Instance.new("Frame")
@@ -803,7 +846,6 @@ local HpBar = Instance.new("Frame")
 local HpText = Instance.new("TextLabel")
 local Dist = Instance.new("TextLabel")
 
---Properties:
 
 TargetHuds.Name = "TargetHuds"
 TargetHuds.Parent = game.CoreGui
@@ -908,12 +950,20 @@ game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
         if globtar ~= nil then
             Flux.Visible = true
             local hp = GetHp(globtar)
-            local HpPercent = Round(GetPercent(hp.Health,hp.MaxHealth))
-            HpBar.Size = UDim2.new(HpPercent / 100, 0,1,0)
-            HpText.Text = tostring(HpPercent).."%"
             Name.Text = globtar.Name
-            local mag = Round((player.Character.HumanoidRootPart.Position - globtar.Character.HumanoidRootPart.Position).Magnitude)
-            Dist.Text = "Dist: "..tostring(mag)
+            if hp ~= false then
+                local HpPercent = Round(GetPercent(hp.Health,hp.MaxHealth))
+                HpBar.Size = UDim2.new(HpPercent / 100, 0,1,0)
+                HpText.Text = tostring(HpPercent).."%"
+            else
+                HpText.Text = "Cannot find HP"
+            end
+            
+            if globtar.Character:FindFirstChild("HumanoidRootPart") then
+                local mag = Round((player.Character.HumanoidRootPart.Position - globtar.Character.HumanoidRootPart.Position).Magnitude)
+                Dist.Text = "Dist: "..tostring(mag)
+            end
+         
             local con, isrea = game:GetService("Players"):GetUserThumbnailAsync(globtar.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
             Avatar.Image = con
         end
@@ -931,3 +981,91 @@ game:GetService("RunService").RenderStepped:connect(function()
     end)
 end)
 
+
+
+function Teleport(v)
+    if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") == nil then return end
+    if game.GameId == 19274812341 then
+        
+    else   -- Universal TP
+        print("Attempt TP")
+        local succes, Error = pcall(function()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
+        end)
+        print(succes)
+        if succes then
+            syn.toast_notification({Title = 'Success',Content = 'Sucessfully Teleported to '..v.Name,Type = ToastType.Success,Duration = 1.5,})
+        else
+            syn.toast_notification({Title = 'Error',Content = Error..v.Name,Type = ToastType.Error,Duration = 1.5,})
+        end
+    end
+
+end
+
+--[[local TabMenu = Window:TabMenu()
+local AimbotTab = TabMenu:Add("Aimbot")
+
+AimbotTab:Label("Aimbot Settings")
+AimbotTab:Separator()
+
+local ChangeAimBotBind = AimbotTab:Button()
+ChangeAimBotBind.Label = "Aimbot Bind: MouseButton2"
+ChangeAimBotBind.OnUpdated:Connect(function()
+    ChangeAimBotBind.Label = "Changing Bind"
+    ChangingBind = true
+end)]]
+local TpPlayerGuiUIObjs = {}
+local TpPlayerGuiConnections = {}
+
+local PlayerTpTab;
+function TptoPlayer(bool)
+    if bool == true then
+        PlayerTpTab =  TabMenu:Add("TP To Player UI")
+        TpPlayerGuiUIObjs[#TpPlayerGuiUIObjs+1] = PlayerTpTab    
+        PlayerTpTab:Label("Click a name to TP to them")
+        PlayerTpTab:Separator()
+        local function CreateButton(v)
+            local PlayerButton = PlayerTpTab:Button()
+            PlayerButton.Label = v.Name
+            PlayerButton.OnUpdated:Connect(function()
+                if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    Teleport(v)
+                end
+
+            end)
+        end
+        for i,v in pairs(game.Players:GetChildren()) do
+            if v ~= game.Players.LocalPlayer then
+                CreateButton(v)
+            end
+        end
+        TpPlayerGuiConnections[#TpPlayerGuiConnections+1] = game:GetService("Players").PlayerAdded:connect(function(v)
+            if v ~= game.Players.LocalPlayer then
+                CreateButton(v)
+            end
+        end)
+    else
+        for i,v in pairs(TpPlayerGuiConnections) do
+            v:Disconnect()
+        end
+        PlayerTpTab:Clear()
+    end    
+end
+
+
+
+local MiscTabMenu = TabMenu:Add("Misc")
+
+local TpPlayerCheckBox = MiscTabMenu:CheckBox()
+TpPlayerCheckBox.Label = "Open Player TP Menu"
+TpPlayerCheckBox.OnUpdated:Connect(function(v)
+    TptoPlayer(v)
+end)
+
+
+
+
+
+
+
+syn.toast_notification({Title = 'Project Hub',Content = 'Sucessfully loaded Project HUB',Type = ToastType.Success,Duration = 3,})
