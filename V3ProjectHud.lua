@@ -76,7 +76,9 @@ local OutlineColors = {
 }
 
 local MiscOp = {
-    ShowTpTab = false
+    ShowTpTab = false,
+    ShowBeams = true,
+    ShowWayText = true
 }
 local EspTextOption = {
     Size = 24
@@ -168,31 +170,53 @@ end
 
 local IgnoreRayTable = {player.Character}
 local IgnoreObscureTable = {}
+
+
+local ObscureServs = {}
+function AddObscureTable(bool)
+    if bool == true then
+        ObscureServs[#ObscureServs + 1] = game.Workspace.DescendantAdded:connect(function(v)
+            if v:IsA("BasePart") and (v.Transparency == 1 or v.CanCollide == false) and AimbotOp.VisiblyCheck == "ObscuringParts"  then
+                IgnoreObscureTable[#IgnoreObscureTable+1] = v
+            end
+        end)
+        ObscureServs[#ObscureServs + 1] = game.Workspace.DescendantRemoving:connect(function(v)
+            local k = table.find(IgnoreObscureTable,v)
+            if k ~= nil then
+                table.remove(IgnoreObscureTable,k)
+    
+            end
+        end)
+
+    else
+        for i,v in pairs(ObscureServs) do
+            v:Disconnect()
+        end
+    end
+    
+end
+
+
 function ObscureAllWorkspace()
-if  AimbotOp.VisiblyCheck ~= "ObscuringParts" then IgnoreObscureTable = {}; return end
-     IgnoreObscureTable = {}
-     for _,v in pairs(game.Workspace:GetDescendants()) do
+    if AimbotOp.VisiblyCheck == "ObscuringParts" then
+        AddObscureTable(true)
+    else
+        AddObscureTable(false)
+    end
+    if  AimbotOp.VisiblyCheck ~= "ObscuringParts" then IgnoreObscureTable = {}; return end
+    IgnoreObscureTable = {}
+    for _,v in pairs(game.Workspace:GetDescendants()) do
         if v:IsA("BasePart") and (v.Transparency == 1 or v.CanCollide == false) then
             IgnoreObscureTable[#IgnoreObscureTable+1] = v
         end
+        if AimbotOp.VisiblyCheck ~= "ObscuringParts" then
+            IgnoreObscureTable = {}
+            return
+        end
     end
 end
-function AddObscureTable()
 
-    game.Workspace.DescendantAdded:connect(function(v)
-        if v:IsA("BasePart") and (v.Transparency == 1 or v.CanCollide == false) and AimbotOp.VisiblyCheck == "ObscuringParts"  then
-            IgnoreObscureTable[#IgnoreObscureTable+1] = v
-        end
-    end)
-    game.Workspace.DescendantRemoving:connect(function(v)
-        local k = table.find(IgnoreObscureTable,v)
-        if k ~= nil then
-            table.remove(IgnoreObscureTable,k)
 
-        end
-    end)
-end
-coroutine.wrap(AddObscureTable)()
 
 function FindHumanoid(v)
 	local Path = v
@@ -207,7 +231,25 @@ function FindHumanoid(v)
 	end
 end
 
+function RayAddToTab(part)
+    if part.Transparency == 1 or part.CanCollide == false then
+        IgnoreRayTable[#IgnoreRayTable+1] = part   
+    end
 
+end
+
+function CheckRay(v,aimtopart)
+  
+    local ray = Ray.new(player.Character.Head.Position, (v.Character[aimtopart].Position - player.Character.Head.Position).unit * 30000)
+    local part, position = workspace:FindPartOnRayWithIgnoreList(ray, IgnoreRayTable, false, true)
+    if part then
+        if FindHumanoid(part) then
+            return true, v.Character[aimtopart]
+        end
+        RayAddToTab(part)
+    end
+
+end
 
 function CheckVisiblity(v) -- Return true == Visible to part
     if AimbotOp.AimPart == "All" then
@@ -238,7 +280,53 @@ function CheckVisiblity(v) -- Return true == Visible to part
                 local LeftLegVis = not unpack(cam:GetPartsObscuringTarget({player.Character.Head.Position, v.Character["Left Leg"].Position}, IgnoreObscureTable))
                 if LeftLegVis == true then return true, v.Character["Left Leg"] end
             end
-            
+        elseif AimbotOp.VisiblyCheck == "Raycast"   then
+            local cam = game.Workspace.CurrentCamera
+            local R15Character = false
+            if v.Character:FindFirstChild("LeftLowerArm") then R15Character = true end
+            local bool, instance = CheckRay(v,"Head")
+            if bool == true then
+                return bool,instance
+            end
+            local bool, instance = CheckRay(v,"HumanoidRootPart")
+            if bool == true then
+                return bool,instance
+            end
+            if R15Character == true then
+                local bool, instance = CheckRay(v,"RightLowerArm")
+                if bool == true then
+                    return bool,instance
+                end 
+                local bool, instance = CheckRay(v,"LeftLowerArm")
+                if bool == true then
+                    return bool,instance
+                end
+                local bool, instance = CheckRay(v,"RightLowerLeg")
+                if bool == true then
+                    return bool,instance
+                end
+                local bool, instance = CheckRay(v,"LeftLowerLeg")
+                if bool == true then
+                    return bool,instance
+                end
+            else
+                local bool, instance = CheckRay(v,"Right Arm")
+                if bool == true then
+                    return bool,instance
+                end 
+                local bool, instance = CheckRay(v,"Left Arm")
+                if bool == true then
+                    return bool,instance
+                end
+                local bool, instance = CheckRay(v,"Right Leg")
+                if bool == true then
+                    return bool,instance
+                end
+                local bool, instance = CheckRay(v,"Left Leg")
+                if bool == true then
+                    return bool,instance
+                end
+            end
         end  
         return false
     end
@@ -253,10 +341,8 @@ function CheckVisiblity(v) -- Return true == Visible to part
         if part then
             if FindHumanoid(part) == true then
                 return true, v.Character[AimbotOp.AimPart]
-            elseif part.Transparency == 1   or part.CanCollide == false then
-                IgnoreRayTable[#IgnoreRayTable+1] = part   
-
-                return false
+            else
+                RayAddToTab(part)
             end
         end
         Debugged("Check Visibilty, Part: "..tostring(part))
@@ -268,7 +354,7 @@ function InFOV(v)
     local camera = game.Workspace.CurrentCamera
     local mouse = player:GetMouse()
     local chatpartpos, OnScreen = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
-	local mag = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(chatpartpos.x, chatpartpos.Y)).Magnitude
+	local mag = (Vector2.new(mouse.X, mouse.Y - 36) - Vector2.new(chatpartpos.x, chatpartpos.Y)).Magnitude
 	if mag < AimbotOp.FovSize then
 		return true
 	end
@@ -698,22 +784,23 @@ local function Round(v)
 end
 local function GetHp(v)
     if game.PlaceId == 286090429 then -- Aresenal HP 
-        if v:FindFirstChild("NRPBS") == nil then return false end
-        return {Health = v.NRPBS.Health.Value, MaxHealth = v.NRPBS.MaxHealth.Value}
+        if v:FindFirstChild("NRPBS") == nil then return {Health = 0, MaxHealth = 0, Found = false} end
+        return {Health = v.NRPBS.Health.Value, MaxHealth = v.NRPBS.MaxHealth.Value, Found = true}
     elseif game.PlaceId == 3785125742 then -- Xeno Online 2
-        if (v.Character:FindFirstChild("Health") or v.Character.Health:FindFirstChild("Max")) == nil then return false end
-        return {Health = v.Character.Health.Value, MaxHealth = v.Character.Health.Max.Value}
+        if (v.Character:FindFirstChild("Health") or v.Character.Health:FindFirstChild("Max")) == nil then return {Health = 0, MaxHealth = 0, Found = false} end
+        return {Health = v.Character:FindFirstChild("Health").Value, MaxHealth = v.Character.Health:FindFirstChild("Max").Value, Found = true}
     else -- Universal
-        if v.Character:FindFirstChild("Humanoid") == nil then return false end
-        return {Health = v.Character.Humanoid.Health, MaxHealth = v.Character.Humanoid.MaxHealth}
+        if not v.Character:FindFirstChild("Humanoid") then return {Health = 0, MaxHealth = 0, Found = false} end
+        return {Health = v.Character.Humanoid.Health, MaxHealth = v.Character.Humanoid.MaxHealth, Found = true}
     end
 
 end
 local function ModdedText(str,v) -- Add extra text like Bp: Money: blah blah
     if game.PlaceId == 184928419545353 then
         return str.." jhhfhfh"..v.Name
+    else -- Universal
+        return str
     end
-    
 end
 
 local function floorpos(pos)
@@ -729,7 +816,8 @@ local function ESP(v)
     TextString.Size = EspTextOption.Size
 
     RunService = game:GetService("RunService").RenderStepped:connect(function()
-        if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") and GetHp(v).Health > 0  then
+        local curhp = GetHp(v)
+        if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") and (curhp.Found == true and curhp.Health > 0 or curhp.Found == false ) then
             local StringRender = ""
             local camera = game.Workspace.CurrentCamera
             local RootPos, OnS = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
@@ -740,10 +828,10 @@ local function ESP(v)
                 TextString.Position = floorpos(Vector2.new(HeadPos.X - (TextString.TextBounds.X / 2),HeadPos.Y -  TextString.TextBounds.Y))
                 if v == globtar then
                     TextString.Color = TextColor.AimbotTarget
-                elseif v.Team == player.Team then
-                    TextString.Color = TextColor.AllyColor
-                else
+                elseif TeamCheck(v) == true  then
                     TextString.Color = TextColor.EnemyColor
+                else
+                    TextString.Color = TextColor.AllyColor
                 end
             end
             if ESPOp.ESPEnabled == false or OnS == false then
@@ -754,24 +842,23 @@ local function ESP(v)
                     StringRender = v.Name
                 end
                 if ESPOp.ShowHP == true then
+                    local hp = GetHp(v)
                     if ESPOp.UsePercentage == false then
-                        local hp = GetHp(v)
-                        if hp ~= false then
+                        if hp.Found == true then
                             StringRender = StringRender.. " "..tostring(hp.Health).." / "..tostring(hp.MaxHealth)
                         else
                             StringRender = StringRender.." Cannot find HP"
                         end
                         
                     else
-                        local hp = GetHp(v)
-                        if hp ~= false then
+                        if hp.Found == true  then
                             StringRender = StringRender.." "..tostring(Round(GetPercent(hp.Health,hp.MaxHealth))).."%"
                         else
                             StringRender = StringRender.." Cannot find HP"
                         end
                     end
                 end
-                ModdedText(StringRender,v)
+                StringRender = ModdedText(StringRender,v)
                 DrawText()
             end
         else
@@ -951,7 +1038,7 @@ game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
             Flux.Visible = true
             local hp = GetHp(globtar)
             Name.Text = globtar.Name
-            if hp ~= false then
+            if hp.Found == true then
                 local HpPercent = Round(GetPercent(hp.Health,hp.MaxHealth))
                 HpBar.Size = UDim2.new(HpPercent / 100, 0,1,0)
                 HpText.Text = tostring(HpPercent).."%"
@@ -984,85 +1071,158 @@ end)
 
 
 function Teleport(v)
+    local pos;
+    local name;
+    if type(v) == "table" then
+        pos = v.pos
+        name = v.name
+    else
+        pos = v.Character.HumanoidRootPart.Position
+        name = v.Name
+    end
     if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") == nil then return end
     if game.GameId == 19274812341 then
         
     else   -- Universal TP
         print("Attempt TP")
         local succes, Error = pcall(function()
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
         end)
         print(succes)
         if succes then
-            syn.toast_notification({Title = 'Success',Content = 'Sucessfully Teleported to '..v.Name,Type = ToastType.Success,Duration = 1.5,})
+            syn.toast_notification({Title = 'Success',Content = 'Sucessfully Teleported to '..name,Type = ToastType.Success,Duration = 1.5,})
         else
-            syn.toast_notification({Title = 'Error',Content = Error..v.Name,Type = ToastType.Error,Duration = 1.5,})
+            syn.toast_notification({Title = 'Error',Content = Error.."   "..name,Type = ToastType.Error,Duration = 1.5,})
         end
     end
-
 end
 
---[[local TabMenu = Window:TabMenu()
-local AimbotTab = TabMenu:Add("Aimbot")
-
-AimbotTab:Label("Aimbot Settings")
-AimbotTab:Separator()
-
-local ChangeAimBotBind = AimbotTab:Button()
-ChangeAimBotBind.Label = "Aimbot Bind: MouseButton2"
-ChangeAimBotBind.OnUpdated:Connect(function()
-    ChangeAimBotBind.Label = "Changing Bind"
-    ChangingBind = true
-end)]]
 local TpPlayerGuiUIObjs = {}
 local TpPlayerGuiConnections = {}
 
 local PlayerTpTab;
-function TptoPlayer(bool)
-    if bool == true then
-        PlayerTpTab =  TabMenu:Add("TP To Player UI")
-        TpPlayerGuiUIObjs[#TpPlayerGuiUIObjs+1] = PlayerTpTab    
-        PlayerTpTab:Label("Click a name to TP to them")
-        PlayerTpTab:Separator()
-        local function CreateButton(v)
-            local PlayerButton = PlayerTpTab:Button()
-            PlayerButton.Label = v.Name
-            PlayerButton.OnUpdated:Connect(function()
-                if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                    Teleport(v)
-                end
-
-            end)
-        end
-        for i,v in pairs(game.Players:GetChildren()) do
-            if v ~= game.Players.LocalPlayer then
-                CreateButton(v)
-            end
-        end
-        TpPlayerGuiConnections[#TpPlayerGuiConnections+1] = game:GetService("Players").PlayerAdded:connect(function(v)
-            if v ~= game.Players.LocalPlayer then
-                CreateButton(v)
+local ran = false
+function TptoPlayer()
+    if ran == true then return end
+    ran = true
+    PlayerTpTab =  TabMenu:Add("TP To Player UI")
+    TpPlayerGuiUIObjs[#TpPlayerGuiUIObjs+1] = PlayerTpTab    
+    PlayerTpTab:Label("Click a name to TP to them")
+    PlayerTpTab:Separator()
+    local function CreateButton(v)
+        local PlayerButton = PlayerTpTab:Button()
+        PlayerButton.Label = v.Name
+        PlayerButton.OnUpdated:Connect(function()
+            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                Teleport(v)
             end
         end)
-    else
-        for i,v in pairs(TpPlayerGuiConnections) do
-            v:Disconnect()
+        local serv;
+        serv = game.Players.PlayerRemoving:Connect(function(RemovedPlayer)
+            if RemovedPlayer == v then
+                PlayerButton.Visible = false
+                serv:Disconnect()
+            end 
+        end)
+    end
+    for i,v in pairs(game.Players:GetChildren()) do
+        if v ~= game.Players.LocalPlayer then
+            CreateButton(v)
         end
-        PlayerTpTab:Clear()
-    end    
+    end
+    game:GetService("Players").PlayerAdded:connect(function(v)
+        if v ~= game.Players.LocalPlayer then
+            CreateButton(v)
+        end
+    end)   
 end
+local ranway = false
+function CreateWayPoint()
+    if ranway == true then return end
+    ranway = true
+    local WayPointTab = TabMenu:Add("Waypoints")
+    WayPointTab:Label("Waypoint Settings")
+    WayPointTab:Separator()
+    local ShowBeam = WayPointTab:CheckBox()
+    ShowBeam.Label = "Show Beams"
+    ShowBeam.OnUpdated:Connect(function(v)
+        MiscOp.ShowBeams = v
+    end)
+    local ShowText = WayPointTab:CheckBox()
+    ShowText.Label = "Show Name"
+    ShowText.OnUpdated:Connect(function(v)
+        MiscOp.ShowWayText = v
+    end)
+    WayPointTab:Label("Create WayPoint")
+    WayPointTab:Separator()
+    local function MakePoint(Name,TPBIND)
+        local MadePos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+        local d = WayPointTab:Label(Name)
+        local base = WayPointTab:SameLine()
+        local serv;
+        local TeleportButton = base:Button()
+        TeleportButton.Label = "Teleport To Point"
+        if TPBIND ~= "" then
+            TeleportButton.Label = "Teleport To Point   Bind: "..TPBIND
+
+        end
+        TeleportButton.OnUpdated:Connect(function()
+            local tab = {name = Name, pos = MadePos}
+            Teleport(tab)
+        end)
+        local RemoveButton = base:Button()
+        RemoveButton.Label = "Remove Waypoint"
+        local h = WayPointTab:Separator()
+        if TPBIND ~= "" then
+            serv = game:GetService("UserInputService").InputBegan:connect(function(i)
+                local s,e = pcall(function()
+                    if i.KeyCode == Enum.KeyCode[TPBIND] then
+                        Teleport({name = Name, pos = MadePos})
+                    end
+                end)
+               
+            end)
+        end
+        RemoveButton.OnUpdated:Connect(function()
+            serv:Disconnect()
+            TeleportButton.Visible = false
+            RemoveButton.Visible = false
+            h.Visible = false
+            d.Visible = false
+        end)
+    end
+    local tpbind = nil
+    local WayPointNameText = WayPointTab:TextBox()
+    WayPointNameText.Label = "Way Point Name"
+    local WayPointBase = WayPointTab:SameLine()
+    local CreateWayPoint = WayPointBase:Button()
+    CreateWayPoint.Label = "Create Waypoint At current Location"
+    CreateWayPoint.OnUpdated:Connect(function()
+        MakePoint(WayPointNameText.Value,tpbind)
+    end)
+    local PointBind = WayPointBase:TextBox()
+    PointBind.Size = Vector2.new(20,20)
+    PointBind.MaxTextLength = 1
+    PointBind.Label = "Waypoint HotKey, Leave blank for none"
+    PointBind.OnUpdated:Connect(function()
+        tpbind = PointBind.Value
+    end)
+    WayPointTab:Label("Waypoints")
+    WayPointTab:Separator()
+end
+
 
 
 
 local MiscTabMenu = TabMenu:Add("Misc")
 
-local TpPlayerCheckBox = MiscTabMenu:CheckBox()
+local TpPlayerCheckBox = MiscTabMenu:Button()
 TpPlayerCheckBox.Label = "Open Player TP Menu"
-TpPlayerCheckBox.OnUpdated:Connect(function(v)
-    TptoPlayer(v)
+TpPlayerCheckBox.OnUpdated:Connect(function()
+    TptoPlayer()
 end)
 
-
+CreateWayPoint()
 
 
 
