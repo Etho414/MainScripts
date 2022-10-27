@@ -222,7 +222,7 @@ function FindHumanoid(v)
 	local Path = v
 	while true do
 		if Path:FindFirstChildOfClass("Humanoid") then
-			return true
+			return true, Path
 		elseif Path.Parent == game.Workspace then
 			return false
 		else
@@ -243,7 +243,8 @@ function CheckRay(v,aimtopart)
     local ray = Ray.new(player.Character.Head.Position, (v.Character[aimtopart].Position - player.Character.Head.Position).unit * 30000)
     local part, position = workspace:FindPartOnRayWithIgnoreList(ray, IgnoreRayTable, false, true)
     if part then
-        if FindHumanoid(part) then
+        local bool,path = FindHumanoid(part)
+        if bool == true and path == v.Character then
             return true, v.Character[aimtopart]
         end
         RayAddToTab(part)
@@ -339,7 +340,8 @@ function CheckVisiblity(v) -- Return true == Visible to part
         local ray = Ray.new(player.Character.Head.Position, (v.Character[AimbotOp.AimPart].Position - player.Character.Head.Position).unit * 30000)
         local part, position = workspace:FindPartOnRayWithIgnoreList(ray, IgnoreRayTable, false, true)
         if part then
-            if FindHumanoid(part) == true then
+            local bool, path = FindHumanoid(part)
+            if bool == true and path == v.Character then
                 return true, v.Character[AimbotOp.AimPart]
             else
                 RayAddToTab(part)
@@ -1164,7 +1166,6 @@ function CreateWayPoint()
         TeleportButton.Label = "Teleport To Point"
         if TPBIND ~= "" then
             TeleportButton.Label = "Teleport To Point   Bind: "..TPBIND
-
         end
         TeleportButton.OnUpdated:Connect(function()
             local tab = {name = Name, pos = MadePos}
@@ -1174,21 +1175,21 @@ function CreateWayPoint()
         RemoveButton.Label = "Remove Waypoint"
         local h = WayPointTab:Separator()
         if TPBIND ~= "" then
-            serv = game:GetService("UserInputService").InputBegan:connect(function(i)
+            serv = game:GetService("UserInputService").InputBegan:connect(function(i,g)
+                if g then return end
                 local s,e = pcall(function()
                     if i.KeyCode == Enum.KeyCode[TPBIND] then
                         Teleport({name = Name, pos = MadePos})
                     end
-                end)
-               
+                end)     
             end)
         end
         RemoveButton.OnUpdated:Connect(function()
-            serv:Disconnect()
             TeleportButton.Visible = false
             RemoveButton.Visible = false
             h.Visible = false
             d.Visible = false
+            serv:Disconnect()
         end)
     end
     local tpbind = nil
@@ -1200,7 +1201,7 @@ function CreateWayPoint()
     CreateWayPoint.OnUpdated:Connect(function()
         MakePoint(WayPointNameText.Value,tpbind)
     end)
-    local PointBind = WayPointBase:TextBox()
+    local PointBind = WayPointTab:TextBox()
     PointBind.Size = Vector2.new(20,20)
     PointBind.MaxTextLength = 1
     PointBind.Label = "Waypoint HotKey, Leave blank for none"
@@ -1211,18 +1212,18 @@ function CreateWayPoint()
     WayPointTab:Separator()
 end
 
-
-
-
 local MiscTabMenu = TabMenu:Add("Misc")
-
 local TpPlayerCheckBox = MiscTabMenu:Button()
 TpPlayerCheckBox.Label = "Open Player TP Menu"
 TpPlayerCheckBox.OnUpdated:Connect(function()
     TptoPlayer()
 end)
 
-CreateWayPoint()
+local WayPointBox = MiscTabMenu:Button()
+WayPointBox.Label = "Open Waypoint Menu"
+TpPlayerCheckBox.OnUpdated:Connect(function()
+    CreateWayPoint()
+end)
 
 
 
