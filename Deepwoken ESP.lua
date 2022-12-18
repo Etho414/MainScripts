@@ -66,10 +66,10 @@ function CalcString(OptTable)
     basestring = basestring..OptTable.Name
     if OptTable.IsPlayer == true then
         if _G.ShowTalentAmount == true then
-            if game.Players[OptTable.Name] then
-                basestring = basestring.." Talents: "..tostring(CheckTalentAmount(game.Players[OptTable.Name]))
+            if game.Players:FindFirstChild(OptTable.Name) then
+                basestring = basestring.." Talents: "..tostring(CheckTalentAmount(game.Players:FindFirstChild(OptTable.Name)))
             else
-                basestring = basestring.. " Cant find talent thingy"
+                basestring = basestring.. " Nil Talent"
             end
            
         end
@@ -300,6 +300,7 @@ end
 workspace.Live.ChildAdded:connect(function(v)
     AddMobToESP(v)
 end)
+
 
 
 
