@@ -3,6 +3,8 @@ local EspListenTable = {}
 local cam = game.Workspace.CurrentCamera
 local RunESP = false
 
+
+
 function round(n)
     return math.floor(n)
 end
@@ -102,6 +104,7 @@ function EspListener()
                         TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                         TextOBJ.Size = _G.TextSize
                         TextOBJ.ZIndex = 1
+                        TextOBJ.Color = _G.PlayerESPColor
                     end
                 end
 
@@ -130,7 +133,7 @@ function EspListener()
                     TextOBJ.Text = CalcString(v)
                     TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                     TextOBJ.Size = _G.MobTextSize
-                    TextOBJ.Color = Color3.fromRGB(255,255,255)
+                    TextOBJ.Color = _G.MobESPColor
                     TextOBJ.ZIndex = 20
                 end
 
