@@ -15,7 +15,7 @@ end
 if game.GameId == 3785125742 then 
     print("Loading Xeno Online 2!")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/Xeno%20Online%202", true))()
-elseif game.GameId == 4111023553 then
+elseif game.GameId == 1359573625 then
     print("Loading Deepwoken ESP!")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/Deepwoken%20ESP.lua", true))()
 end
