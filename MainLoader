@@ -1,5 +1,5 @@
 -- Main way to load scripts for each game!
-
+print(game.GameId)
 --[[
 
   Xeno Online 2 - 10366978580 - https://www.roblox.com/games/10366978580/Xeno-Online-II-NEW-CODE
