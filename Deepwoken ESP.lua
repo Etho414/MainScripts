@@ -38,10 +38,10 @@ local RunESP = false
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
-repeat wait() until workspace:FindFirstChild("Live"); print("Live")
-repeat wait(); player = game.Players.LocalPlayer until player.Name ~= nil; print('Waitingo n name')
-repeat wait() until workspace:WaitForChild("Live"):FindFirstChild(player.Name); print("Waiting for.. "..player.Name)
-print("Loaded in!")
+repeat wait() until workspace:FindFirstChild("Live")
+repeat wait(); player = game.Players.LocalPlayer until player.Name ~= nil
+repeat wait() until workspace:WaitForChild("Live"):FindFirstChild(player.Name)
+
 local cam = game.Workspace.CurrentCamera
 function round(n)
     return math.floor(n)
