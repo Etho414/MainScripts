@@ -272,7 +272,7 @@ local MobRetryTable = {}
 function AddMobToESP(v)
     if not v:IsA("Model") then return end
 
-    if v and v:FindFirstChild("Humanoid") and CheckMob(v) == true  then
+    if v and v:FindFirstChild("Humanoid") and CheckMob(v) == true  and v:GetAttribute("MOB_rich_name") ~= nil then
         local HpValTable = {
             Type = "Humanoid",
             HumanoidPath = v.Humanoid
@@ -292,10 +292,15 @@ function MobRetryFunction()
     while wait() do
         local RemovedVal = false
         for i,v in pairs(MobRetryTable) do
-            if v and v:FindFirstChild("Humanoid") and RemovedVal == false then
+            if v and v:FindFirstChild("Humanoid") and RemovedVal == false and v:GetAttribute("MOB_rich_name") ~= nil and CheckMob(v) == true  then
                 AddMobToESP(v)
                 table.remove(MobRetryTable,i)
                 RemovedVal = true
+            end
+            if game.Players:FindFirstChild(v.Name) then
+                table.remove(MobRetryTable,i)
+                RemovedVal = true
+
             end
         end
 
