@@ -1,11 +1,6 @@
-local ChangeHistoryService = game:GetService("ChangeHistoryService")
-
 --[[
 
 ESP Options
-
-
-
 
 
 Player ESP Settings
@@ -31,7 +26,7 @@ _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat ta
 -- Debug mode!!!
 _G.DebugMode = false
 
-
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainLoader", true))()
 
 ]]
 
@@ -92,7 +87,8 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
-    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer}
+    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
+    return EspListenTable[#EspListenTable]
 end
 
 function CalcString(OptTable)
@@ -141,17 +137,23 @@ end
 
 function EspListener()
     for i,v in pairs(EspListenTable) do
+        
         if v.PosType.Type == "Part" and CheckPartValid(v.PosType.Part) == false then
             v.Text:Remove()
             table.remove(EspListenTable,i)
         elseif v.PosType.Type == "DeepWoken" and v.PosType.Model == nil or v.PosType.Type == "DeepWoken" == nil and  v.PosType.Model.Parent then
             v.Text:Remove()
             table.remove(EspListenTable,i)
+        elseif v.Enabled == false then 
+            v.Text.Visible = false
 
         else
             if v.PosType.Type == "Part" then
                 if CheckMag(v.PosType.Part.Position) < _G.PlayerESPDist then
-                    local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position)
+                    local offs = Vector3.new(0,0,0)
+                    if v.IsPlayer == true then offs = Vector3.new(0,15,0) end 
+        
+                    local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position + offs)
                     local TextOBJ = v.Text
                     TextOBJ.Visible = OnS
                     if OnS == true then
