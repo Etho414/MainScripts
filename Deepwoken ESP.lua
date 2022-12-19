@@ -1,4 +1,4 @@
-local GuiService = game:GetService("GuiService")
+
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
 local cam = game.Workspace.CurrentCamera
@@ -73,11 +73,11 @@ function CalcString(OptTable)
         if string.upper(OptTable.HpType.Type) == "HUMANOID" and OptTable.HpType.HumanoidPath ~= false then
             local huma = OptTable.HpType.HumanoidPath
 
-            basestring = basestring..tostring(round(huma.Health)).."/"..tostring(huma.MaxHealth).."] "
+            basestring = basestring..tostring(round(huma.Health)).."/"..tostring(round(huma.MaxHealth)).."] "
         elseif string.upper(OptTable.HpType.Type) == "NONE" then
             basestring = ""
         elseif string.upper(OptTable.HpType.Type) == "CUSTOM" then
-            basestring = basestring..tostring(round(OptTable.HpType.MinHP.Value)).."/"..tostring(OptTable.HpType.MaxHp.Value).."] "
+            basestring = basestring..tostring(round(OptTable.HpType.MinHP.Value)).."/"..tostring(round(OptTable.HpType.MaxHp.Value)).."] "
 
         end
     end
@@ -329,7 +329,7 @@ game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     if key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
         EspToggle()
     elseif key.KeyCode == Enum.KeyCode[_G.InstantLogButton] then
-        game.Players.LocalPlayer:Kick("Instant logs! (I love etho!!)")
+        game.Players.LocalPlayer:Kick("Instant log! (I love etho!!)")
     end
 
 end)
