@@ -151,7 +151,7 @@ function EspListener()
             if v.PosType.Type == "Part" then
                 if CheckMag(v.PosType.Part.Position) < _G.PlayerESPDist then
                     local offs = Vector3.new(0,0,0)
-                    if v.IsPlayer == true then offs = Vector3.new(0,15,0) end 
+                    if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
         
                     local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position + offs)
                     local TextOBJ = v.Text
