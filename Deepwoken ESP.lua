@@ -160,7 +160,7 @@ function EspListener()
                         TextOBJ.Text = CalcString(v)
                         local offset = CheckMag(v.PosType.Part.Position) / 500
                         if offset < 0 then offset = 0 end
-                        TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),offs + CharPos.Y - offset)
+                        TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),offs - CharPos.Y - offset)
                         TextOBJ.Size = _G.TextSize
                         TextOBJ.ZIndex = 1
                         TextOBJ.Color = _G.PlayerESPColor
