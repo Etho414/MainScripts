@@ -1,3 +1,4 @@
+local GuiService = game:GetService("GuiService")
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
 local cam = game.Workspace.CurrentCamera
@@ -13,7 +14,7 @@ _G.PlayerESPDist = 10000
 _G.ShowTalentAmount = true
 _G.ShowDistance = true
 _G.ToggleKey = "T" -- Make sure its capital!!!!
-
+_G.InstantLogButton = "L" -- Make sure its capital!!!!
 _G.PlayerESPColor = Color3.fromRGB(0,0,0)
 _G.MobESPColor = Color3.fromRGB(255,255,255)
 
@@ -327,6 +328,8 @@ game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     if gpe then return end
     if key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
         EspToggle()
+    elseif key.KeyCode == Enum.KeyCode[_G.InstantLogButton] then
+        game.Players.LocalPlayer:Kick("Instant logs! (I love etho!!)")
     end
 
 end)
