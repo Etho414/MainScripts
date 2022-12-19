@@ -6,17 +6,33 @@ local RunESP = false
 
 --[[
 
-_G.TextSize = 30
-_G.MobTextSize = 20
-_G.DisplayHp = true
-_G.MobESPDist = 5000
-_G.PlayerESPDist = 10000
-_G.ShowTalentAmount = true
-_G.ShowDistance = true
-_G.ToggleKey = "T" -- Make sure its capital!!!!
-_G.InstantLogButton = "L" -- Make sure its capital!!!!
-_G.PlayerESPColor = Color3.fromRGB(0,0,0)
-_G.MobESPColor = Color3.fromRGB(255,255,255)
+ESP Options
+
+
+
+
+
+Player ESP Settings
+_G.DisplayHp = true -- Display players HP
+_G.ShowTalentAmount = true -- Show how many talents the player has
+_G.ShowPlayerDist = true -- Shows how far away the PLAYER is in units (In the [] Brackets)
+_G.PlayerESPDist = 10000 -- How many units away until ESP Stops to render
+_G.PlayerESPColor = Color3.fromRGB(0,0,0) -- Color of the PLAYER ESP (In RGB)
+_G.TextSize = 30 -- Player ESP Text Size 
+
+
+Mob ESP Settings
+_G.ShowMobDist = true -- Shows how far away the MOB is in units (In the [] Brackets)
+_G.MobESPDist = 5000 -- How many units away until ESP Stops to render
+_G.MobESPColor = Color3.fromRGB(255,255,255) -- Color of the MOB ESP (In RGB)
+_G.MobTextSize = 20 -- Mob ESP Text Size
+
+
+KeyBinds (Make sure its Capital)
+_G.ToggleKey = "T" -- Bind for Toggeling ESP
+_G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
+
+
 
 
 
@@ -48,8 +64,14 @@ function CheckTalentAmount(ToCheckPlayer)
 
 end
 
-
-
+ function GetDeepWokenMobDist(v)
+    if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
+        return CheckMag(v.PosType.Model.HumanoidRootPart.Position)
+    elseif v.PosType.Model:FindFirstChild("SpawnCF") then
+        local cf = v.PosType.Model.SpawnCF.Value
+        return CheckMag(Vector3.new(cf.X,cf.Y,cf.Z))     
+    end
+ end
 
 
 
@@ -91,9 +113,14 @@ function CalcString(OptTable)
             end
            
         end
-        if _G.ShowDistance == true then
+        if _G.ShowPlayerDist == true then
             basestring = basestring.." ["..tostring(round(CheckMag(OptTable.PosType.Part.Position))).."]"
         end
+    elseif OptTable.PosType.Type == "DeepWoken" then
+        if _G.ShowMobDist == true then
+            basestring = basestring.." ["..GetDeepWokenMobDist(OptTable).."]"
+        end
+        
     end
     return basestring
 end
@@ -126,38 +153,33 @@ function EspListener()
                         TextOBJ.ZIndex = 1
                         TextOBJ.Color = _G.PlayerESPColor
                     end
+                else
+                    v.Text.Visible = false
                 end
 
                
             elseif v.PosType.Type == "DeepWoken" then
-                
                 local CharPos,OnS;
-                if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
-                    if CheckMag(v.PosType.Model.HumanoidRootPart.Position) < _G.MobESPDist then
+                if GetDeepWokenMobDist(v) < _G.ShowMobDist then
+                    if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                         CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
-                    else
-                        OnS = false
-                    end
-                elseif v.PosType.Model:FindFirstChild("SpawnCF") then
-                    local cf = v.PosType.Model.SpawnCF.Value
-                    if CheckMag(Vector3.new(cf.X,cf.Y,cf.Z)) < _G.MobESPDist then
+                    elseif v.PosType.Model:FindFirstChild("SpawnCF") then
+                        local cf = v.PosType.Model.SpawnCF.Value
                         CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
-                    else
-                        OnS = false
                     end
+                    local TextOBJ = v.Text
+                    OnS = OnS or false
+                    TextOBJ.Visible = OnS
+                    if OnS == true then
+                        TextOBJ.Text = CalcString(v)
+                        TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
+                        TextOBJ.Size = _G.MobTextSize
+                        TextOBJ.Color = _G.MobESPColor
+                        TextOBJ.ZIndex = 20
+                    end
+                else
+                    v.Text.Visible = false
                 end
-                local TextOBJ = v.Text
-                OnS = OnS or false
-                TextOBJ.Visible = OnS
-                if OnS == true then
-                    TextOBJ.Text = CalcString(v)
-                    TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
-                    TextOBJ.Size = _G.MobTextSize
-                    TextOBJ.Color = _G.MobESPColor
-                    TextOBJ.ZIndex = 20
-                end
-
-            
             
             end
           
