@@ -1,9 +1,4 @@
 
-local player = game.Players.LocalPlayer
-local EspListenTable = {}
-local cam = game.Workspace.CurrentCamera
-local RunESP = false
-
 --[[
 
 ESP Options
@@ -38,6 +33,11 @@ _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat ta
 
 
 ]]
+
+local player = game.Players.LocalPlayer
+local EspListenTable = {}
+local cam = game.Workspace.CurrentCamera
+local RunESP = false
 
 function round(n)
     return math.floor(n)
