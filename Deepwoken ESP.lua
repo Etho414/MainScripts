@@ -32,15 +32,24 @@ _G.DebugMode = false
 
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
-local cam = game.Workspace.CurrentCamera
+
 local RunESP = false
 
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+repeat wait() until workspace:FindFirstChild("Live"); print("Live")
+repeat wait(); player = game.Players.LocalPlayer until player.Name ~= nil; print('Waitingo n name')
+repeat wait() until workspace:WaitForChild("Live"):FindFirstChild(player.Name); print("Waiting for.. "..player.Name)
+print("Loaded in!")
+local cam = game.Workspace.CurrentCamera
 function round(n)
     return math.floor(n)
 end
 
 function CheckMag(PositionToCheck)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+
+    if player ~= nil  and player.Character ~= nil and player.Character:FindFirstChild("HumanoidRootPart") then
         return (player.Character.HumanoidRootPart.Position - PositionToCheck).Magnitude
 
     end
@@ -149,12 +158,15 @@ function EspListener()
 
         else
             if v.PosType.Type == "Part" then
-                if CheckMag(v.PosType.Part.Position) < _G.PlayerESPDist then
+                local distcache = CheckMag(v.PosType.Part.Position)
+                
+
+                if distcache ~= nil and distcache < _G.PlayerESPDist then
                     local offs = Vector3.new(0,0,0)
                     if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
         
         
-                    local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position + offs)
+                    local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position +offs)
                     local TextOBJ = v.Text
                     TextOBJ.Visible = OnS
                     if OnS == true then
@@ -261,7 +273,9 @@ game.Players.PlayerAdded:connect(function(v)
 end)
 
 game.Players.PlayerRemoving:connect(function(v)
-    PlayerConnectionsTable[v.Name]:Disconnect()
+    if table.find(PlayerConnectionsTable,v.Name) then
+        PlayerConnectionsTable[v.Name]:Disconnect()
+    end
 end)
 
 
@@ -353,7 +367,7 @@ end
 coroutine.wrap(MobRetryFunction)()
 
 
-
+workspace:WaitForChild("Live")
 
 
 for i,v in pairs(workspace.Live:GetChildren()) do
@@ -385,3 +399,9 @@ game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     end
 
 end)
+
+
+
+ -- Re execute on Teleport!
+
+
