@@ -160,7 +160,7 @@ function EspListener()
                
             elseif v.PosType.Type == "DeepWoken" then
                 local CharPos,OnS;
-                if GetDeepWokenMobDist(v) < _G.ShowMobDist then
+                if GetDeepWokenMobDist(v) < _G.MobESPDist then
                     if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                         CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
                     elseif v.PosType.Model:FindFirstChild("SpawnCF") then
@@ -228,7 +228,7 @@ end
 local PlayerConnectionsTable = {}
 
 for i,v in pairs(game.Players:GetChildren()) do
-    if v ~= game.Players.LocalPlayer then
+    if v ~= game.Players.LocalPlayer or v.Name ~= game.Players.LocalPlayer.Name then
         AddPlayerToESP(v)
         PlayerConnectionsTable[v.Name] = v.CharacterAdded:connect(function(v)
             AddPlayerToESP(game.Players[v.Name])
