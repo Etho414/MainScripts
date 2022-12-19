@@ -70,6 +70,7 @@ end
     elseif v.PosType.Model:FindFirstChild("SpawnCF") then
         local cf = v.PosType.Model.SpawnCF.Value
         return CheckMag(Vector3.new(cf.X,cf.Y,cf.Z))     
+    else return _G.MobESPDist + 1000
     end
  end
 
@@ -118,7 +119,7 @@ function CalcString(OptTable)
         end
     elseif OptTable.PosType.Type == "DeepWoken" then
         if _G.ShowMobDist == true then
-            basestring = basestring.." ["..GetDeepWokenMobDist(OptTable).."]"
+            basestring = basestring.." ["..round(GetDeepWokenMobDist(OptTable)).."]"
         end
         
     end
