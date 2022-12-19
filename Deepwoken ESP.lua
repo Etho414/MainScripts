@@ -161,7 +161,8 @@ function EspListener()
                
             elseif v.PosType.Type == "DeepWoken" then
                 local CharPos,OnS;
-                if GetDeepWokenMobDist(v) < _G.MobESPDist then
+                local mobdist = GetDeepWokenMobDist(v)
+                if mobdist ~= nil and mobdist < _G.MobESPDist then
                     if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                         CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
                     elseif v.PosType.Model:FindFirstChild("SpawnCF") then
