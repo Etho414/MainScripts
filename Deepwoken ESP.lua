@@ -246,12 +246,6 @@ function CheckRetryTable()
     end
 end
 coroutine.wrap(CheckRetryTable)()
-game:GetService("UserInputService").InputBegan:connect(function(key)
-    if key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
-        EspToggle()
-    end
-
-end)
 
 
 
@@ -329,3 +323,10 @@ end)
 
 
 
+game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
+    if gpe then return end
+    if key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
+        EspToggle()
+    end
+
+end)
