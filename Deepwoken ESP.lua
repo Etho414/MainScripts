@@ -228,14 +228,16 @@ end
 local PlayerConnectionsTable = {}
 
 for i,v in pairs(game.Players:GetChildren()) do
-    AddPlayerToESP(v)
-    PlayerConnectionsTable[v.Name] = v.CharacterAdded:connect(function(v)
-        AddPlayerToESP(game.Players[v.Name])
-    end)
-
+    if v ~= game.Players.LocalPlayer then
+        AddPlayerToESP(v)
+        PlayerConnectionsTable[v.Name] = v.CharacterAdded:connect(function(v)
+            AddPlayerToESP(game.Players[v.Name])
+        end)
+    end
 end
 
 game.Players.PlayerAdded:connect(function(v)
+    if v == game.Players.LocalPlayer then return end
     PlayerConnectionsTable[v.Name] = v.CharacterAdded:connect(function(v)
         AddPlayerToESP(game.Players[v.Name])
     end)
