@@ -1,3 +1,4 @@
+local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
 --[[
 
@@ -298,7 +299,7 @@ end
 
 
 
-
+local MobsInESP = {}
 local MobRetryTable = {}
 function AddMobToESP(v)
     if not v:IsA("Model") then return end
@@ -312,7 +313,12 @@ function AddMobToESP(v)
             Type = "DeepWoken",
             Model = v
         }
-        AddESPObj(PosTypeTable,v:GetAttribute("MOB_rich_name"),HpValTable)
+        if table.find(MobsInESP,v) == nil then
+            MobsInESP[#MobsInESP+1] = v
+            AddESPObj(PosTypeTable,v:GetAttribute("MOB_rich_name"),HpValTable)
+        end
+        
+        
     else
         MobRetryTable[#MobRetryTable + 1] = v
 
@@ -351,7 +357,11 @@ workspace.Live.ChildAdded:connect(function(v)
     AddMobToESP(v)
 end)
 
-
+workspace.ChildRemoved:Connect(function(child)
+    if table.find(MobsInESP,child) ~= nil then
+        table.remove(MobsInESP,table.find(MobsInESP,child))
+    end
+end)
 
 
 
