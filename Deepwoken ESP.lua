@@ -27,8 +27,8 @@ KeyBinds (Make sure its Capital, Change to "" for no keybind!)
 _G.ToggleKey = "T" -- Bind for Toggeling ESP
 _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
 
-
-
+-- Debug mode!!!
+_G.DebugMode = false
 
 
 
@@ -74,7 +74,12 @@ end
     end
  end
 
+function debug(msg)
+    if _G.DebugMode == true then
+        print(msg)
+    end    
 
+end
 
 function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     if not PosType or type(PosType) ~= "table" then
@@ -297,7 +302,7 @@ end
 local MobRetryTable = {}
 function AddMobToESP(v)
     if not v:IsA("Model") then return end
-
+    debug(v.Name)
     if v and v:FindFirstChild("Humanoid") and CheckMob(v) == true  and v:GetAttribute("MOB_rich_name") ~= nil then
         local HpValTable = {
             Type = "Humanoid",
