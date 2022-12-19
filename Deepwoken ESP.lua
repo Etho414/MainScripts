@@ -3,7 +3,24 @@ local EspListenTable = {}
 local cam = game.Workspace.CurrentCamera
 local RunESP = false
 
+--[[
 
+_G.TextSize = 30
+_G.MobTextSize = 20
+_G.DisplayHp = true
+_G.MobESPDist = 5000
+_G.PlayerESPDist = 10000
+_G.ShowTalentAmount = true
+_G.ShowDistance = true
+_G.ToggleKey = "T" -- Make sure its capital!!!!
+
+_G.PlayerESPColor = Color3.fromRGB(0,0,0)
+_G.MobESPColor = Color3.fromRGB(255,255,255)
+
+
+
+
+]]
 
 function round(n)
     return math.floor(n)
