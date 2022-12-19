@@ -61,7 +61,7 @@ function CheckTalentAmount(ToCheckPlayer)
         end
         return talentamount
     end
-    return false
+    return 0
 
 end
 
@@ -113,10 +113,13 @@ function CalcString(OptTable)
     basestring = basestring..OptTable.Name
     if OptTable.IsPlayer == true then
         if _G.ShowTalentAmount == true then
-            if game.Players:FindFirstChild(OptTable.Name) then
+            if game.Players:FindFirstChild(OptTable.Name)  then
                 basestring = basestring.." Talents: "..tostring(CheckTalentAmount(game.Players:FindFirstChild(OptTable.Name)))
+            elseif game.Players:FindFirstChild(OptTable.HpType.HumanoidPath.Parent.Name) then
+                basestring = basestring.." Talents: "..tostring(CheckTalentAmount(game.Players:FindFirstChild(game.Players:FindFirstChild(OptTable.HpType.HumanoidPath.Parent.Name))))
             else
-                basestring = basestring.. " Nil Talent"
+
+                basestring = basestring.. " Talents: Nil"
             end
            
         end
