@@ -28,7 +28,7 @@ _G.MobESPColor = Color3.fromRGB(255,255,255) -- Color of the MOB ESP (In RGB)
 _G.MobTextSize = 20 -- Mob ESP Text Size
 
 
-KeyBinds (Make sure its Capital)
+KeyBinds (Make sure its Capital, Change to "" for no keybind!)
 _G.ToggleKey = "T" -- Bind for Toggeling ESP
 _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
 
@@ -357,9 +357,9 @@ end)
 
 game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     if gpe then return end
-    if key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
+    if _G.ToggleKey ~= "" and  key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
         EspToggle()
-    elseif key.KeyCode == Enum.KeyCode[_G.InstantLogButton] then
+    elseif _G.InstantLogButton ~= "" and  key.KeyCode == Enum.KeyCode[_G.InstantLogButton] then
         game.Players.LocalPlayer:Kick("Instant log! (I love etho!!)")
     end
 
