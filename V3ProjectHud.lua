@@ -792,6 +792,7 @@ local function GetHp(v)
         if (v.Character:FindFirstChild("Health") or v.Character.Health:FindFirstChild("Max")) == nil then return {Health = 0, MaxHealth = 0, Found = false} end
         return {Health = v.Character:FindFirstChild("Health").Value, MaxHealth = v.Character.Health:FindFirstChild("Max").Value, Found = true}
     else -- Universal
+        if not v.Character then return {Health = 0, MaxHealth = 0, Found = false} end
         if not v.Character:FindFirstChild("Humanoid") then return {Health = 0, MaxHealth = 0, Found = false} end
         return {Health = v.Character.Humanoid.Health, MaxHealth = v.Character.Humanoid.MaxHealth, Found = true}
     end
@@ -1159,14 +1160,17 @@ function CreateWayPoint()
     WayPointTab:Separator()
     local function MakePoint(Name,TPBIND)
         local MadePos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-        local d = WayPointTab:Label(Name)
+        local d;
+        if TPBIND ~= "" then
+            d = WayPointTab:Label(Name.."   TP Bind: " ..TPBIND)
+        else
+            d = WayPointTab:Label(Name)
+        end
         local base = WayPointTab:SameLine()
         local serv;
         local TeleportButton = base:Button()
         TeleportButton.Label = "Teleport To Point"
-        if TPBIND ~= "" then
-            TeleportButton.Label = "Teleport To Point   Bind: "..TPBIND
-        end
+       
         TeleportButton.OnUpdated:Connect(function()
             local tab = {name = Name, pos = MadePos}
             Teleport(tab)
@@ -1192,7 +1196,7 @@ function CreateWayPoint()
             serv:Disconnect()
         end)
     end
-    local tpbind = nil
+    local tpbind = ""
     local WayPointNameText = WayPointTab:TextBox()
     WayPointNameText.Label = "Way Point Name"
     local WayPointBase = WayPointTab:SameLine()
@@ -1221,7 +1225,7 @@ end)
 
 local WayPointBox = MiscTabMenu:Button()
 WayPointBox.Label = "Open Waypoint Menu"
-TpPlayerCheckBox.OnUpdated:Connect(function()
+WayPointBox.OnUpdated:Connect(function()
     CreateWayPoint()
 end)
 
@@ -1229,4 +1233,4 @@ end)
 
 
 
-syn.toast_notification({Title = 'Project Hub',Content = 'Sucessfully loaded Project HUB',Type = ToastType.Success,Duration = 3,})
+syn.toast_notification({Title = 'Project Hub',Content = 'Sucessfully loaded Project HUB',Type = ToastType.Success,Duration = 3})
