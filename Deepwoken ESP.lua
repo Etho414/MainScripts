@@ -164,14 +164,10 @@ function EspListener()
                 RemoveESPVal = true
             elseif v.Enabled == false then 
                 v.Text.Visible = false
-            elseif v.IsPlayer == true then
-                if v.Name ~= "" or v.Name ~= nil then
-                    if not game.Players:FindFirstChild(v.Name) then
-                        v.Text:Remove()
-                        table.remove(EspListenTable,i)
-                        RemoveESPVal = true
-                    end
-                end
+            elseif v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.Name) then
+                v.Text:Remove()
+                table.remove(EspListenTable,i)
+                RemoveESPVal = true
             else
                 if v.PosType.Type == "Part" then
                     local distcache = CheckMag(v.PosType.Part.Position)
