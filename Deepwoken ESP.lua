@@ -27,7 +27,8 @@ Other ESP Settings (NPC, OWLS, ARTIFACTS)
 _G.OtherESPDist = 10000
 _G.ShowOtherDist = true
 
-
+_G.ShowPosture = true
+_G.ShowEther = true
 -- Debug mode!!!
 _G.DebugMode = false
 
@@ -49,7 +50,8 @@ _G.ToggleKey = _G.ToggleKey or "T"
 _G.InstantLogButton = _G.InstantLogButton or "L"
 _G.OtherESPDist = _G.OtherESPDist or 0
 _G.ShowOtherDist = _G.ShowOtherDist or true
-
+_G.ShowPosture = _G.ShowPosture or true
+_G.ShowEther = _G.ShowEther or true
 
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
@@ -125,15 +127,18 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName)
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
+    local BackUpText = Drawing.new("Text")
     if IsPlayer == true then
         ESPText.ZIndex = ESPZindexHoldval + 10000
+        BackUpText.ZIndex = ESPZindexHoldval + 10000
         debug("Player "..tostring(ESPText.ZIndex))
     else
         ESPText.ZIndex = ESPZindexHoldval + 1
+        BackUpText.ZIndex = ESPZindexHoldval + 1
     end
     debug(ESPZindexHoldval)
     ESPZindexHoldval = ESPZindexHoldval + 1
-    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true, ModName = ModdedName}
+    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true, ModName = ModdedName,BackUpText = BackUpText}
     return EspListenTable[#EspListenTable]
 end
 
@@ -189,6 +194,42 @@ end
 function CheckPartValid(chara)
     if chara.Parent ~= nil then return true else return false end
 end
+function GetPercent(min,max)
+    return round((min / max) * 100)
+
+end
+function CalcBackUpString(OptTable)
+    local basestring = ""
+    if OptTable.IsPlayer == true then
+        local charactermodel = OptTable.PosType.Part.Parent
+        if charactermodel == nil then return "" end
+        if charactermodel:FindFirstChild("BreakMeter") and _G.ShowPosture == true then
+            local val = charactermodel.BreakMeter
+            basestring = basestring.."Posture: "..GetPercent(val.Value,val.MaxValue).."%"
+        end
+        if charactermodel:FindFirstChild("Ether") and _G.ShowEther == true then
+            local val = charactermodel.Ether
+            basestring = basestring.." Ether: "..GetPercent(val.Value,val.MaxValue).."%"
+        end
+        
+    else
+        local MobModel = OptTable.PosType.Model
+        if MobModel == nil then return "" end
+        if MobModel:FindFirstChild("BreakMeter") and _G.ShowPosture == true then
+            local val = MobModel.BreakMeter
+            basestring = basestring.."Posture: "..GetPercent(val.Value,val.MaxValue).."%"
+        end
+        if MobModel:FindFirstChild("Ether") and _G.ShowEther == true then
+            local val = MobModel.Ether
+            basestring = basestring.." Ether: "..GetPercent(val.Value,val.MaxValue).."%"
+        end
+    end
+
+    return basestring
+end
+
+
+
 
 function EspListener()
     local RemoveESPVal = false
@@ -217,21 +258,29 @@ function EspListener()
                         if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
                         local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position +offs)
                         local TextOBJ = v.Text
+                        local BackUpText = v.BackUpText
                         TextOBJ.Visible = OnS
+                        BackUpText.Visible = OnS
                         if OnS == true then
                             
                             local offset = CheckMag(v.PosType.Part.Position) / 500
                             if offset < 0 then offset = 0 end
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y - offset)
+                            
                             TextOBJ.Text = CalcString(v) 
+                            BackUpText.Text = CalcBackUpString(v)
                             local textoffs = _G.TextSize - (offset * 1.5)
                             if textoffs < 15 then textoffs = 15 end
-
+                            BackUpText.Size = textoffs
                             TextOBJ.Size = textoffs
+                            BackUpText.Position = Vector2.new(CharPos.X - (BackUpText.TextBounds.X/2),(CharPos.Y - offset) + TextOBJ.TextBounds.Y)
                             TextOBJ.Color = _G.PlayerESPColor
+                            BackUpText.Color = _G.PlayerESPColor
+                            
                         end
                     else
                         v.Text.Visible = false
+                        v.BackUpText.Visible = false
                     end
     
                    
@@ -240,6 +289,7 @@ function EspListener()
                     local mobdist = GetDeepWokenMobDist(v)
                     if mobdist ~= nil and mobdist < _G.MobESPDist then
                         local holdpos;
+
                         if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                             CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
                             holdpos = v.PosType.Model.HumanoidRootPart.Position
@@ -248,23 +298,30 @@ function EspListener()
                             CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
                             holdpos = Vector3.new(cf.X,cf.Y,cf.Z)
                         end
+                        local BackUpText = v.BackUpText
                         local TextOBJ = v.Text
                         OnS = OnS or false
                         TextOBJ.Visible = OnS
+                        BackUpText.Visible = OnS
                         local offset = CheckMag(holdpos) / 500
                         if offset < 0 then offset = 0 end
 
                         if OnS == true then
                             TextOBJ.Text = CalcString(v)
+                            BackUpText.Text = CalcBackUpString(v)
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y- offset) 
 
                             local textoffs = _G.MobTextSize - (offset * 1.5)
                             if textoffs < 15 then textoffs = 15 end
                             TextOBJ.Size = textoffs
+                            BackUpText.Size = textoffs
+                            BackUpText.Position = Vector2.new(CharPos.X - (BackUpText.TextBounds.X/2),(CharPos.Y - offset) + TextOBJ.TextBounds.Y)
                             TextOBJ.Color = _G.MobESPColor
+                            BackUpText.Color = _G.MobESPColor
                         end
                     else
                         v.Text.Visible = false
+                        v.BackUpText.Visible = false
                     end
                 
                 end
