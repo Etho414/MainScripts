@@ -46,6 +46,12 @@ local cam = game.Workspace.CurrentCamera
 function round(n)
     return math.floor(n)
 end
+local PossibleKickmsg = {"I fucking love etho","Holy fuck merh is ugly IRL","i love MEN","I wanna kill merhs dog","Why silver so hot IRL","i love pebbels..."}
+function KickLocPlayer()
+    game.Players.LocalPlayer:Kick(PossibleKickmsg[math.random(1,#PossibleKickmsg)])
+end
+
+
 
 function CheckMag(PositionToCheck)
 
@@ -145,74 +151,83 @@ function CheckPartValid(chara)
 end
 
 function EspListener()
+    local RemoveESPVal = false
     for i,v in pairs(EspListenTable) do
-        
-        if v.PosType.Type == "Part" and CheckPartValid(v.PosType.Part) == false then
-            v.Text:Remove()
-            table.remove(EspListenTable,i)
-        elseif v.PosType.Type == "DeepWoken" and v.PosType.Model == nil or v.PosType.Type == "DeepWoken" == nil and  v.PosType.Model.Parent then
-            v.Text:Remove()
-            table.remove(EspListenTable,i)
-        elseif v.Enabled == false then 
-            v.Text.Visible = false
-
-        else
-            if v.PosType.Type == "Part" then
-                local distcache = CheckMag(v.PosType.Part.Position)
+        if RemoveESPVal == false then
+            if v.PosType.Type == "Part" and CheckPartValid(v.PosType.Part) == false then
+                v.Text:Remove()
+                table.remove(EspListenTable,i)
+                RemoveESPVal = true
+            elseif v.PosType.Type == "DeepWoken" and v.PosType.Model == nil or v.PosType.Type == "DeepWoken" == nil and  v.PosType.Model.Parent then
+                v.Text:Remove()
+                table.remove(EspListenTable,i)
+                RemoveESPVal = true
+            elseif v.Enabled == false then 
+                v.Text.Visible = false
+            elseif v.IsPlayer == true then
+                if v.Name ~= "" or v.Name ~= nil then
+                    if not game.Players:FindFirstChild(v.Name) then
+                        v.Text:Remove()
+                        table.remove(EspListenTable,i)
+                        RemoveESPVal = true
+                    end
+                end
+            else
+                if v.PosType.Type == "Part" then
+                    local distcache = CheckMag(v.PosType.Part.Position)
+                    if distcache ~= nil and distcache < _G.PlayerESPDist then
+                        local offs = Vector3.new(0,0,0)
+                        if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
+                        local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position +offs)
+                        local TextOBJ = v.Text
+                        TextOBJ.Visible = OnS
+                        if OnS == true then
+                            TextOBJ.Text = CalcString(v)
+                            local offset = CheckMag(v.PosType.Part.Position) / 500
+                            if offset < 0 then offset = 0 end
+                            TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y - offset)
+                            TextOBJ.Size = _G.TextSize
+                            TextOBJ.ZIndex = 1
+                            TextOBJ.Color = _G.PlayerESPColor
+                        end
+                    else
+                        v.Text.Visible = false
+                    end
+    
+                   
+                elseif v.PosType.Type == "DeepWoken" then
+                    local CharPos,OnS;
+                    local mobdist = GetDeepWokenMobDist(v)
+                    if mobdist ~= nil and mobdist < _G.MobESPDist then
+                        if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
+                            CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
+                        elseif v.PosType.Model:FindFirstChild("SpawnCF") then
+                            local cf = v.PosType.Model.SpawnCF.Value
+                            CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
+                        end
+                        local TextOBJ = v.Text
+                        OnS = OnS or false
+                        TextOBJ.Visible = OnS
+                        if OnS == true then
+                            TextOBJ.Text = CalcString(v)
+                            TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
+                            TextOBJ.Size = _G.MobTextSize
+                            TextOBJ.Color = _G.MobESPColor
+                            TextOBJ.ZIndex = 20
+                        end
+                    else
+                        v.Text.Visible = false
+                    end
                 
-
-                if distcache ~= nil and distcache < _G.PlayerESPDist then
-                    local offs = Vector3.new(0,0,0)
-                    if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
-        
-        
-                    local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position +offs)
-                    local TextOBJ = v.Text
-                    TextOBJ.Visible = OnS
-                    if OnS == true then
-                        TextOBJ.Text = CalcString(v)
-                        local offset = CheckMag(v.PosType.Part.Position) / 500
-                        if offset < 0 then offset = 0 end
-                        TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y - offset)
-                        TextOBJ.Size = _G.TextSize
-                        TextOBJ.ZIndex = 1
-                        TextOBJ.Color = _G.PlayerESPColor
-                    end
-                else
-                    v.Text.Visible = false
                 end
-
+              
                
-            elseif v.PosType.Type == "DeepWoken" then
-                local CharPos,OnS;
-                local mobdist = GetDeepWokenMobDist(v)
-                if mobdist ~= nil and mobdist < _G.MobESPDist then
-                    if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
-                        CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
-                    elseif v.PosType.Model:FindFirstChild("SpawnCF") then
-                        local cf = v.PosType.Model.SpawnCF.Value
-                        CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
-                    end
-                    local TextOBJ = v.Text
-                    OnS = OnS or false
-                    TextOBJ.Visible = OnS
-                    if OnS == true then
-                        TextOBJ.Text = CalcString(v)
-                        TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
-                        TextOBJ.Size = _G.MobTextSize
-                        TextOBJ.Color = _G.MobESPColor
-                        TextOBJ.ZIndex = 20
-                    end
-                else
-                    v.Text.Visible = false
-                end
+                
             
             end
-          
-           
             
-        
         end
+        
 
     end
 end
@@ -221,10 +236,11 @@ local LoopServ;
 function EspToggle()
     if RunESP == true then
         RunESP = false
+        LoopServ:Disconnect()
         for i,v in pairs(EspListenTable) do
             v.Text.Visible = false
         end
-        LoopServ:Disconnect()
+       
     else
         RunESP = true
         LoopServ = game:GetService("RunService").RenderStepped:connect(EspListener)
@@ -395,13 +411,12 @@ game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     if _G.ToggleKey ~= "" and  key.KeyCode == Enum.KeyCode[_G.ToggleKey] then
         EspToggle()
     elseif _G.InstantLogButton ~= "" and  key.KeyCode == Enum.KeyCode[_G.InstantLogButton] then
-        game.Players.LocalPlayer:Kick("Instant log! (I love etho!!)")
+        KickLocPlayer()
     end
 
 end)
 
 
 
- -- Re execute on Teleport!
 
 
