@@ -123,10 +123,12 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
+    local ListenTableCache = #EspListenTable
+
     if IsPlayer == true then
-        ESPText.ZIndex = #EspListenTable + 10000
+        ESPText.ZIndex = #ListenTableCache + 1000
     else
-        ESPText.ZIndex = #EspListenTable
+        ESPText.ZIndex = #ListenTableCache
     end
     
     EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
