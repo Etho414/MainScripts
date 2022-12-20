@@ -23,12 +23,33 @@ KeyBinds (Make sure its Capital, Change to "" for no keybind!)
 _G.ToggleKey = "T" -- Bind for Toggeling ESP
 _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
 
+Other ESP Settings (NPC, OWLS, ARTIFACTS)
+_G.OtherESPDist = 10000
+_G.ShowOtherDist = true
+
+
 -- Debug mode!!!
 _G.DebugMode = false
 
  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainLoader", true))()
 
 ]]
+
+_G.DisplayHp = _G.DisplayHp or true 
+_G.ShowTalentAmount = _G.ShowTalentAmount or true 
+_G.ShowPlayerDist = _G.ShowPlayerDist or true 
+_G.PlayerESPDist = _G.PlayerESPDist or 6000
+_G.PlayerESPColor = _G.PlayerESPColor or Color3.fromRGB(0,0,0) 
+_G.TextSize  = _G.TextSize or 30
+_G.ShowMobDist = _G.ShowMobDist or true
+_G.MobESPDist = _G.MobESPDist or 2000
+_G.MobESPColor = _G.MobESPColor or Color3.fromRGB(255,255,255)
+_G.MobTextSize = _G.MobTextSize or 20
+_G.ToggleKey = _G.ToggleKey or "T"
+_G.InstantLogButton = _G.InstantLogButton or "L"
+_G.OtherESPDist = _G.OtherESPDist or 0
+_G.ShowOtherDist = _G.ShowOtherDist or true
+
 
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
@@ -122,7 +143,7 @@ function CalcString(OptTable)
         end
     end
     basestring = basestring..OptTable.Name
-    if OptTable.IsPlayer == true then
+    if OptTable.IsPlayer == true then -- Talent ESP
         if _G.ShowTalentAmount == true then
             if game.Players:FindFirstChild(OptTable.Name)  then
                 basestring = basestring.." Talents: "..tostring(CheckTalentAmount(game.Players:FindFirstChild(OptTable.Name)))
@@ -132,12 +153,16 @@ function CalcString(OptTable)
 
                 basestring = basestring.. " Talents: Nil"
             end
-           
         end
-        if _G.ShowPlayerDist == true then
-            basestring = basestring.." ["..tostring(round(CheckMag(OptTable.PosType.Part.Position))).."]"
+        if OptTable.IsPlayer == true and _G.ShowPlayerDist == true then
+            basestring = basestring.." ["..tostring(round(CheckMag(OptTable.PosType.Part.Position))).."]"  
         end
-    elseif OptTable.PosType.Type == "DeepWoken" then
+    elseif OptTable.PosType.Type == "Part" then -- Show Distance for ESP
+        if  OptTable.IsPlayer == false and _G.ShowOtherDist == true  then
+            basestring = basestring.." ["..tostring(round(CheckMag(OptTable.PosType.Part.Position))).."]"  
+        end
+       
+    elseif OptTable.PosType.Type == "DeepWoken" then -- Deepwoken Mobs ESP
         if _G.ShowMobDist == true then
             basestring = basestring.." ["..round(GetDeepWokenMobDist(OptTable)).."]"
         end
@@ -171,19 +196,23 @@ function EspListener()
             else
                 if v.PosType.Type == "Part" then
                     local distcache = CheckMag(v.PosType.Part.Position)
-                    if distcache ~= nil and distcache < _G.PlayerESPDist then
+                    if distcache ~= nil and distcache < _G.PlayerESPDist and v.IsPlayer == true or v.IsPlayer == false and distcache ~= nil and  distcache < _G.OtherESPDist then
                         local offs = Vector3.new(0,0,0)
                         if v.IsPlayer == true then offs = Vector3.new(0,3,0) end 
                         local CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Part.Position +offs)
                         local TextOBJ = v.Text
                         TextOBJ.Visible = OnS
                         if OnS == true then
-                            TextOBJ.Text = CalcString(v)
+                            
                             local offset = CheckMag(v.PosType.Part.Position) / 500
                             if offset < 0 then offset = 0 end
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y - offset)
-                            TextOBJ.Size = _G.TextSize
-                            TextOBJ.ZIndex = 1
+                            TextOBJ.Text = CalcString(v) 
+                            local textoffs = _G.TextSize - (offset * 1.5)
+                            if textoffs < 15 then textoffs = 15 end
+
+                            TextOBJ.Size = textoffs
+                            TextOBJ.ZIndex = 20
                             TextOBJ.Color = _G.PlayerESPColor
                         end
                     else
@@ -209,7 +238,7 @@ function EspListener()
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                             TextOBJ.Size = _G.MobTextSize
                             TextOBJ.Color = _G.MobESPColor
-                            TextOBJ.ZIndex = 20
+                            TextOBJ.ZIndex = 1
                         end
                     else
                         v.Text.Visible = false
@@ -394,11 +423,43 @@ workspace.ChildRemoved:Connect(function(child)
         table.remove(MobsInESP,table.find(MobsInESP,child))
     end
 end)
+local NPCRetry = {}
+function AddToNPCEsp(v)
+    if v and v:FindFirstChild("HumanoidRootPart") then
+        local PosTypeTable = {
+            Type = "Part",
+            Part = v.HumanoidRootPart
+    
+        }
+        local HealthThingTable = {
+            Type = "None"
+
+        }
+        AddESPObj(PosTypeTable,v.Name,HealthThingTable)
+    else
+        NPCRetry[#NPCRetry+1] = v
+    end
+    
+
+
+end
 
 
 
+for i,v in pairs(game.Workspace.NPCs:GetChildren()) do
+    AddToNPCEsp(v)
+end
 
 
+
+function NpcRetryFunc()
+    for i,v in pairs(NPCRetry) do
+        if v and v.Name ~= "" and v.Name ~= nil and v:FindFirstChild("HumanoidRootPart") then
+            AddToNPCEsp(v)
+        end
+    end   
+end
+coroutine.wrap(NpcRetryFunc)()
 
 
 

@@ -686,6 +686,7 @@ Chams.Value = false
 
 function Cham(v)
     local Highlight = Instance.new("Highlight",ChamsFolder)
+    if v == player then return end
     if v.Character then
         Highlight.Adornee = v.Character
         Highlight.Enabled = true
