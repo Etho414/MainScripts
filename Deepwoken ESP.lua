@@ -120,8 +120,9 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
 
     CharaName = CharaName or "Dumby forgot a name..."
     if CharaName == "Etho4141" then CharaName = "HOT DADDY" end
-    if CharaName == "GrenadeGrey" or CharaName == "Saiahwastaken" then CharaName = "COMPLETE LOSER FAG" end
+    if CharaName == "GrenadeGrey"  then CharaName = "zZzMerh" end
     if CharaName == "MoriRobloxCringe" then CharaName = "zZzSilver" end
+    if CharaName == "Saiahwastaken" then CharaName = "zZzSaiah" end
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
