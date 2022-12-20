@@ -313,7 +313,7 @@ function AddPlayerToESP(v)
 
     }
     local CharaName = ""
-    if v.Name == "zxcKyuuwu" then CharaName = "HOT2312312312312123123123131 DADDY" end
+    if v.Name == "Etho4141" then CharaName = "MASTER ETHO" end
     if v.Name == "GrenadeGrey"  then CharaName = "zZzMerh" end
     if v.Name == "MoriRobloxCringe" then CharaName = "zZzSilver" end
     if v.Name == "Saiahwastaken" then CharaName = "zZzSaiah" end
