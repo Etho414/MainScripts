@@ -105,7 +105,6 @@ end
     else return _G.MobESPDist + 1000
     end
  end
-
 function debug(msg)
     if _G.DebugMode == true then
         print(msg)
@@ -124,12 +123,13 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
     if IsPlayer == true then
-        ESPZindexHoldval = ESPZindexHoldval + 10000
+        ESPText.ZIndex = ESPZindexHoldval + 10000
+        debug("Player "..tostring(ESPText.ZIndex))
     else
-        ESPZindexHoldval = ESPZindexHoldval + 1
+        ESPText.ZIndex = ESPZindexHoldval + 1
     end
-    
-    ESPText.ZIndex = ESPZindexHoldval
+    debug(ESPZindexHoldval)
+    ESPZindexHoldval = ESPZindexHoldval + 1
     EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
     return EspListenTable[#EspListenTable]
 end
@@ -230,19 +230,28 @@ function EspListener()
                     local CharPos,OnS;
                     local mobdist = GetDeepWokenMobDist(v)
                     if mobdist ~= nil and mobdist < _G.MobESPDist then
+                        local holdpos;
                         if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                             CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
+                            holdpos = v.PosType.Model.HumanoidRootPart.Position
                         elseif v.PosType.Model:FindFirstChild("SpawnCF") then
                             local cf = v.PosType.Model.SpawnCF.Value
                             CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
+                            holdpos = Vector3.new(cf.X,cf.Y,cf.Z)
                         end
                         local TextOBJ = v.Text
                         OnS = OnS or false
                         TextOBJ.Visible = OnS
+                        local offset = CheckMag(holdpos) / 500
+                        if offset < 0 then offset = 0 end
+
                         if OnS == true then
                             TextOBJ.Text = CalcString(v)
-                            TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
-                            TextOBJ.Size = _G.MobTextSize
+                            TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y- offset) 
+
+                            local textoffs = _G.MobTextSize - (offset * 1.5)
+                            if textoffs < 15 then textoffs = 15 end
+                            TextOBJ.Size = textoffs
                             TextOBJ.Color = _G.MobESPColor
                         end
                     else
