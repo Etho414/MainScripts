@@ -1,9 +1,9 @@
+--[[
+
+ESP Options
 
 
---ESP Options
-
-
---Player ESP Settings
+Player ESP Settings
 _G.DisplayHp = true -- Display players HP
 _G.ShowTalentAmount = true -- Show how many talents the player has
 _G.ShowPlayerDist = true -- Shows how far away the PLAYER is in units (In the [] Brackets)
@@ -12,18 +12,18 @@ _G.PlayerESPColor = Color3.fromRGB(0,0,0) -- Color of the PLAYER ESP (In RGB)
 _G.TextSize = 30 -- Player ESP Text Size 
 
 
---Mob ESP Settings
+Mob ESP Settings
 _G.ShowMobDist = true -- Shows how far away the MOB is in units (In the [] Brackets)
 _G.MobESPDist = 5000 -- How many units away until ESP Stops to render
 _G.MobESPColor = Color3.fromRGB(255,255,255) -- Color of the MOB ESP (In RGB)
 _G.MobTextSize = 20 -- Mob ESP Text Size
 
 
---KeyBinds (Make sure its Capital, Change to "" for no keybind!)
+KeyBinds (Make sure its Capital, Change to "" for no keybind!)
 _G.ToggleKey = "T" -- Bind for Toggeling ESP
 _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
 
---Other ESP Settings (NPC, OWLS, ARTIFACTS)
+Other ESP Settings (NPC, OWLS, ARTIFACTS)
 _G.OtherESPDist = 10000
 _G.ShowOtherDist = true
 
@@ -33,7 +33,7 @@ _G.DebugMode = false
 
  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainLoader", true))()
 
-
+]]
 
 _G.DisplayHp = _G.DisplayHp or true 
 _G.ShowTalentAmount = _G.ShowTalentAmount or true 
@@ -123,10 +123,6 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
-    local ListenTableCache = #EspListenTable
-
-
-    
     EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
     return EspListenTable[#EspListenTable]
 end
@@ -241,8 +237,8 @@ function EspListener()
                             TextOBJ.Text = CalcString(v)
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                             TextOBJ.Size = _G.MobTextSize
-                            TextOBJ.ZIndex = 1
                             TextOBJ.Color = _G.MobESPColor
+                            TextOBJ.ZIndex = 1
                         end
                     else
                         v.Text.Visible = false
@@ -476,7 +472,6 @@ game:GetService("UserInputService").InputBegan:connect(function(key,gpe)
     end
 
 end)
-
 
 
 
