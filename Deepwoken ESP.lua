@@ -317,8 +317,6 @@ function AddPlayerToESP(v)
     if v.Name == "GrenadeGrey"  then CharaName = "zZzMerh" end
     if v.Name == "MoriRobloxCringe" then CharaName = "zZzSilver" end
     if v.Name == "Saiahwastaken" then CharaName = "zZzSaiah" end
-
-    print(CharaName)
     AddESPObj(PosTypeTable,v.Name,HpValTable,true,CharaName)
 end
 
