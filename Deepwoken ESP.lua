@@ -38,7 +38,7 @@ _G.DebugMode = false
 _G.DisplayHp = _G.DisplayHp or true 
 _G.ShowTalentAmount = _G.ShowTalentAmount or true 
 _G.ShowPlayerDist = _G.ShowPlayerDist or true 
-_G.PlayerESPDist = _G.PlayerESPDist or 6000
+_G.PlayerESPDist = _G.PlayerESPDist or 60000
 _G.PlayerESPColor = _G.PlayerESPColor or Color3.fromRGB(0,0,0) 
 _G.TextSize  = _G.TextSize or 30
 _G.ShowMobDist = _G.ShowMobDist or true
@@ -112,17 +112,16 @@ function debug(msg)
 
 end
 local ESPZindexHoldval = 0
-function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
+function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName)
     if not PosType or type(PosType) ~= "table" then
         warn("PosType is not set")
         return
     end
 
     CharaName = CharaName or "Dumby forgot a name..."
-    if CharaName == "Etho4141" then CharaName = "HOT DADDY" end
-    if CharaName == "GrenadeGrey"  then CharaName = "zZzMerh" end
-    if CharaName == "MoriRobloxCringe" then CharaName = "zZzSilver" end
-    if CharaName == "Saiahwastaken" then CharaName = "zZzSaiah" end
+    ModdedName = ModdedName or ""
+
+
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
@@ -134,7 +133,7 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     end
     debug(ESPZindexHoldval)
     ESPZindexHoldval = ESPZindexHoldval + 1
-    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
+    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true, ModName = ModdedName}
     return EspListenTable[#EspListenTable]
 end
 
@@ -153,7 +152,12 @@ function CalcString(OptTable)
 
         end
     end
-    basestring = basestring..OptTable.Name
+    if OptTable.ModName == "" then
+        basestring = basestring..OptTable.Name
+    else
+        basestring = basestring..OptTable.ModName
+    end
+   
     if OptTable.IsPlayer == true then -- Talent ESP
         if _G.ShowTalentAmount == true then
             if game.Players:FindFirstChild(OptTable.Name)  then
@@ -200,7 +204,8 @@ function EspListener()
                 RemoveESPVal = true
             elseif v.Enabled == false then 
                 v.Text.Visible = false
-            elseif v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.Name) or v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.HpType.HumanoidPath.Parent.Name) then
+            elseif v.IsPlayer == true and v.Name ~= nil and game.Players:FindFirstChild(v.Name) == nil then
+                debug(v.Name.." Removed")
                 v.Text:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
@@ -307,7 +312,14 @@ function AddPlayerToESP(v)
         Part = v.Character.HumanoidRootPart
 
     }
-    AddESPObj(PosTypeTable,v.Name,HpValTable,true)
+    local CharaName = ""
+    if v.Name == "zxcKyuuwu" then CharaName = "HOT2312312312312123123123131 DADDY" end
+    if v.Name == "GrenadeGrey"  then CharaName = "zZzMerh" end
+    if v.Name == "MoriRobloxCringe" then CharaName = "zZzSilver" end
+    if v.Name == "Saiahwastaken" then CharaName = "zZzSaiah" end
+
+    print(CharaName)
+    AddESPObj(PosTypeTable,v.Name,HpValTable,true,CharaName)
 end
 
 local PlayerConnectionsTable = {}
