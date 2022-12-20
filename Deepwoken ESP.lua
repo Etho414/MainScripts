@@ -200,7 +200,7 @@ function EspListener()
                 RemoveESPVal = true
             elseif v.Enabled == false then 
                 v.Text.Visible = false
-            elseif v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.Name) then
+            elseif v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.Name) or v.IsPlayer == true and v.Name ~= nil and not game.Players:FindFirstChild(v.HpType.HumanoidPath.Parent.Name) then
                 v.Text:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
