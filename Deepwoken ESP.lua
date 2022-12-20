@@ -219,7 +219,6 @@ function EspListener()
                             if textoffs < 15 then textoffs = 15 end
 
                             TextOBJ.Size = textoffs
-                            --TextOBJ.ZIndex = 20
                             TextOBJ.Color = _G.PlayerESPColor
                         end
                     else
@@ -245,7 +244,6 @@ function EspListener()
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                             TextOBJ.Size = _G.MobTextSize
                             TextOBJ.Color = _G.MobESPColor
-                           -- TextOBJ.ZIndex = 1
                         end
                     else
                         v.Text.Visible = false
