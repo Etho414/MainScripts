@@ -27,8 +27,9 @@ Other ESP Settings (NPC, OWLS, ARTIFACTS)
 _G.OtherESPDist = 10000
 _G.ShowOtherDist = true
 
-_G.ShowPosture = true
-_G.ShowEther = true
+_G.ShowPosture = true -- Shows posture % of enemies (Works on mobs!!!!)
+_G.ShowEther = true -- Shows ether % of enemies (Mobs dont have ether..)
+
 -- Debug mode!!!
 _G.DebugMode = false
 
