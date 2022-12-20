@@ -31,8 +31,6 @@ for i,v in pairs(game.Players:GetChildren()) do
     end
 end
 game.Players.PlayerAdded:connect(function(v)
-    print(v.Name.." Joined the GAME!!!")
-
     Cham(V)
 end)
 local function togglething()
