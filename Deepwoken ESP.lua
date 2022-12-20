@@ -112,7 +112,7 @@ function debug(msg)
     end    
 
 end
-
+local ESPZindexHoldval = 0
 function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     if not PosType or type(PosType) ~= "table" then
         warn("PosType is not set")
@@ -123,6 +123,13 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer)
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
     local ESPText = Drawing.new("Text")
+    if IsPlayer == true then
+        ESPZindexHoldval = ESPZindexHoldval + 10000
+    else
+        ESPZindexHoldval = ESPZindexHoldval + 1
+    end
+    
+    ESPText.ZIndex = ESPZindexHoldval
     EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true}
     return EspListenTable[#EspListenTable]
 end
@@ -212,7 +219,7 @@ function EspListener()
                             if textoffs < 15 then textoffs = 15 end
 
                             TextOBJ.Size = textoffs
-                            TextOBJ.ZIndex = 20
+                            --TextOBJ.ZIndex = 20
                             TextOBJ.Color = _G.PlayerESPColor
                         end
                     else
@@ -238,7 +245,7 @@ function EspListener()
                             TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y)
                             TextOBJ.Size = _G.MobTextSize
                             TextOBJ.Color = _G.MobESPColor
-                            TextOBJ.ZIndex = 1
+                           -- TextOBJ.ZIndex = 1
                         end
                     else
                         v.Text.Visible = false
