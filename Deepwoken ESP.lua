@@ -349,6 +349,7 @@ function EspToggle()
         LoopServ:Disconnect()
         for i,v in pairs(EspListenTable) do
             v.Text.Visible = false
+            v.BackUpText.Visible = false
         end
        
     else
