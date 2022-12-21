@@ -625,7 +625,7 @@ function CreateNotif(Contents, Duration)
     local function CreateText()
         
         text.Text = Contents
-        text.Position = BaseNotifPos + Vector2.new(0 ,0 - (#NotifTab - 1) * text.TextBounds.y)
+        text.Position = BaseNotifPos + Vector2.new(0 ,0 - #NotifTab * text.TextBounds.y)
        
         wait(Duration)
         text.Visible = false
