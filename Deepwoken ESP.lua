@@ -619,7 +619,7 @@ function CreateNotif(Contents, Duration)
     local NotifPos = #NotifTab
     local text = Drawing.new("Text")
     text.Visible = true
-    text.Size = 50
+    text.Size = 35
     text.Color = Color3.fromRGB(255,255,255)
     NotifTab[#NotifTab+ 1] = {Message = Contents,Dura = Duration, Pos = NotifPos, NotifText = text}
     local function CreateText()
