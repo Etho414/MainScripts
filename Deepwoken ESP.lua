@@ -598,7 +598,6 @@ function AddBasePartToESP(v,ModdedName)
     local HealthThingTable = {
         Type = "None"
     }
-    print("Owl Added to BaseESP")
     AddESPObj(PosTypeTable,v.Name,HealthThingTable,false,ModdedName,"ShowOwlSpawns")
 
 end
@@ -658,14 +657,13 @@ end
 
 for i,v in pairs(game.Workspace.Thrown:GetChildren()) do
     if v.Name == "EventFeatherRef" and CheckPartValid(v) == true  then
-        Inter("Owl has spawned check ESP",_G.NotificationTime)
-        print("Owl Spawned",v.Position,print(v.ClassName))
+        Inter("An Owl has spawned check ESP",_G.NotificationTime)
         AddBasePartToESP(v,"OWL")
     end   
 end
 game.Workspace.Thrown.ChildAdded:connect(function(v)
     if v.Name == "EventFeatherRef" and CheckPartValid(v) == true  then
-        Inter("Owl has spawned check ESP",_G.NotificationTime)
+        Inter("An Owl has spawned check ESP",_G.NotificationTime)
         AddBasePartToESP(v,"OWL")
     end   
 end)
