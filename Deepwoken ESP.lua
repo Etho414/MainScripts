@@ -238,17 +238,21 @@ function EspListener()
         if RemoveESPVal == false then
             if v.PosType.Type == "Part" and CheckPartValid(v.PosType.Part) == false then
                 v.Text:Remove()
+                v.BackUpText:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
             elseif v.PosType.Type == "DeepWoken" and v.PosType.Model == nil or v.PosType.Type == "DeepWoken" == nil and  v.PosType.Model.Parent then
                 v.Text:Remove()
+                v.BackUpText:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
             elseif v.Enabled == false then 
                 v.Text.Visible = false
+                v.BackUpText.Visible = false
             elseif v.IsPlayer == true and v.Name ~= nil and game.Players:FindFirstChild(v.Name) == nil then
-                debug(v.Name.." Removed")
+
                 v.Text:Remove()
+                v.BackUpText:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
             else
