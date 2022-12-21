@@ -24,19 +24,29 @@ _G.ToggleKey = "T" -- Bind for Toggeling ESP
 _G.InstantLogButton = "L" -- Bind for Instant logging (Will NOT bypass combat tag)
 
 --Other ESP Settings (NPC, OWLS, ARTIFACTS)
-_G.OtherESPDist = 10000
+_G.OtherESPDist = 100000
 _G.ShowOtherDist = true
 
 _G.ShowPosture = true -- Shows posture % of enemies (Works on mobs!!!!)
 _G.ShowEther = true -- Shows ether % of enemies (Mobs dont have ether..)
 
+_G.ShowPlayer = true -- Shows plays on ESP (Defaults to true)
+_G.ShowMOB = true -- Shows mobs on ESP (defaults to true)
+_G.ShowNPC = false -- Shows NPC's on ESP (Defaults to false)
+_G.ShowOwlSpawns = true -- Shows Owl Event locations on ESP (Defaults to true)
+_G.ShowUnloadedMobs = true -- Determines whether to show MOB's (Not Owls) which are not loaded in or not (Defaults to true) Recommended to leave set to true
+_G.ShowOwlNotifications = true -- Shows a notification on the left side of the screen if a OWL has spawned
+_G.NotificationTime = 5 -- How long a notification would stay up for (In seconds)
+
+
+
 -- Debug mode!!!
 _G.DebugMode = false
 
- loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainLoader", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/MainLoader", true))()
 
 ]]
-
+_G.ShowOwlSpawns = true
 _G.DisplayHp = _G.DisplayHp or true 
 _G.ShowTalentAmount = _G.ShowTalentAmount or true 
 _G.ShowPlayerDist = _G.ShowPlayerDist or true 
@@ -49,10 +59,18 @@ _G.MobESPColor = _G.MobESPColor or Color3.fromRGB(255,255,255)
 _G.MobTextSize = _G.MobTextSize or 20
 _G.ToggleKey = _G.ToggleKey or "T"
 _G.InstantLogButton = _G.InstantLogButton or "L"
-_G.OtherESPDist = _G.OtherESPDist or 0
+_G.OtherESPDist = _G.OtherESPDist or 20000
 _G.ShowOtherDist = _G.ShowOtherDist or true
 _G.ShowPosture = _G.ShowPosture or true
 _G.ShowEther = _G.ShowEther or true
+_G.ShowMOB = _G.ShowMOB or false
+_G.ShowNPC = _G.ShowNPC or false
+_G.ShowOwlSpawns = _G.ShowOwlSpawns or true
+_G.ShowPlayer = _G.ShowPlayer or true
+_G.ShowUnloadedMobs = _G.ShowUnloadedMobs  or true
+_G.ShowOwlNotifications = _G.ShowOwlNotifications or true
+_G.NotificationTime = _G.NotificationTime or 5
+
 
 local player = game.Players.LocalPlayer
 local EspListenTable = {}
@@ -113,9 +131,11 @@ function debug(msg)
         print(msg)
     end    
 
+
 end
+_G.test = ""
 local ESPZindexHoldval = 0
-function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName)
+function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName,GlobalVarriable)
     if not PosType or type(PosType) ~= "table" then
         warn("PosType is not set")
         return
@@ -123,7 +143,7 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName)
 
     CharaName = CharaName or "Dumby forgot a name..."
     ModdedName = ModdedName or ""
-
+    GlobalVarriable = GlobalVarriable or "test"
 
     HpValTable = HpValTable or {Type = "None",Min = 0,Max = 0}
     IsPlayer = IsPlayer or false
@@ -137,9 +157,9 @@ function AddESPObj(PosType,CharaName,HpValTable,IsPlayer,ModdedName)
         ESPText.ZIndex = ESPZindexHoldval + 1
         BackUpText.ZIndex = ESPZindexHoldval + 1
     end
-    debug(ESPZindexHoldval)
     ESPZindexHoldval = ESPZindexHoldval + 1
-    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = true, ModName = ModdedName,BackUpText = BackUpText}
+
+    EspListenTable[#EspListenTable + 1 ] = {PosType = PosType,Text = ESPText, Name = CharaName, HpType = HpValTable,IsPlayer = IsPlayer, Enabled = GlobalVarriable, ModName = ModdedName,BackUpText = BackUpText}
     return EspListenTable[#EspListenTable]
 end
 
@@ -236,7 +256,9 @@ function EspListener()
     local RemoveESPVal = false
     for i,v in pairs(EspListenTable) do
         if RemoveESPVal == false then
+
             if v.PosType.Type == "Part" and CheckPartValid(v.PosType.Part) == false then
+
                 v.Text:Remove()
                 v.BackUpText:Remove()
                 table.remove(EspListenTable,i)
@@ -246,7 +268,8 @@ function EspListener()
                 v.BackUpText:Remove()
                 table.remove(EspListenTable,i)
                 RemoveESPVal = true
-            elseif v.Enabled == false then 
+            elseif _G[v.Enabled] ~= true and _G[v.Enabled] ~= "" then 
+
                 v.Text.Visible = false
                 v.BackUpText.Visible = false
             elseif v.IsPlayer == true and v.Name ~= nil and game.Players:FindFirstChild(v.Name) == nil then
@@ -257,6 +280,7 @@ function EspListener()
                 RemoveESPVal = true
             else
                 if v.PosType.Type == "Part" then
+                    
                     local distcache = CheckMag(v.PosType.Part.Position)
                     if distcache ~= nil and distcache < _G.PlayerESPDist and v.IsPlayer == true or v.IsPlayer == false and distcache ~= nil and  distcache < _G.OtherESPDist then
                         local offs = Vector3.new(0,0,0)
@@ -279,8 +303,14 @@ function EspListener()
                             BackUpText.Size = textoffs
                             TextOBJ.Size = textoffs
                             BackUpText.Position = Vector2.new(CharPos.X - (BackUpText.TextBounds.X/2),(CharPos.Y - offset) + TextOBJ.TextBounds.Y)
-                            TextOBJ.Color = _G.PlayerESPColor
-                            BackUpText.Color = _G.PlayerESPColor
+                            if v.ModName == "OWL" then
+                                TextOBJ.Color = Color3.fromRGB(255,255,255)
+                                BackUpText.Color = Color3.fromRGB(255,255,255)
+                            else
+                                TextOBJ.Color = _G.PlayerESPColor
+                                BackUpText.Color = _G.PlayerESPColor
+                            end
+                            
                             
                         end
                     else
@@ -298,31 +328,36 @@ function EspListener()
                         if v.PosType.Model:FindFirstChild("HumanoidRootPart") then
                             CharPos,OnS = cam:WorldToViewportPoint(v.PosType.Model.HumanoidRootPart.Position)
                             holdpos = v.PosType.Model.HumanoidRootPart.Position
-                        elseif v.PosType.Model:FindFirstChild("SpawnCF") then
+                        elseif v.PosType.Model:FindFirstChild("SpawnCF") and _G.ShowUnloadedMobs == true then
                             local cf = v.PosType.Model.SpawnCF.Value
                             CharPos,OnS = cam:WorldToViewportPoint(Vector3.new(cf.X,cf.Y,cf.Z))
                             holdpos = Vector3.new(cf.X,cf.Y,cf.Z)
                         end
-                        local BackUpText = v.BackUpText
-                        local TextOBJ = v.Text
-                        OnS = OnS or false
-                        TextOBJ.Visible = OnS
-                        BackUpText.Visible = OnS
-                        local offset = CheckMag(holdpos) / 500
-                        if offset < 0 then offset = 0 end
+                        if CharPos ~= nil and holdpos ~= nil  then
+                            local BackUpText = v.BackUpText
+                            local TextOBJ = v.Text
+                            OnS = OnS or false
+                            TextOBJ.Visible = OnS
+                            BackUpText.Visible = OnS
+                            local offset = CheckMag(holdpos) / 500
+                            if offset < 0 then offset = 0 end
 
-                        if OnS == true then
-                            TextOBJ.Text = CalcString(v)
-                            BackUpText.Text = CalcBackUpString(v)
-                            TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y- offset) 
+                            if OnS == true then
+                                TextOBJ.Text = CalcString(v)
+                                BackUpText.Text = CalcBackUpString(v)
+                                TextOBJ.Position = Vector2.new(CharPos.X - (TextOBJ.TextBounds.X/2),CharPos.Y- offset) 
 
-                            local textoffs = _G.MobTextSize - (offset * 1.5)
-                            if textoffs < 15 then textoffs = 15 end
-                            TextOBJ.Size = textoffs
-                            BackUpText.Size = textoffs
-                            BackUpText.Position = Vector2.new(CharPos.X - (BackUpText.TextBounds.X/2),(CharPos.Y - offset) + TextOBJ.TextBounds.Y)
-                            TextOBJ.Color = _G.MobESPColor
-                            BackUpText.Color = _G.MobESPColor
+                                local textoffs = _G.MobTextSize - (offset * 1.5)
+                                if textoffs < 15 then textoffs = 15 end
+                                TextOBJ.Size = textoffs
+                                BackUpText.Size = textoffs
+                                BackUpText.Position = Vector2.new(CharPos.X - (BackUpText.TextBounds.X/2),(CharPos.Y - offset) + TextOBJ.TextBounds.Y)
+                                TextOBJ.Color = _G.MobESPColor
+                                BackUpText.Color = _G.MobESPColor
+                            end
+                        else
+                            v.Text.Visible = false
+                            v.BackUpText.Visible = false
                         end
                     else
                         v.Text.Visible = false
@@ -380,7 +415,7 @@ function AddPlayerToESP(v)
     if v.Name == "GrenadeGrey"  then CharaName = "zZzMerh" end
     if v.Name == "MoriRobloxCringe" then CharaName = "zZzSilver" end
     if v.Name == "Saiahwastaken" then CharaName = "zZzSaiah" end
-    AddESPObj(PosTypeTable,v.Name,HpValTable,true,CharaName)
+    AddESPObj(PosTypeTable,v.Name,HpValTable,true,CharaName,"ShowPlayer")
 end
 
 local PlayerConnectionsTable = {}
@@ -467,7 +502,7 @@ function AddMobToESP(v)
         }
         if table.find(MobsInESP,v) == nil then
             MobsInESP[#MobsInESP+1] = v
-            AddESPObj(PosTypeTable,v:GetAttribute("MOB_rich_name"),HpValTable)
+            AddESPObj(PosTypeTable,v:GetAttribute("MOB_rich_name"),HpValTable,false,"","ShowMOB")
         end
         
         
@@ -526,7 +561,7 @@ function AddToNPCEsp(v)
             Type = "None"
 
         }
-        AddESPObj(PosTypeTable,v.Name,HealthThingTable)
+        AddESPObj(PosTypeTable,v.Name,HealthThingTable,false,"","ShowNPC")
     else
         NPCRetry[#NPCRetry+1] = v
     end
@@ -541,7 +576,9 @@ for i,v in pairs(game.Workspace.NPCs:GetChildren()) do
     AddToNPCEsp(v)
 end
 
-
+game.Workspace.NPCs.ChildAdded:connect(function()
+    AddToNPCEsp(v)
+end)
 
 function NpcRetryFunc()
     for i,v in pairs(NPCRetry) do
@@ -551,6 +588,93 @@ function NpcRetryFunc()
     end   
 end
 coroutine.wrap(NpcRetryFunc)()
+
+function AddBasePartToESP(v,ModdedName)
+    local PosTypeTable = {
+        Type = "Part",
+        Part = v
+
+    }
+    local HealthThingTable = {
+        Type = "None"
+    }
+    print("Owl Added to BaseESP")
+    AddESPObj(PosTypeTable,v.Name,HealthThingTable,false,ModdedName,"ShowOwlSpawns")
+
+end
+
+
+
+
+
+local NotifTab = {}
+
+local cam = game.Workspace.CurrentCamera
+
+
+
+local BaseNotifPos = Vector2.new(cam.ViewportSize.X/ 19 ,cam.ViewportSize.Y / 2)
+function CreateNotif(Contents, Duration)
+    Contents = Contents or "retard"
+    Duration = Duration or 3
+    local NotifPos = #NotifTab
+    local text = Drawing.new("Text")
+    text.Visible = true
+    text.Size = 50
+    text.Color = Color3.fromRGB(255,255,255)
+    NotifTab[#NotifTab+ 1] = {Message = Contents,Dura = Duration, Pos = NotifPos, NotifText = text}
+    local function CreateText()
+        
+        text.Text = Contents
+        text.Position = BaseNotifPos + Vector2.new(0 ,0 - (#NotifTab - 1) * text.TextBounds.y)
+       
+        wait(Duration)
+        text.Visible = false
+        table.remove(NotifTab,NotifPos)
+        local function ReDrawNotifs()
+            for i,v in pairs(NotifTab) do
+                v.NotifText.Position = BaseNotifPos + Vector2.new(0,0 - i* v.NotifText.TextBounds.Y)
+            end
+        end
+        ReDrawNotifs()
+    end
+    CreateText()
+end
+function Inter(con,dura)
+    if _G.ShowOwlNotifications == true then
+        coroutine.wrap(CreateNotif)(con,dura)
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+for i,v in pairs(game.Workspace.Thrown:GetChildren()) do
+    if v.Name == "EventFeatherRef" and CheckPartValid(v) == true  then
+        Inter("Owl has spawned check ESP",_G.NotificationTime)
+        print("Owl Spawned",v.Position,print(v.ClassName))
+        AddBasePartToESP(v,"OWL")
+    end   
+end
+game.Workspace.Thrown.ChildAdded:connect(function(v)
+    if v.Name == "EventFeatherRef" and CheckPartValid(v) == true  then
+        Inter("Owl has spawned check ESP",_G.NotificationTime)
+        AddBasePartToESP(v,"OWL")
+    end   
+end)
+
+
+
+
+
+
 
 
 
