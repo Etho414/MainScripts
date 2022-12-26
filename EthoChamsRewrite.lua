@@ -4,6 +4,7 @@ local HighlightFold = Instance.new("Folder",game.CoreGui)
 local StopHighlight = false
 local ButtonPressServ;
 local PlayerAddServ;
+print("Chams Script Etho v0.9!")
 
 _G.StopGlobalEthoChams = false
 
@@ -48,7 +49,7 @@ function Cham(v,SettingsTab)
         end
     end)
 end
-function ToggleCham(TogVal,SettingsTab)
+function ToggleCham(TogVal)
     if TogVal == true then
         StopHighlight = false
     else
@@ -63,7 +64,7 @@ end
 
 function ReturnTabThing:InitChams(SettingsTab)
     local ChamsToggle = true
-    ToggleCham(ChamsToggle,SettingsTab)
+    ToggleCham(ChamsToggle)
     for i,v in pairs(game.Players:GetChildren()) do 
         if v ~= player then   
             Cham(v,SettingsTab)
