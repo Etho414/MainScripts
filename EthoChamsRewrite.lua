@@ -36,6 +36,8 @@ function Cham(v,SettingsTab)
             HighLight.Enabled = not StopHighlight
             HighLight.FillTransparency = _G[SettingsTab.FillGlobal]
             HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
+            HighLight.FillColor = _G[SettingsTab.FillColor]
+            HighLight.OutlineColor = _G{SettingsTab.OutlineColor}
         end)
         if _G.StopGlobalEthoChams == true then Stop() end
     end)
@@ -59,9 +61,8 @@ end
 
 
 
-function ReturnTabThing:InitChams(SettingsTab,ButtonToggle)
+function ReturnTabThing:InitChams(SettingsTab)
     local ChamsToggle = true
-    ButtonToggle = string.upper(ButtonToggle)
     ToggleCham(ChamsToggle,SettingsTab)
     for i,v in pairs(game.Players:GetChildren()) do 
         if v ~= player then   
@@ -75,7 +76,7 @@ function ReturnTabThing:InitChams(SettingsTab,ButtonToggle)
     end)
     ButtonPressServ = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
         if gameProcessedEvent then return end
-        if input.KeyCode == Enum.KeyCode[ButtonToggle] then
+        if input.KeyCode == Enum.KeyCode[string.upper(_G[SettingsTab.ToggleKey])] then
             ChamsToggle = not ChamsToggle
             ToggleCham(ChamsToggle,SettingsTab)
         end
