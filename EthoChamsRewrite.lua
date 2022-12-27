@@ -4,7 +4,6 @@ local HighlightFold = Instance.new("Folder",game.CoreGui)
 local StopHighlight = false
 local ButtonPressServ;
 local PlayerAddServ;
-print("Chams Script Etho v0.9!")
 
 _G.StopGlobalEthoChams = false
 
@@ -45,7 +44,9 @@ function Cham(v,SettingsTab)
     
     PlayerRemoveServ = game:GetService("RunService").RenderStepped:connect(function(v2)
         if v2 == v then
-            Stop()
+            RunServ:Disconnect()
+            PlayerRemoveServ:Disconnect()
+            HighLight:Destroy()
         end
     end)
 end
