@@ -66,7 +66,6 @@ function Cham(v,SettingsTab)
     
     PlayerRemoveServ = game:GetService("RunService").RenderStepped:connect(function(v2)
         if v2 == v then
-            print(v2 == v, "Remove Serv",v2,v)
             RunServ:Disconnect()
             PlayerRemoveServ:Disconnect()
             HighLight:Destroy()
