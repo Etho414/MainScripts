@@ -26,8 +26,9 @@ _G.RanEthoChams = true
 function Cham(v,SettingsTab)
     local RunServ;
     local PlayerRemoveServ;
-    local HighLight = Instance.new("Highlight",HighlightFold)
-
+    local HighLight = Instance.new("Highlight")
+    HighLight.Parent = HighlightFold
+    local HoldChildrenNum = 0
     local function Stop()
         PlayerRemoveServ:Disconnect()
         RunServ:Disconnect() 
@@ -38,19 +39,31 @@ function Cham(v,SettingsTab)
 
         end
     end
+    local function RefreshHighlight(hl)
+        hl.Adornee = nil
+        hl.Adornee = v.Character
+    
+    end
     RunServ = game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
-        pcall(function()
             if v.Character and HighLight.Adornee ~= v.Character then
-                print("Adorneed",v)
+                HoldChildrenNum = #v.Character:GetChildren()
                 HighLight.Adornee = v.Character
             end
-            
+            if v.Character and HighLight.Adornee == v.Character then
+                if HoldChildrenNum ~= #v.Character:GetChildren() then
+                    HoldChildrenNum = #v.Character:GetChildren()
+                    RefreshHighlight(HighLight)
+
+
+                end
+
+
+            end
             HighLight.Enabled = not StopHighlight
-            HighLight.FillTransparency = _G[SettingsTab.FillGlobal]
+            HighLight.FillTransparency = _G[SettingsTab.FillTransVal]
             HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
             HighLight.FillColor = _G[SettingsTab.FillColor]
-            HighLight.OutlineColor = _G{SettingsTab.OutlineColor}
-        end)
+            HighLight.OutlineColor = _G[SettingsTab.OutlineColor]
         if _G.StopGlobalEthoChams == true then Stop() end
     end)
     
@@ -62,7 +75,6 @@ function Cham(v,SettingsTab)
             HighLight:Destroy()
         end
     end)
-    print("Added "..v.Name.." To Cham Thing")
 end
 function ToggleCham(TogVal)
     if TogVal == true then
@@ -82,13 +94,11 @@ function ReturnTabThing:InitChams(SettingsTab)
     ToggleCham(ChamsToggle)
     for i,v in pairs(game.Players:GetChildren()) do 
         if v ~= player then   
-            print(v)
             Cham(v,SettingsTab)
         end
     end
     PlayerAddServ = game.Players.PlayerAdded:connect(function(v)
         if v ~= player then
-            print("Adding "..v.Name.." To CHAM!")
             Cham(v,SettingsTab)
         end
     end)
