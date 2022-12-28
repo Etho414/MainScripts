@@ -32,10 +32,11 @@ function Cham(v,SettingsTab)
     local function Stop()
         PlayerRemoveServ:Disconnect()
         RunServ:Disconnect() 
+        HighLight.Enabled = false
         HighLight:Destroy()
         PlayerAddServ:Disconnect()
         if _G.StopGlobalEthoChams == true then
-            ButtonPressServ:Disconnect()
+            ButtonPressServ:Disconnect()    
 
         end
     end
@@ -53,11 +54,7 @@ function Cham(v,SettingsTab)
                 if HoldChildrenNum ~= #v.Character:GetChildren() then
                     HoldChildrenNum = #v.Character:GetChildren()
                     RefreshHighlight(HighLight)
-
-
                 end
-
-
             end
             HighLight.Enabled = not StopHighlight
             HighLight.FillTransparency = _G[SettingsTab.FillTransVal]
@@ -76,7 +73,7 @@ function Cham(v,SettingsTab)
         end
     end)
 end
-function ToggleCham(TogVal)
+function ReturnTabThing:ToggleCham(TogVal)
     if TogVal == true then
         StopHighlight = false
     else
@@ -91,7 +88,7 @@ end
 
 function ReturnTabThing:InitChams(SettingsTab)
     local ChamsToggle = true
-    ToggleCham(ChamsToggle)
+    ReturnTabThing:ToggleCham(ChamsToggle)
     for i,v in pairs(game.Players:GetChildren()) do 
         if v ~= player then   
             Cham(v,SettingsTab)
@@ -102,13 +99,15 @@ function ReturnTabThing:InitChams(SettingsTab)
             Cham(v,SettingsTab)
         end
     end)
-    ButtonPressServ = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
-        if gameProcessedEvent then return end
-        if input.KeyCode == Enum.KeyCode[string.upper(_G[SettingsTab.ToggleKey])] then
-            ChamsToggle = not ChamsToggle
-            ToggleCham(ChamsToggle,SettingsTab)
-        end
-    end)
+    if SettingsTab.ToggleKey and SettingsTab.ToggleKey ~= "" then
+        ButtonPressServ = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessedEvent)
+            if gameProcessedEvent then return end
+            if input.KeyCode == Enum.KeyCode[string.upper(_G[SettingsTab.ToggleKey])] then
+                ChamsToggle = not ChamsToggle
+                ReturnTabThing:ToggleCham(ChamsToggle,SettingsTab)
+            end
+        end)
+    end
 end
 
 
