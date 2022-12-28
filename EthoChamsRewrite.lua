@@ -1,9 +1,15 @@
 local ReturnTabThing = {}
-local player = game.Players.LocalPlayer
+local player;
 local HighlightFold = Instance.new("Folder",game.CoreGui)
 local StopHighlight = false
 local ButtonPressServ;
 local PlayerAddServ;
+
+repeat wait(); player = game.Players.LocalPlayer until player and player.Name and player.Parent
+repeat wait() until game.Players
+repeat wait() until #game.Players:GetChildren() ~= 0
+
+
 
 _G.StopGlobalEthoChams = false
 
