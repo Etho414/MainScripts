@@ -1,6 +1,8 @@
 local ReturnTabThing = {}
 local player;
-local HighlightFold = Instance.new("Folder",game.CoreGui)
+local HighlightFold = Instance.new("Folder")
+syn.protect_gui(HighlightFold)
+HighlightFold.Parent = game.CoreGui
 local StopHighlight = false
 local ButtonPressServ;
 local PlayerAddServ;
@@ -38,7 +40,11 @@ function Cham(v,SettingsTab)
     end
     RunServ = game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
         pcall(function()
-            HighLight.Adornee = v.Character
+            if v.Character and HighLight.Adornee ~= v.Character then
+                print("Adorneed",v)
+                HighLight.Adornee = v.Character
+            end
+            
             HighLight.Enabled = not StopHighlight
             HighLight.FillTransparency = _G[SettingsTab.FillGlobal]
             HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
@@ -50,11 +56,13 @@ function Cham(v,SettingsTab)
     
     PlayerRemoveServ = game:GetService("RunService").RenderStepped:connect(function(v2)
         if v2 == v then
+            print(v2 == v, "Remove Serv",v2,v)
             RunServ:Disconnect()
             PlayerRemoveServ:Disconnect()
             HighLight:Destroy()
         end
     end)
+    print("Added "..v.Name.." To Cham Thing")
 end
 function ToggleCham(TogVal)
     if TogVal == true then
@@ -74,11 +82,13 @@ function ReturnTabThing:InitChams(SettingsTab)
     ToggleCham(ChamsToggle)
     for i,v in pairs(game.Players:GetChildren()) do 
         if v ~= player then   
+            print(v)
             Cham(v,SettingsTab)
         end
     end
     PlayerAddServ = game.Players.PlayerAdded:connect(function(v)
         if v ~= player then
+            print("Adding "..v.Name.." To CHAM!")
             Cham(v,SettingsTab)
         end
     end)
@@ -90,7 +100,6 @@ function ReturnTabThing:InitChams(SettingsTab)
         end
     end)
 end
-
 
 
 
