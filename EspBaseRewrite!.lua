@@ -1,24 +1,42 @@
+local GuiService = game:GetService("GuiService")
 -- ESP BASE REWRITE
 local player;
 local DrawESP = false
+
+local ChamsFolder;
 if not game:IsLoaded() then
     game:IsLoaded():Wait()
 end
 
 repeat wait(); player =  game.Players.LocalPlayer until player and player.Name and player.Parent
 
+
+-- Backup Global Variables incase they are not set
+
+_G.EthoChamsDefaultESPToggle = true
+_G.EthoChamsDefaultESPTextSize = 30
+_G.EthoChamsDefaultESPTextColor = Color3.fromRGB(255,255,255)
+_G.EthoChamsDefaultESPShowDistance = true
+_G.EthoChamsDefaultESPMaxRenderDistance = 10000
+_G.EthoChamsDefaultESPShowHealth =  true
+_G.EthoChamsDefaultESPShowHealthPercent = false
+_G.EthoChamsDefaultESPScaledText = true
+_G.EthoChamsDefaultESPChamsToggle = false
+_G.EthoChamsDefaultESPChamsFillColor = Color3.fromRGB(255,0,0)
+_G.EthoChamsDefaultESPChamsOutlineColor = Color3.fromRGB(0,0,0)
+_G.EthoChamsDefaultESPChamsFillTrans = 1
+_G.EthoChamsDefaultESPChamsOutlineTrans = 0
+
+
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
-_G.AllowChamsToBeUsed = false -- might have a detection (i tryed to stop it tho..)
-
-local ChamsFolder;
-if _G.AllowChamsToBeUsed == true then
+_G.AllowChamsEtho = true
+if _G.AllowChamsEtho == true then
     ChamsFolder = Instance.new("Folder")
     syn.protect_gui(ChamsFolder)
     ChamsFolder.Parent = game.CoreGui
 end
-
 function CalcPercent(min,max)
     return math.floor(((min / max) * 100) + 0.5)
 end
@@ -38,12 +56,19 @@ function ESPFunctionReturnTable:CheckBasePartValid(Part)
     return true
 end
 function VisibleText(Bool,TextTable)
-    for i,v in pairs(TextTable) do
+    for i,v in pairs(TextTable.ESPTextObjects) do
         v.Visible = Bool
+    end
+    if TextTable.Highlight ~= nil then
+        TextTable.Highlight.HightlightObj.Enabled = Bool
     end
 end
 
+function ESPFunctionReturnTable:RefreshHighlight(HighlightObj,PartToAdornee)
+    HighlightObj.Adornee = nil
+    HighlightObj.Adornee = PartToAdornee
 
+end
 
 function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if type(OptionTable) ~= "table"  then
@@ -52,7 +77,48 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     elseif OptionTable.Data == nil then
         error("AddESPObj Function, Data is not a varaible in OptionTable aa2")
         return
+    elseif OptionTable.Data.ReturnPosFunc == nil then
+        error("AddESPObj Function, Return pos function == nil aa3")
+        return
+    elseif OptionTable.Data.CalcStringFunction == nil then
+        error("AddESPObj Function, Calc String function == nil aa4")
+        return   
+    elseif OptionTable.Data.DeterminToRemoveFunction == nil then
+        error("AddESPObj Function, DeterminToBeRemovedFunction == nil, aa5")    
     end
+    OptionTable.Data.ModdedName = OptionTable.Data.ModdedName or ""
+    OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
+    OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
+    OptionTable.ToBeRemoved = OptionTable.ToBeRemoved or false
+    
+    local GlobalVariablePreset = OptionTable.GlobalVariableTable
+    if GlobalVariablePreset == nil then
+        error("AddESPObj Function, GlobalVariableTable == nil")
+        return
+    end
+    GlobalVariablePreset.Toggle = GlobalVariablePreset.Toggle or "EthoChamsDefaultESPToggle"
+    GlobalVariablePreset.TextSize = GlobalVariablePreset.TextSize or "EthoChamsDefaultESPTextSize"
+    GlobalVariablePreset.TextColor = GlobalVariablePreset.TextColor or "EthoChamsDefaultESPTextColor"
+    GlobalVariablePreset.ShowDistance = GlobalVariablePreset.ShowDistance or "EthoChamsDefaultESPShowDistance"
+    GlobalVariablePreset.MaxRenderDistance = GlobalVariablePreset.MaxRenderDistance or "EthoChamsDefaultESPMaxRenderDistance"
+    GlobalVariablePreset.ShowHealth = GlobalVariablePreset.ShowHealth or "EthoChamsDefaultESPShowHealth"
+    GlobalVariablePreset.ShowHealthPercent = GlobalVariablePreset.ShowHealthPercent or "EthoChamsDefaultESPShowHealthPercent"
+    GlobalVariablePreset.ScaledText = GlobalVariablePreset.ScaledText or "EthoChamsDefaultESPScaledText"
+    GlobalVariablePreset.ChamsToggle = GlobalVariablePreset.ChamsToggle or "EthoChamsDefaultESPChamsToggle"
+    GlobalVariablePreset.ChamsFillColor = GlobalVariablePreset.ChamsFillColor or "EthoChamsDefaultESPChamsFillColor"
+    GlobalVariablePreset.ChamsOutlineColor = GlobalVariablePreset.ChamsOutlineColor or "EthoChamsDefaultESPChamsOutlineColor"
+    GlobalVariablePreset.ChamsFillTrans = GlobalVariablePreset.ChamsFillTrans or "EthoChamsDefaultESPChamsFillTrans"
+    GlobalVariablePreset.ChamsOutlineTrans = GlobalVariablePreset.ChamsFillTrans or "EthoChamsDefaultESPChamsOutlineTrans"
+
+
+    if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
+
+        local Highlight = Instance.new("Highlight",ChamsFolder)
+        OptionTable.Data.Highlight.HighlightObj = Highlight
+        OptionTable.Data.Highlight.LastKnownChildrenCache = -2
+    end
+
+
     local ESPPresetText1 = Drawing.new("Text")
     local ESPPresetText2 = Drawing.new("Text")
     local ESPPresetText3 = Drawing.new("Text")
@@ -65,7 +131,7 @@ function ESPRenderer()
     for i,OptionTable in pairs(ESPListenTable) do
         OptionTable.Data.DeterminToRemoveFunction(OptionTable)
         if _G[OptionTable.GlobalVariableTable.Toggle] == false then
-            VisibleText(false,OptionTable.ESPTextObjects)
+            VisibleText(false,OptionTable)
         elseif OptionTable.ToBeRemoved == true  then
             PauseRender = true
             for i,v in pairs(OptionTable.ESPTextObjects) do 
@@ -74,7 +140,7 @@ function ESPRenderer()
             end
             table.remove(ESPListenTable,i)
         elseif DrawESP == false then
-            VisibleText(false, OptionTable.ESPTextObjects)
+            VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable)
             if PositionCached ~= nil and _G[OptionTable.GlobalVariableTable.Toggle] == true  then
@@ -114,13 +180,40 @@ function ESPRenderer()
                         v.Size = ChangeTo
                         v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
                     end
-                    VisibleText(true,OptionTable.ESPTextObjects)
+                    if  OptionTable.Data.Highlight.UseChams == true and OptionTable.Data.Highlight.HighlightObj ~= nil then
+                       
+                        local HighlightObj = OptionTable.Data.Highlight.HighlightObj
+                        local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
+                       
+                        if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
+                            local ChildrenCached = #AdorneePart:GetChildren()
+                            if HighlightObj.Adornee ~= AdorneePart then
+                                OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                HighlightObj.Adornee = AdorneePart
+                            end
+                            if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache then
+                                OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                ESPFunctionReturnTable:RefreshHighlight(HighlightObj,AdorneePart)
+                            end
+                            HighlightObj.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
+                            HighlightObj.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
+                            HighlightObj.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
+                            HighlightObj.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
+                            HighlightObj.Enabled = true 
+                        else
+                            HighlightObj.Enabled = false
+                        end
+
+                    end
+
+
+                    VisibleText(true,OptionTable)
                 else
-                    VisibleText(false,OptionTable.ESPTextObjects)
+                    VisibleText(false,OptionTable)
                 end
 
             else
-                VisibleText(false, OptionTable.ESPTextObjects)
+                VisibleText(false, OptionTable)
             end
         end
     end
@@ -134,7 +227,7 @@ function ESPFunctionReturnTable:Toggle()
     else
         ESPRunServ:Disconnect()
         for i,v in pairs(ESPListenTable) do
-            VisibleText(false,v.ESPTextObjects)
+            VisibleText(false,v.Highlight.HightlightObj)
         end
     end
 end
@@ -150,6 +243,12 @@ _G.ShowPlayerHealthPercent = false
 _G.PlayerMaxDist = 10000
 _G.ShowPlayerHealth = true
 _G.ScalePlayerText = true
+_G.ShowChams = true
+_G.ChamsFillColor = Color3.fromRGB(255,0,255)
+_G.ChamsOutlineColor = Color3.fromRGB(0,0,0)
+_G.ChamsFill = 0
+_G.ChamsOutlineTrans = 0
+
 
 function AddPlayerESP(v)
     local OptionTable = {
@@ -172,10 +271,10 @@ function AddPlayerESP(v)
                 if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
                     local MagnitudeChached = ESPFunctionReturnTable:GetMagnitude(v.Character.HumanoidRootPart.Position,player.Character:FindFirstChild("HumanoidRootPart").Position)
                     if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
-                        Line1Text = "["..tostring(Round(MagnitudeChached)).."] "..Line1Text
+                        Line3Text = "["..tostring(Round(MagnitudeChached)).."] "..Line3Text
                     end
                     if PassedTable.Data.ModdedName ~= "" then
-                        Line1Text = Line1Text..PassedTable.Data.ModdedName.." "
+                        Line3Text = Line3Text..PassedTable.Data.ModdedName.." "
                     else
                         Line1Text = Line1Text..v.Name.." "
                     end
@@ -183,9 +282,9 @@ function AddPlayerESP(v)
                         local MinHp = v.Character.Humanoid.Health
                         local MaxHp = v.Character.Humanoid.MaxHealth
                         if _G[PassedTable.GlobalVariableTable.ShowHealthPercent] == true then
-                            Line1Text = Line1Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
+                            Line3Text = Line3Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
                         else
-                            Line1Text = Line1Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
+                            Line3Text = Line3Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
                         end
                     end
                 end
@@ -197,7 +296,18 @@ function AddPlayerESP(v)
                 if ESPFunctionReturnTable:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
                 end
-            end
+            end,
+            RunAfterEverthing = function(PassedTable)
+                
+
+            end,
+            Highlight = {
+                UseChams = true,
+                ReturnPartFunction = function()
+                    return v.Character
+                end,
+                LastKnownChildrenCache = 0
+            }
         },
         GlobalVariableTable = {
             Toggle = "PlayerESP",
@@ -207,7 +317,12 @@ function AddPlayerESP(v)
             MaxRenderDistance = "PlayerMaxDist",
             ShowHealth = "ShowPlayerHealth",
             ShowHealthPercent = "ShowPlayerHealthPercent",
-            ScaledText = "ScalePlayerText"
+            ScaledText = "ScalePlayerText",
+            ChamsToggle = "ShowChams",
+            ChamsFillColor = "ChamsFillColor",
+            ChamsOutlineColor = "ChamsOutlineColor",
+            ChamsFillTrans = "ChamsFill",
+            ChamsOutlineTrans = "ChamsOutlineTrans"
 
 
         }
