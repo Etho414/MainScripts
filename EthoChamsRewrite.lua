@@ -59,6 +59,8 @@ function Cham(v,SettingsTab)
             HighLight.Enabled = not StopHighlight
             if _G[SettingsTab.FillTransVal] ~= nil then
                 HighLight.FillTransparency = _G[SettingsTab.FillTransVal]
+            else
+                HighLight.FillTransparency = 0
             end
             if _G[SettingsTab.OutlineGlobal] ~= nil then
                 HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
