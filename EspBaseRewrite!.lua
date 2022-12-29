@@ -22,7 +22,9 @@ end
 function CalcPercent(min,max)
     return math.floor(((min / max) * 100) + 0.5)
 end
-
+function Round(n)
+    return math.floor(n + 0.5)
+end
 
 function ESPFunctionReturnTable:GetMagnitude(Pos1,Pos2)
     return (Pos1 - Pos2).Magnitude
@@ -47,7 +49,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if type(OptionTable) ~= "table"  then
         error("AddESPObj Function, Set Variable is not a OPTIONTABLE aa1")
         return
-    elseif OptionTable.Date == nil then
+    elseif OptionTable.Data == nil then
         error("AddESPObj Function, Data is not a varaible in OptionTable aa2")
         return
     end
@@ -64,32 +66,39 @@ function ESPRenderer()
         if _G[OptionTable.GlobalVariableTable.Toggle] == false then
             VisibleText(false,OptionTable.ESPTextObjects)
         else
-            local PositionCached = OptionTable.ReturnPosFunc(OptionTable)
+            local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable)
             if PositionCached ~= nil and _G[OptionTable.GlobalVariableTable.Toggle] == true  then
                 local cam = game.Workspace.CurrentCamera
                 local ScreenPos,OnS = cam:WorldToViewportPoint(PositionCached)
                 if OnS then
                     local TextTable = OptionTable.ESPTextObjects
-                    local StringCached = OptionTable.CalcStringFunction(OptionTable)
-
+                    local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
+                    local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(game.Players.LocalPlayer.Character.HumanoidRootPart.Position,PositionCached)
+                    local TextOffset = MagnitudeCached / 500
                     --Settings texts for the lines!!!
                     StringCached.Line1 = StringCached.Line1 or ""
                     StringCached.Line2 = StringCached.Line2 or ""
                     StringCached.Line2 = StringCached.Line2 or ""
 
-                    TextTable.Text1 = StringCached.Line1
-                    TextTable.Text2 = StringCached.Line2
-                    TextTable.Text3 = StringCached.Line3
+                    TextTable.Text1.Text = StringCached.Line1
+                    TextTable.Text2.Text = StringCached.Line2
+                    TextTable.Text3.Text = StringCached.Line3
 
                     -- Settings positions of text objects
-                    TextTable.Line1.Poistion = Vector2.new(ScreenPos.x - TextTable.Line1.TextBounds.X,ScreenPos.Y - OptionTable.Data.TextOffset)
-                    TextTable.Line2.Position = Vector2.new(ScreenPos.x - TextTable.Line2.TextBounds.X,(TextTable.Line1.Position.Y - TextTable.Line1.TextBounds.Y) - OptionTable.Data.TextOffset)
-                    TextTable.Line3.Position = Vector2.new(ScreenPos.x - TextTable.Line3.TextBounds.X,(TextTable.Line2.Position.Y - TextTable.Line2.TextBounds.Y) - OptionTable.Data.TextOffset)
+                    
+                    TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),(ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset)
+                    TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text2.TextBounds.X / 2),(1.5 + TextTable.Text1.Position.Y - TextTable.Text1.TextBounds.Y / 2))
+                    TextTable.Text3.Position = Vector2.new(ScreenPos.X - (TextTable.Text3.TextBounds.X / 2),(1.5 + TextTable.Text2.Position.Y - TextTable.Text2.TextBounds.Y / 2) )
                     for i,v in pairs(TextTable) do
-                        v.Size = _G[OptionTable.GlobalVariableTable.TextSize]
+                        local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
+                        local ChangeTo = HoldSize - (TextOffset * 1.5)
+                        if ChangeTo < (HoldSize / 2) then 
+                            ChangeTo = (HoldSize / 2)
+                        end
+                        v.Size = ChangeTo
                         v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
                     end
-                    VisibleText(true)
+                    VisibleText(true,OptionTable.ESPTextObjects)
                 else
                     VisibleText(false,OptionTable.ESPTextObjects)
                 end
@@ -109,7 +118,8 @@ local DrawESP = false
 function ESPFunctionReturnTable:Toggle()
     DrawESP = not DrawESP
     if DrawESP == true then
-        ESPRunServ = game:GetService("RunService").RenderStepped:connect(ESPRenderer)()
+        print("d")
+        ESPRunServ = game:GetService("RunService").RenderStepped:connect(ESPRenderer)
     else
         ESPRunServ:Disconnect()
     end
@@ -131,7 +141,7 @@ for i,v in pairs(game.Players:GetChildren()) do
             Data = {
                 ReturnPosFunc = function(PassedTable)
                     if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
-                        local MagnitudeChached = ESPFunctionReturnTable:GetMagnitude(v.Character.HumanoidRootPart.Position,player.Character:FindFirstChild("HumanoidRootPart"))
+                        local MagnitudeChached = ESPFunctionReturnTable:GetMagnitude(v.Character.HumanoidRootPart.Position,player.Character:FindFirstChild("HumanoidRootPart").Position)
                         if MagnitudeChached < _G[PassedTable.GlobalVariableTable.MaxRenderDistance] then
                             return v.Character.HumanoidRootPart.Position
                         end
@@ -144,12 +154,12 @@ for i,v in pairs(game.Players:GetChildren()) do
                     local Line2Text = "222"
                     local Line3Text = "222"
                     if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
-                        local MagnitudeChached = ESPFunctionReturnTable:GetMagnitude(v.Character.HumanoidRootPart.Position,player.Character:FindFirstChild("HumanoidRootPart"))
+                        local MagnitudeChached = ESPFunctionReturnTable:GetMagnitude(v.Character.HumanoidRootPart.Position,player.Character:FindFirstChild("HumanoidRootPart").Position)
                         if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
-                            Line1Text = "["..tostring(MagnitudeChached).."]"..Line1Text.." "
+                            Line1Text = "["..tostring(Round(MagnitudeChached)).."]"..Line1Text.." "
                         end
-                        if PassedTable.ModdedName ~= "" then
-                            Line1Text = Line1Text..PassedTable.ModdedName.." "
+                        if PassedTable.Data.ModdedName ~= "" then
+                            Line1Text = Line1Text..PassedTable.Data.ModdedName.." "
                         else
                             Line1Text = Line1Text..v.Name.." "
                         end
@@ -157,9 +167,9 @@ for i,v in pairs(game.Players:GetChildren()) do
                             local MinHp = v.Character.Humanoid.Health
                             local MaxHp = v.Character.Humanoid.MaxHealth
                             if _G[PassedTable.GlobalVariableTable.ShowHealthPercent] == true then
-                                Line1Text = Line1Text.."["..tostring(CalcPercent(MinHp,MaxHp)).."%] "
+                                Line1Text = Line1Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
                             else
-                                Line1Text = Line1Text.."["..tostring(MinHp).."/"..tostring(MaxHp).."] "
+                                Line1Text = Line1Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
                             end
                         end
                     end
