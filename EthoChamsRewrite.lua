@@ -57,10 +57,20 @@ function Cham(v,SettingsTab)
                 end
             end
             HighLight.Enabled = not StopHighlight
-            HighLight.FillTransparency = _G[SettingsTab.FillTransVal]
-            HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
-            HighLight.FillColor = _G[SettingsTab.FillColor]
-            HighLight.OutlineColor = _G[SettingsTab.OutlineColor]
+            if _G[SettingsTab.FillTransVal] ~= nil then
+                HighLight.FillTransparency = _G[SettingsTab.FillTransVal]
+            end
+            if _G[SettingsTab.OutlineGlobal] ~= nil then
+                HighLight.OutlineTransparency = _G[SettingsTab.OutlineGlobal]
+            end
+            if _G[SettingsTab.FillColor] ~= nil then
+                HighLight.FillColor = _G[SettingsTab.FillColor]
+            end
+            if _G[SettingsTab.OutlineColor] ~= nil then
+                HighLight.OutlineColor = _G[SettingsTab.OutlineColor]
+            else
+                HighLight.OutlineColor = Color3.fromRGB(255,255,255)
+            end
         if _G.StopGlobalEthoChams == true then Stop() end
     end)
     
