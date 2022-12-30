@@ -32,7 +32,7 @@ _G.EthoChamsDefaultESPHpBarToggle = false
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
-_G.AllowChamsEtho = true
+_G.AllowChamsEtho = _G.AllowChamsEtho or false 
 if _G.AllowChamsEtho == true then
     ChamsFolder = Instance.new("Folder")
     syn.protect_gui(ChamsFolder)
@@ -61,7 +61,7 @@ function VisibleText(Bool,TextTable)
         v.Visible = Bool
     end
     
-    if TextTable.Data.Highlight ~= nil then
+    if TextTable.Data.Highlight ~= nil and TextTable.Data.Highlight.HighlightObj ~= nil  then
         TextTable.Data.Highlight.HighlightObj.Enabled = Bool
     end
 end
@@ -89,10 +89,17 @@ function ReturnColorOnHp(HP)
 
 end
 
-function ESPFunctionReturnTable:RefreshHighlight(HighlightObj,PartToAdornee)
-    HighlightObj.Adornee = nil
-    HighlightObj.Adornee = PartToAdornee
-
+function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
+    if PassedTable.Data.Highlight.Refreshing == false then
+        PassedTable.Data.Highlight.Refreshing = true 
+        local HighlightObj = PassedTable.Data.Highlight.HighlightObj
+        local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
+        HighlightObj2.Adornee = PartToAdornee
+        HighlightObj.Adornee = nil
+        HighlightObj.Adornee = PartToAdornee
+        HighlightObj2.Adornee = nil
+    end
+    PassedTable.Data.Highlight.Refreshing = false 
 end
 function CFtoVec(cf)
     return Vector3.new(cf.x,cf.y,cf.z)
@@ -123,7 +130,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         error("AddESPObj Function, GlobalVariableTable == nil, aa6")
         return
     end
-    GlobalVariablePreset.Toggle = GlobalVariablePreset.Toggle or "EthoChamsDefaultESPToggle"
+    GlobalVariablePreset.TextToggle = GlobalVariablePreset.TextToggle or "EthoChamsDefaultESPToggle"
     GlobalVariablePreset.TextSize = GlobalVariablePreset.TextSize or "EthoChamsDefaultESPTextSize"
     GlobalVariablePreset.TextColor = GlobalVariablePreset.TextColor or "EthoChamsDefaultESPTextColor"
     GlobalVariablePreset.ShowDistance = GlobalVariablePreset.ShowDistance or "EthoChamsDefaultESPShowDistance"
@@ -147,8 +154,11 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
+        local Highlight2 = Instance.new("Highlight"),ChamsFolder
         OptionTable.Data.Highlight.HighlightObj = Highlight
+        OptionTable.Data.Highlight.HighlightObj2 = Highlight2
         OptionTable.Data.Highlight.LastKnownChildrenCache = -2
+        OptionTable.Data.Highlight.Refreshing = false
         if OptionTable.Data.Highlight.ReturnPartFunction == nil then
            error("AddESPObj Function - Highlight Portion, Return Part Function == nil, aa7") 
         end
@@ -174,9 +184,7 @@ local PauseRender = false
 function ESPRenderer()
     for i,OptionTable in pairs(ESPListenTable) do
         OptionTable.Data.DeterminToRemoveFunction(OptionTable)
-        if _G[OptionTable.GlobalVariableTable.Toggle] == false then
-            VisibleText(false,OptionTable)
-        elseif OptionTable.ToBeRemoved == true  then
+        if OptionTable.ToBeRemoved == true  then
             PauseRender = true
             for i,v in pairs(OptionTable.ESPTextObjects) do 
                 v.Visible = false
@@ -186,8 +194,8 @@ function ESPRenderer()
         elseif DrawESP == false then
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
-            local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable)
-            if PositionCached ~= nil and _G[OptionTable.GlobalVariableTable.Toggle] == true and DrawESP == true  then
+            local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
+            if PositionCached ~= nil  and DrawESP == true  then
                 if player and player.Character and player.Character.HumanoidRootPart and ESPFunctionReturnTable:GetMagnitude(player.Character.HumanoidRootPart.Position,CFtoVec(PositionCached)) < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(game.Players.LocalPlayer.Character.HumanoidRootPart.Position,CFtoVec(PositionCached))
                     local cam = game.Workspace.CurrentCamera
@@ -198,79 +206,62 @@ function ESPRenderer()
                         
                         local TextOffset = MagnitudeCached / 500
                         if TextOffset < 0 then TextOffset = 0 end
+                        if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
+                            --Settings texts for the lines!!!
 
-                        --Settings texts for the lines!!!
+                            StringCached.Line1 = StringCached.Line1 or ""
+                            StringCached.Line2 = StringCached.Line2 or ""
+                            StringCached.Line2 = StringCached.Line2 or ""
 
-                        StringCached.Line1 = StringCached.Line1 or ""
-                        StringCached.Line2 = StringCached.Line2 or ""
-                        StringCached.Line2 = StringCached.Line2 or ""
+                            TextTable.Text1.Text = StringCached.Line1
+                            TextTable.Text2.Text = StringCached.Line2
+                            TextTable.Text3.Text = StringCached.Line3
 
-                        TextTable.Text1.Text = StringCached.Line1
-                        TextTable.Text2.Text = StringCached.Line2
-                        TextTable.Text3.Text = StringCached.Line3
-
-                        -- Settings positions of text objects 
-                        if TextTable.Text1.Text == "" then
-                            TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
-                        else
-                            TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),(ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset)
-                        end
-                        if TextTable.Text2.Text == "" then
-                            TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
-                        else
-                            TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text2.TextBounds.X / 2), (TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
-                        end
-                        
-                        
-                        TextTable.Text3.Position = Vector2.new(ScreenPos.X - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
-
-                        -- Changes Text Options / Makes Offsets!
-                        for i,v in pairs(TextTable) do
-                            local ChangeTo;
-                            local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
-                            if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
-                                ChangeTo = HoldSize - (TextOffset * 8)
-                                if ChangeTo < (HoldSize / 2) then 
-                                    ChangeTo = (HoldSize / 2)
-                                end
+                            -- Settings positions of text objects 
+                            if TextTable.Text1.Text == "" then
+                                TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
                             else
-                                ChangeTo = HoldSize
-                            end 
-                            if v == "Text" then      
-                                v.Size = ChangeTo 
-                            end  
-                            if i ~= "HpBarFilled" then
-                                v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),(ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset)
                             end
-                        end
+                            if TextTable.Text2.Text == "" then
+                                TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
+                            else
+                                TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text2.TextBounds.X / 2), (TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
+                            end
+                            
+                            TextTable.Text3.Position = Vector2.new(ScreenPos.X - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
 
-                        -- Chams !!!!
+                            TextTable.Text1.Visible = true 
+                            TextTable.Text2.Visible = true
+                            TextTable.Text3.Visible = true 
 
-                        if  OptionTable.Data.Highlight.UseChams == true and OptionTable.Data.Highlight.HighlightObj ~= nil and _G.AllowChamsEtho == true  then
-                        
-                            local HighlightObj = OptionTable.Data.Highlight.HighlightObj
-                            local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
-                            if HighlightObj ~= nil and AdorneePart ~= nil then
-                                if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
-                                    local ChildrenCached = #AdorneePart:GetChildren()
-                                    if HighlightObj.Adornee ~= AdorneePart then
-                                        OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
-                                        HighlightObj.Adornee = AdorneePart
+                            -- Changes Text Options / Makes Offsets!
+                            for i,v in pairs(TextTable) do
+                                local ChangeTo;
+                                local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
+                                if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
+                                    ChangeTo = HoldSize - (TextOffset * 8)
+                                    if ChangeTo < (HoldSize / 2) then 
+                                        ChangeTo = (HoldSize / 2)
                                     end
-                                    if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() then
-                                        OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
-                                        ESPFunctionReturnTable:RefreshHighlight(HighlightObj,OptionTable.Data.Highlight.ReturnPartFunction())
-                                    end
-                                    HighlightObj.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
-                                    HighlightObj.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
-                                    HighlightObj.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
-                                    HighlightObj.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
-                                    HighlightObj.Enabled = true 
                                 else
-                                    HighlightObj.Enabled = false
+                                    ChangeTo = HoldSize
+                                end 
+                                if v == "Text" then      
+                                    v.Size = ChangeTo 
+                                end  
+                                if i ~= "HpBarFilled" then
+                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
                                 end
                             end
+                        else
+                            TextTable.Text1.Visible = false 
+                            TextTable.Text2.Visible = false
+                            TextTable.Text3.Visible = false 
                         end
+                        
+
+                        
 
                         -- Box ESP !!!
 
@@ -290,7 +281,7 @@ function ESPRenderer()
                                     BoxEspObj.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
                                     BoxEspObj.PointD = Vector2.new(BottomRight.X,BottomRight.Y)
     
-
+                                    BoxEspObj.Visible = true 
 
                                     
                                 else
@@ -346,21 +337,64 @@ function ESPRenderer()
                                 FilledBoxPreset.PointD = Vector2.new(BottomRight.X,BottomLeft.Y)
 
                                 FilledBoxPreset.Color = ReturnColorOnHp(HP)
+                                OutlineBoxPreset.Visible = true
+                                FilledBoxPreset.Visible = true
                             else
                                 OutlineBoxPreset.Visible = false
-
+                                FilledBoxPreset.Visible = false
                             end
-                            
+                        else
+                            OptionTable.ESPTextObjects.HpBarOutline.Visible = false
+                            OptionTable.ESPTextObjects.HpBarFilled.Visible = false
                         end
                         
 
 
 
                         OptionTable.Data.RunAfterEverthing(OptionTable)
-                        VisibleText(true,OptionTable)
+                        
                     else
                         VisibleText(false,OptionTable)
                     end
+                    
+                    -- Chams !!!!
+
+                    if  OptionTable.Data.Highlight.UseChams == true and OptionTable.Data.Highlight.HighlightObj ~= nil and _G.AllowChamsEtho == true  then
+                        
+                        local HighlightObj = OptionTable.Data.Highlight.HighlightObj
+                        local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
+                        local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
+                        if HighlightObj ~= nil and AdorneePart ~= nil then
+                            if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
+                                local ChildrenCached = #AdorneePart:GetChildren()
+                                if HighlightObj.Adornee ~= AdorneePart then
+                                    OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                    HighlightObj.Adornee = AdorneePart
+                                end
+                                if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() then
+                                    OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                    ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
+                                end
+                                HighlightObj.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
+                                HighlightObj.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
+                                HighlightObj.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
+                                HighlightObj.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
+                                HighlightObj.Enabled = true 
+
+                                HighlightObj2.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
+                                HighlightObj2.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
+                                HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
+                                HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
+                                HighlightObj2.Enabled = false 
+                            else
+                                HighlightObj.Enabled = false
+                                HighlightObj2.Enabled = false 
+                            end
+                        end
+                    end
+                    
+
+
                 else
                     VisibleText(false,OptionTable)
                 end
@@ -483,7 +517,7 @@ function AddPlayerESP(v)
             }
         },
         GlobalVariableTable = {
-            Toggle = "PlayerESP",
+            TextToggle = "PlayerESP",
             TextSize = "PlayerTextSize",
             TextColor = "PlayerTextColor",
             ShowDistance = "PlayerDist",
