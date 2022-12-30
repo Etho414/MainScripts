@@ -67,12 +67,22 @@ function VisibleText(Bool,TextTable)
 end
 
 function ReturnColorOnHp(HP)
-    if HP <= 0.25 then
-        return Color3.fromRGB(228, 68, 68)
+    if HP <= 0.1 then
+        return Color3.fromRGB(255,0,0)
+    elseif HP <= 0.2 then
+        return Color3.fromRGB(255, 68, 68)
+    elseif HP <= 0.3 then
+        return Color3.fromRGB(247, 99, 99)
+    elseif HP <= 0.4 then
+        return Color3.fromRGB(255, 116, 62)
     elseif HP <= 0.5 then
-        return Color3.fromRGB(236, 104, 27)
-    elseif HP <= 0.75 then
-        return Color3.fromRGB(250, 202, 46)
+        return Color3.fromRGB(255, 178, 36)
+    elseif HP <= 0.6 then
+        return Color3.fromRGB(253, 182, 74)
+    elseif HP <= 0.7 then
+        return Color3.fromRGB(255, 251, 0)
+    elseif HP <= 0.8 then
+        return Color3.fromRGB(173, 207, 19)
     else
         return Color3.fromRGB(139, 255, 30)
     end
@@ -298,11 +308,13 @@ function ESPRenderer()
                             
                             if HpCached ~= nil then
                                 local HP = HpCached.Min / HpCached.Max
+                                local Widthinset = 0.25
+                                local Heightinset = 0.25
                                 local BarFilledOffsets = {
-                                    TopLeft = CFrame.new(BarOffsetTable.TopLeft.X - 0.2,BarOffsetTable.TopLeft.Y - 0.2,0),
-                                    TopRight = CFrame.new(BarOffsetTable.TopRight.X + 0.2,BarOffsetTable.TopRight.Y,0),
-                                    BottomLeft = CFrame.new(BarOffsetTable.BottomLeft.X - 0.2,BarOffsetTable.BottomLeft.Y + 0.2,0),
-                                    BottomRight = CFrame.new(BarOffsetTable.BottomRight.X + 0.2,BarOffsetTable.BottomRight.Y + 0.2,0)
+                                    TopLeft = CFrame.new(BarOffsetTable.TopLeft.X - Widthinset,BarOffsetTable.TopLeft.Y - Heightinset,0),
+                                    TopRight = CFrame.new(BarOffsetTable.TopRight.X + Widthinset,BarOffsetTable.TopRight.Y + Heightinset,0),
+                                    BottomLeft = CFrame.new(BarOffsetTable.BottomLeft.X - Widthinset,BarOffsetTable.BottomLeft.Y + Heightinset,0),
+                                    BottomRight = CFrame.new(BarOffsetTable.BottomRight.X + Widthinset,BarOffsetTable.BottomRight.Y + Heightinset,0)
 
                                 }
 
