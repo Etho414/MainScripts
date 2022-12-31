@@ -576,7 +576,7 @@ for i,v in pairs(game.Workspace.NPCs:GetChildren()) do
     AddToNPCEsp(v)
 end
 
-game.Workspace.NPCs.ChildAdded:connect(function()
+game.Workspace.NPCs.ChildAdded:connect(function(v)
     AddToNPCEsp(v)
 end)
 

@@ -32,6 +32,7 @@ _G.EthoChamsDefaultESPHpBarToggle = false
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
+_G.AllowChamsEtho = true 
 _G.AllowChamsEtho = _G.AllowChamsEtho or false 
 if _G.AllowChamsEtho == true then
     ChamsFolder = Instance.new("Folder")
@@ -82,7 +83,7 @@ function ReturnColorOnHp(HP)
     elseif HP <= 0.7 then
         return Color3.fromRGB(255, 251, 0)
     elseif HP <= 0.8 then
-        return Color3.fromRGB(173, 207, 19)
+        return Color3.fromRGB(168, 194, 54)
     else
         return Color3.fromRGB(139, 255, 30)
     end
@@ -91,15 +92,24 @@ end
 
 function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
     if PassedTable.Data.Highlight.Refreshing == false then
-        PassedTable.Data.Highlight.Refreshing = true 
-        local HighlightObj = PassedTable.Data.Highlight.HighlightObj
-        local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
-        HighlightObj2.Adornee = PartToAdornee
-        HighlightObj.Adornee = nil
-        HighlightObj.Adornee = PartToAdornee
-        HighlightObj2.Adornee = nil
+        local function RefreshThingy()
+            PassedTable.Data.Highlight.Refreshing = true 
+            local HighlightObj = PassedTable.Data.Highlight.HighlightObj
+            local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
+            HighlightObj2.Adornee = PartToAdornee
+            wait(0.5)
+            HighlightObj.Adornee = nil
+            wait(0.5)
+            HighlightObj.Adornee = PartToAdornee
+            wait(0.5)
+            HighlightObj2.Adornee = nil
+            PassedTable.Data.Highlight.Refreshing = false 
+        end
+        
+        
+        coroutine.wrap(RefreshThingy)()
+        
     end
-    PassedTable.Data.Highlight.Refreshing = false 
 end
 function CFtoVec(cf)
     return Vector3.new(cf.x,cf.y,cf.z)
@@ -426,7 +436,7 @@ _G.PlayerTextSize = 30
 _G.PlayerTextColor = Color3.fromRGB(255,255,255)
 _G.PlayerDist = true
 _G.ShowPlayerHealthPercent = false
-_G.PlayerMaxDist = 200
+_G.PlayerMaxDist = 20000
 _G.ShowPlayerHealth = true
 _G.ScalePlayerText = true
 _G.ShowChams = true
@@ -441,7 +451,7 @@ function AddPlayerESP(v)
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
-            ModdedName = "",
+            ModdedName = "daddy",
             ReturnPosFunc = function(PassedTable)
                 if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
                     return v.Character.HumanoidRootPart.CFrame

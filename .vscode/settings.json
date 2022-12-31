@@ -1,0 +1,11 @@
+{
+    "robloxLsp.diagnostics.globals": [
+        "syn",
+        "Drawing",
+        "Circle",
+        "mouse1press",
+        "RenderWindow",
+        "ToastType",
+        "Quad"
+    ]
+}
