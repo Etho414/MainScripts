@@ -1,5 +1,17 @@
-local GuiService = game:GetService("GuiService")
 -- ESP BASE REWRITE
+
+
+
+
+
+--[[
+
+    Shit to add
+
+    -- 3d Boxs!! (Would need forward left,right backward left,right and height offset!)
+
+
+]]
 local player;
 local DrawESP = false
 
@@ -28,7 +40,9 @@ _G.EthoChamsDefaultESPChamsFillTrans = 1
 _G.EthoChamsDefaultESPChamsOutlineTrans = 0
 _G.EthoChamsDefaultESPBoxToggle = false
 _G.EthoChamsDefaultESPHpBarToggle = false 
-
+_G.EthoChamsDefaultESPWhitelistTable = {}
+_G.EthoChamsDefaultESPWhitelistColor = Color3.fromRGB(255,0,0)
+_G.EthoChamsDefaultESPUseTwoD = true 
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
@@ -49,6 +63,19 @@ end
 function ESPFunctionReturnTable:GetMagnitude(Pos1,Pos2)
     return (Pos1 - Pos2).Magnitude
 end
+
+
+function FindPlayer(name,OptionTable)
+	for i,v in pairs(_G[OptionTable.GlobalVariableTable.WhitelistTable]) do 
+		if name:lower():sub(1,#v) == v:lower() then	
+			return true
+		end
+	end
+    return false 
+end
+
+
+
 
 
 function ESPFunctionReturnTable:CheckBasePartValid(Part)
@@ -81,11 +108,11 @@ function ReturnColorOnHp(HP)
     elseif HP <= 0.6 then
         return Color3.fromRGB(253, 182, 74)
     elseif HP <= 0.7 then
-        return Color3.fromRGB(255, 251, 0)
+        return Color3.fromRGB(226, 228, 98)
     elseif HP <= 0.8 then
-        return Color3.fromRGB(168, 194, 54)
+        return Color3.fromRGB(155, 173, 71)
     else
-        return Color3.fromRGB(139, 255, 30)
+        return Color3.fromRGB(0, 255, 0)
     end
 
 end
@@ -97,11 +124,11 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             local HighlightObj = PassedTable.Data.Highlight.HighlightObj
             local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
             HighlightObj2.Adornee = PartToAdornee
-            wait(0.5)
+            wait()
             HighlightObj.Adornee = nil
-            wait(0.5)
+            wait()
             HighlightObj.Adornee = PartToAdornee
-            wait(0.5)
+            wait()
             HighlightObj2.Adornee = nil
             PassedTable.Data.Highlight.Refreshing = false 
         end
@@ -155,12 +182,20 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.ChamsOutlineTrans = GlobalVariablePreset.ChamsFillTrans or "EthoChamsDefaultESPChamsOutlineTrans"
     GlobalVariablePreset.BoxToggle = GlobalVariablePreset.BoxToggle or "EthoChamsDefaultESPBoxToggle"
     GlobalVariablePreset.HpBarToggle = GlobalVariablePreset.HpBarToggle or "EthoChamsDefaultESPHpBarToggle"
+    GlobalVariablePreset.WhitelistTable = GlobalVariablePreset.WhitelistTable or "EthoChamsDefaultESPWhitelistTable"
+    GlobalVariablePreset.WhitelistColor = GlobalVariablePreset.WhitelistColor or "EthoChamsDefaultESPWhitelistColor"
+    GlobalVariablePreset.UseTwoD = GlobalVariablePreset.UseTwoD or "EthoChamsDefaultESPUseTwoD"
 
-
+    
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
     OptionTable.Data.BoxESP.OffsetTable = OptionTable.Data.BoxESP.OffsetTable or {TopLeft = CFrame.new(-2,2,0), TopRight = CFrame.new(2,2,0), BottomLeft = CFrame.new(-2,-3.5,0), BottomRight = CFrame.new(2,-3.5,0)}
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
     OptionTable.Data.HpBar.BarOffsetTable = OptionTable.Data.HpBar.BarOffsetTable or {TopLeft = CFrame.new(3,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(3,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)}
+    OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
+    OptionTable.Data.UseWhitelist.ReturnNameFunction = OptionTable.Data.UseWhitelist.ReturnNameFunction or function() return nil end
+    OptionTable.Data.BoxESP.ThreeDOffsetTable = OptionTable.Data.BoxESP.ThreeDOffsetTable or {ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5}
+
+
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
@@ -185,8 +220,17 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     HpBarFilledBox.Thickness = 0.1
     HpBarFilledBox.Filled = true 
 
+    local ForwardQuadPreset = Drawing.new("Quad")
+    local LeftQuadPreset = Drawing.new("Quad")
+    local BackwardQuadPreset = Drawing.new("Quad")
+    local RightQuadPreset = Drawing.new("Quad")
+    ForwardQuadPreset.Thickness = 2
+    LeftQuadPreset.Thickness = 2 
+    BackwardQuadPreset.Thickness = 2
+    RightQuadPreset.Thickness = 2 
+
     ESPPresetBox.Thickness = 1 
-    OptionTable.ESPTextObjects = {Text1 =ESPPresetText1,Text2 = ESPPresetText2,Text3 = ESPPresetText3,BoxObj = ESPPresetBox, HpBarOutline = HpBarOutlineBox,HpBarFilled = HpBarFilledBox}
+    OptionTable.ESPTextObjects = {Text1 =ESPPresetText1,Text2 = ESPPresetText2,Text3 = ESPPresetText3,BoxObj = ESPPresetBox, HpBarOutline = HpBarOutlineBox,HpBarFilled = HpBarFilledBox,ForwardQuad = ForwardQuadPreset,LeftQuad = LeftQuadPreset, BackwardQuad = BackwardQuadPreset,RightQuad = RightQuadPreset}
 
     ESPListenTable[#ESPListenTable + 1] = OptionTable
 end
@@ -246,24 +290,7 @@ function ESPRenderer()
                             TextTable.Text3.Visible = true 
 
                             -- Changes Text Options / Makes Offsets!
-                            for i,v in pairs(TextTable) do
-                                local ChangeTo;
-                                local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
-                                if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
-                                    ChangeTo = HoldSize - (TextOffset * 8)
-                                    if ChangeTo < (HoldSize / 2) then 
-                                        ChangeTo = (HoldSize / 2)
-                                    end
-                                else
-                                    ChangeTo = HoldSize
-                                end 
-                                if v == "Text" then      
-                                    v.Size = ChangeTo 
-                                end  
-                                if i ~= "HpBarFilled" then
-                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                end
-                            end
+                            
                         else
                             TextTable.Text1.Visible = false 
                             TextTable.Text2.Visible = false
@@ -271,32 +298,126 @@ function ESPRenderer()
                         end
                         
 
-                        
+                        for i,v in pairs(TextTable) do
+                            local ChangeTo;
+                            local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
+                            if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
+                                ChangeTo = HoldSize - (TextOffset * 8)
+                                if ChangeTo < (HoldSize / 2) then 
+                                    ChangeTo = (HoldSize / 2)
+                                end
+                            else
+                                ChangeTo = HoldSize
+                            end 
+                            if v == "Text" then      
+                                v.Size = ChangeTo 
+                            end  
+                   
+                            if OptionTable.Data.UseWhitelist.UseWhitelist == true then
+                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)
+                                if name then
+                                    if FindPlayer(name,OptionTable) == true then
+                                        if i ~= "HpBarFilled" then
+                                            v.ZIndex = 2
+                                            v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
+                                        end  
+                                    else
+                                        v.ZIndex = 1
+                                        if i ~= "HpBarFilled" then
+                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                        end
+                                        
+                                    end
+                                else
+                                    v.ZIndex = 1
+                                    if i ~= "HpBarFilled" then
+                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                    end
+                                end
+                            else
+                                v.ZIndex = 1
+                                if i ~= "HpBarFilled" then
+                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                end
+                            end
+                        end
 
                         -- Box ESP !!!
 
                         if OptionTable.Data.BoxESP.UseBoxESP == true then
                             local BoxESPPreset = OptionTable.Data.BoxESP
                             local BoxEspObj = OptionTable.ESPTextObjects.BoxObj
-                            if BoxESPPreset ~= nil then
-                                if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then  
-                                    local OffsetTable = BoxESPPreset.OffsetTable
-                                    local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
-                                    local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopRight))
-                                    local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomLeft))
-                                    local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomRight))
-                                    
-                                    BoxEspObj.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
-                                    BoxEspObj.PointA = Vector2.new(TopRight.X,TopRight.Y)
-                                    BoxEspObj.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
-                                    BoxEspObj.PointD = Vector2.new(BottomRight.X,BottomRight.Y)
-    
-                                    BoxEspObj.Visible = true 
+                            local ForwardQuad = OptionTable.ESPTextObjects.ForwardQuad
+                            local LeftsideQuad = OptionTable.ESPTextObjects.LeftQuad
+                            local BackwardQuad = OptionTable.ESPTextObjects.BackwardQuad
+                            local RightsideQuad = OptionTable.ESPTextObjects.RightQuad
 
-                                    
-                                else
-                                    BoxEspObj.Visible = false
+                            if BoxESPPreset ~= nil then
+                                if _G[OptionTable.GlobalVariableTable.UseTwoD] == true then
+                                    if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then  
+                                        ForwardQuad.Visible = false
+                                        LeftsideQuad.Visible = false
+                                        BackwardQuad.Visible = false
+                                        RightsideQuad.Visible = false 
+
+
+                                        local OffsetTable = BoxESPPreset.OffsetTable
+                                        local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
+                                        local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopRight))
+                                        local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomLeft))
+                                        local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomRight))
+                                        
+                                        BoxEspObj.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
+                                        BoxEspObj.PointA = Vector2.new(TopRight.X,TopRight.Y)
+                                        BoxEspObj.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
+                                        BoxEspObj.PointD = Vector2.new(BottomRight.X,BottomRight.Y)
+        
+                                        BoxEspObj.Visible = true 
+    
+                                    else
+                                        BoxEspObj.Visible = false
+                                    end
+                                elseif _G[OptionTable.GlobalVariableTable.UseTwoD] == false then
+                                    if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
+                                        BoxEspObj.Visible = false 
+                                        local Corneroffsets = BoxESPPreset.ThreeDOffsetTable
+                                        local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft))
+                                        local ForwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight))
+                                        local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft))
+                                        local BackwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight))
+                                
+                                        local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                
+                                        ForwardQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
+                                        ForwardQuad.PointB = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
+                                        ForwardQuad.PointD = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
+                                        ForwardQuad.PointC = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
+                                
+                                        LeftsideQuad.PointA = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
+                                        LeftsideQuad.PointB = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
+                                        LeftsideQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
+                                        LeftsideQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
+                                
+                                        BackwardQuad.PointA = Vector2.new(BackwardRight.X,BackwardRight.Y)
+                                        BackwardQuad.PointB = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y)
+                                        BackwardQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
+                                        BackwardQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
+                                
+                                        RightsideQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
+                                        RightsideQuad.PointB = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
+                                        RightsideQuad.PointD = Vector2.new(BackwardRight.X,BackwardRight.Y)
+                                        RightsideQuad.PointC = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y) 
+                                        ForwardQuad.Visible = true
+                                        LeftsideQuad.Visible = true
+                                        BackwardQuad.Visible = true
+                                        RightsideQuad.Visible = true 
+                                    end
+
                                 end
+                                
                             end
                         end
 
@@ -316,9 +437,7 @@ function ESPRenderer()
                                     TopRight = CFrame.new(BarOffsetTable.TopRight.X + Widthinset,BarOffsetTable.TopRight.Y + Heightinset,0),
                                     BottomLeft = CFrame.new(BarOffsetTable.BottomLeft.X - Widthinset,BarOffsetTable.BottomLeft.Y + Heightinset,0),
                                     BottomRight = CFrame.new(BarOffsetTable.BottomRight.X + Widthinset,BarOffsetTable.BottomRight.Y + Heightinset,0)
-
                                 }
-
                                 -- Outline for HpBar
                                 local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopLeft))
                                 local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopRight))
@@ -358,11 +477,8 @@ function ESPRenderer()
                             OptionTable.ESPTextObjects.HpBarFilled.Visible = false
                         end
                         
-
-
-
                         OptionTable.Data.RunAfterEverthing(OptionTable)
-                        
+
                     else
                         VisibleText(false,OptionTable)
                     end
@@ -402,9 +518,6 @@ function ESPRenderer()
                             end
                         end
                     end
-                    
-
-
                 else
                     VisibleText(false,OptionTable)
                 end
@@ -446,12 +559,14 @@ _G.ChamsFill = 0
 _G.ChamsOutlineTrans = 0
 _G.ShowPlayerBox = true
 _G.ShowHpBars = true
-
+_G.WhitelistNames = {}
+_G.WhitelistColor = Color3.fromRGB(255,0,0)
+_G.UseTwoD = true -- true == 2d false == 3d
 function AddPlayerESP(v)
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
-            ModdedName = "daddy",
+            ModdedName = "",
             ReturnPosFunc = function(PassedTable)
                 if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
                     return v.Character.HumanoidRootPart.CFrame
@@ -508,6 +623,14 @@ function AddPlayerESP(v)
                     TopRight = CFrame.new(2,2,0),
                     BottomLeft = CFrame.new(-2,-3.5,0),
                     BottomRight = CFrame.new(2,-3.5,0)
+                },
+                ThreeDOffsetTable = {
+                    ForwardLeft = CFrame.new(-2,2,-2),
+                    ForwardRight = CFrame.new(2,2,-2),
+                    BackwardLeft = CFrame.new(-2,2,2),
+                    BackwardRight = CFrame.new(2,2,2),
+                    Height = 5
+
                 }
             },
             HpBar = {
@@ -524,6 +647,12 @@ function AddPlayerESP(v)
                     BottomRight = CFrame.new(2,-3.5,0)
 
                 }
+            },
+            UseWhitelist = {
+                UseWhitelist = true,
+                ReturnNameFunction = function(PassedTable)
+                    return v.Name
+                end
             }
         },
         GlobalVariableTable = {
@@ -541,17 +670,25 @@ function AddPlayerESP(v)
             ChamsFillTrans = "ChamsFill",
             ChamsOutlineTrans = "ChamsOutlineTrans",
             BoxToggle = "ShowPlayerBox",
-            HpBarToggle = "ShowHpBars"
+            HpBarToggle = "ShowHpBars",
+            WhitelistTable = "WhitelistNames",
+            WhitelistColor = "WhitelistColor",
+            UseTwoD = "UseTwoD"
 
 
         }
 
 
+        
     }
     ESPFunctionReturnTable:AddESPObj(OptionTable)
 end
 
+--[[
+    FUCKING FIX THE WHITELIST SYSTEM HOLY MOLY
 
+
+]]
 
 
 

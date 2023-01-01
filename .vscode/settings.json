@@ -6,6 +6,9 @@
         "mouse1press",
         "RenderWindow",
         "ToastType",
-        "Quad"
+        "Quad",
+        "mouse1release",
+        "keypress",
+        "Text"
     ]
 }
