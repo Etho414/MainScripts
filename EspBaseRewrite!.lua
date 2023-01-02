@@ -260,6 +260,49 @@ function ESPRenderer()
                         
                         local TextOffset = MagnitudeCached / 500
                         if TextOffset < 0 then TextOffset = 0 end
+                        for i,v in pairs(TextTable) do
+                            local ChangeTo;
+                            local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
+                            if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
+                                ChangeTo = HoldSize - (TextOffset * 2)
+                                if ChangeTo < (HoldSize / 2) then 
+                                    ChangeTo = (HoldSize / 2)
+                                end
+                            else
+                                ChangeTo = HoldSize
+                            end 
+                            if i == "Text1" or i == "Text2" or i == "Text3" then      
+                                v.Size = ChangeTo 
+                            end  
+                   
+                            if OptionTable.Data.UseWhitelist.UseWhitelist == true then
+                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
+                                if name then
+                                    if FindPlayer(name,OptionTable) == true then
+                                        v.ZIndex = 2
+                                        if i ~= "HpBarFilled" then
+                                            v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
+                                        end  
+                                    else
+                                        v.ZIndex = 1
+                                        if i ~= "HpBarFilled" then
+                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                        end
+                                        
+                                    end
+                                else
+                                    v.ZIndex = 1
+                                    if i ~= "HpBarFilled" then
+                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                    end
+                                end
+                            else
+                                v.ZIndex = 1
+                                if i ~= "HpBarFilled" then
+                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                end
+                            end
+                        end   
                         if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
                             --Settings texts for the lines!!!
 
@@ -298,49 +341,7 @@ function ESPRenderer()
                         end
                         
 
-                        for i,v in pairs(TextTable) do
-                            local ChangeTo;
-                            local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
-                            if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
-                                ChangeTo = HoldSize - (TextOffset * 2)
-                                if ChangeTo < (HoldSize / 2) then 
-                                    ChangeTo = (HoldSize / 2)
-                                end
-                            else
-                                ChangeTo = HoldSize
-                            end 
-                            if v == "Text" then      
-                                v.Size = ChangeTo 
-                            end  
-                   
-                            if OptionTable.Data.UseWhitelist.UseWhitelist == true then
-                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
-                                if name then
-                                    if FindPlayer(name,OptionTable) == true then
-                                        v.ZIndex = 2
-                                        if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
-                                        end  
-                                    else
-                                        v.ZIndex = 1
-                                        if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                        end
-                                        
-                                    end
-                                else
-                                    v.ZIndex = 1
-                                    if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                    end
-                                end
-                            else
-                                v.ZIndex = 1
-                                if i ~= "HpBarFilled" then
-                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                end
-                            end
-                        end
+                        
 
                         -- Box ESP !!!
 
