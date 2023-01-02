@@ -249,8 +249,9 @@ function ESPRenderer()
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
             if PositionCached ~= nil  and DrawESP == true  then
-                if player and player.Character and player.Character.HumanoidRootPart and ESPFunctionReturnTable:GetMagnitude(player.Character.HumanoidRootPart.Position,CFtoVec(PositionCached)) < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
-                    local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(game.Players.LocalPlayer.Character.HumanoidRootPart.Position,CFtoVec(PositionCached))
+                local MagnitudeCached = OptionTable.Data.ReturnMagnitude(PositionCached)
+                if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
+                    
                     local cam = game.Workspace.CurrentCamera
                     local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                     if OnS then
