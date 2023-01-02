@@ -316,18 +316,24 @@ function ESPRenderer()
                             TextTable.Text3.Text = StringCached.Line3
 
                             -- Settings positions of text objects 
+                            local PositionX = math.floor(ScreenPos.X)
+                            local Text1OffsetX = (TextTable.Text1.TextBounds.X / 2)
+                            local Text2OffsetX = (TextTable.Text2.TextBounds.X / 2)
+
+                            local PositionY = math.floor(ScreenPos.Y)
+                            local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
                             if TextTable.Text1.Text == "" then
-                                TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
+                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
-                                TextTable.Text1.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),(ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset)
+                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,(PositionY - TextOffset) - OptionTable.Data.TextOffset)
                             end
                             if TextTable.Text2.Text == "" then
-                                TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text1.TextBounds.X / 2),((ScreenPos.Y - TextOffset) - OptionTable.Data.TextOffset) + (TextTable.Text1.TextBounds.Y / 2))
+                                TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
-                                TextTable.Text2.Position = Vector2.new(ScreenPos.X - (TextTable.Text2.TextBounds.X / 2), (TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
+                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX, (TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
                             end
                             
-                            TextTable.Text3.Position = Vector2.new(ScreenPos.X - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
+                            TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
 
                             TextTable.Text1.Visible = true 
                             TextTable.Text2.Visible = true
