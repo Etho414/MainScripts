@@ -302,7 +302,7 @@ function ESPRenderer()
                             local ChangeTo;
                             local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
                             if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
-                                ChangeTo = HoldSize - (TextOffset * 8)
+                                ChangeTo = HoldSize - (TextOffset * 2)
                                 if ChangeTo < (HoldSize / 2) then 
                                     ChangeTo = (HoldSize / 2)
                                 end
@@ -314,11 +314,12 @@ function ESPRenderer()
                             end  
                    
                             if OptionTable.Data.UseWhitelist.UseWhitelist == true then
-                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)
+                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
                                 if name then
                                     if FindPlayer(name,OptionTable) == true then
+                                        v.ZIndex = 2
                                         if i ~= "HpBarFilled" then
-                                            v.ZIndex = 2
+                                           
                                             v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
                                         end  
                                     else
@@ -376,6 +377,10 @@ function ESPRenderer()
     
                                     else
                                         BoxEspObj.Visible = false
+                                        ForwardQuad.Visible = false
+                                        LeftsideQuad.Visible = false
+                                        BackwardQuad.Visible = false
+                                        RightsideQuad.Visible = false 
                                     end
                                 elseif _G[OptionTable.GlobalVariableTable.UseTwoD] == false then
                                     if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
@@ -414,6 +419,12 @@ function ESPRenderer()
                                         LeftsideQuad.Visible = true
                                         BackwardQuad.Visible = true
                                         RightsideQuad.Visible = true 
+                                    else
+                                        BoxEspObj.Visible = false 
+                                        ForwardQuad.Visible = false
+                                        LeftsideQuad.Visible = false
+                                        BackwardQuad.Visible = false
+                                        RightsideQuad.Visible = false 
                                     end
 
                                 end
@@ -561,7 +572,7 @@ _G.ShowPlayerBox = true
 _G.ShowHpBars = true
 _G.WhitelistNames = {}
 _G.WhitelistColor = Color3.fromRGB(255,0,0)
-_G.UseTwoD = true -- true == 2d false == 3d
+_G.UseTwoD = false -- true == 2d false == 3d
 function AddPlayerESP(v)
     local OptionTable = {
         ToBeRemoved = false,

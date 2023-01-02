@@ -41,8 +41,13 @@ function Cham(v,SettingsTab)
         end
     end
     local function RefreshHighlight(hl)
-        hl.Adornee = nil
-        hl.Adornee = v.Character
+        if SettingsTab.Refreshing == false then
+            SettingsTab.Refreshing = true 
+            hl.Adornee = nil
+            hl.Adornee = v.Character
+            SettingsTab.Refreshing = false 
+        end
+       
     
     end
     RunServ = game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
@@ -115,6 +120,7 @@ function ReturnTabThing:InitChams(SettingsTab)
             if gameProcessedEvent then return end
             if input.KeyCode == Enum.KeyCode[string.upper(_G[SettingsTab.ToggleKey])] then
                 ChamsToggle = not ChamsToggle
+                SettingsTab.Refreshing = false 
                 ReturnTabThing:ToggleCham(ChamsToggle,SettingsTab)
             end
         end)
