@@ -259,6 +259,7 @@ function ESPRenderer()
                         local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
                         
                         local TextOffset = MagnitudeCached / 500
+                        TextOffset = math.floor(TextOffset)
                         if TextOffset < 0 then TextOffset = 0 end
                         for i,v in pairs(TextTable) do
                             local ChangeTo;
