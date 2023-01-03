@@ -259,7 +259,7 @@ function ESPRenderer()
                         local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
                         
                         local TextOffset = MagnitudeCached / 500
-                        TextOffset = math.floor(TextOffset)
+                        TextOffset = TextOffset
                         if TextOffset < 0 then TextOffset = 0 end
                         for i,v in pairs(TextTable) do
                             local ChangeTo;
@@ -322,6 +322,10 @@ function ESPRenderer()
 
                             local PositionY = math.floor(ScreenPos.Y)
                             local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
+                            local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
+                            local LineOffset = 2
+
+
                             if TextTable.Text1.Text == "" then
                                 TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
@@ -330,10 +334,10 @@ function ESPRenderer()
                             if TextTable.Text2.Text == "" then
                                 TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
-                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
+                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - LineOffset -( Text1OffsetY)))
                             end
                             
-                            TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
+                            TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - LineOffset - Text2OffsetY) )
 
                             TextTable.Text1.Visible = true 
                             TextTable.Text2.Visible = true
