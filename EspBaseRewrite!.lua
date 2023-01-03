@@ -330,7 +330,7 @@ function ESPRenderer()
                             if TextTable.Text2.Text == "" then
                                 TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
-                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX, (TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
+                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - 1 -( TextTable.Text1.TextBounds.Y / 2)))
                             end
                             
                             TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - 1 - (TextTable.Text2.TextBounds.Y / 2)) )
