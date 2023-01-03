@@ -289,11 +289,12 @@ function ESPRenderer()
                                         if i ~= "HpBarFilled" then
                                             v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
                                         end
+                                        
                                     end
                                 else
                                     v.ZIndex = 1
                                     if i ~= "HpBarFilled" then
-                                        v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
                                     end
                                 end
                             else
@@ -321,12 +322,12 @@ function ESPRenderer()
 
                             local PositionY = math.floor(ScreenPos.Y)
                             local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
-                            local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2)
+                            local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
                             local LineOffset = 2
 
 
                             if TextTable.Text1.Text == "" then
-                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + (Text1OffsetY + LineOffset))
+                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
                             else
                                 TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,(PositionY - TextOffset) - OptionTable.Data.TextOffset)
                             end
@@ -396,16 +397,15 @@ function ESPRenderer()
                                     if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
                                         BoxEspObj.Visible = false 
                                         local Corneroffsets = BoxESPPreset.ThreeDOffsetTable
-                                        local VectorYOffset = Vector3.new(0,Corneroffsets.Height,0)
                                         local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft))
                                         local ForwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight))
                                         local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft))
                                         local BackwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight))
                                 
-                                        local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - VectorYOffset)
-                                        local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - VectorYOffset)
-                                        local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - VectorYOffset)
-                                        local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - VectorYOffset)
+                                        local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                        local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
                                 
                                         ForwardQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
                                         ForwardQuad.PointB = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
@@ -456,14 +456,15 @@ function ESPRenderer()
                                 local Heightinset = 0.25
                                 local BarFilledOffsets = {
                                     TopLeft = CFrame.new(BarOffsetTable.TopLeft.X - Widthinset,BarOffsetTable.TopLeft.Y - Heightinset,0),
-                                    BottomLeft = CFrame.new(BarOffsetTable.TopLeft.X  - Widthinset,BarOffsetTable.TopLeft.Y - BarOffsetTable.Height + Heightinset,0),
-
+                                    TopRight = CFrame.new(BarOffsetTable.TopRight.X + Widthinset,BarOffsetTable.TopRight.Y + Heightinset,0),
+                                    BottomLeft = CFrame.new(BarOffsetTable.BottomLeft.X - Widthinset,BarOffsetTable.BottomLeft.Y + Heightinset,0),
+                                    BottomRight = CFrame.new(BarOffsetTable.BottomRight.X + Widthinset,BarOffsetTable.BottomRight.Y + Heightinset,0)
                                 }
                                 -- Outline for HpBar
                                 local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopLeft))
-                                local TopRight = Vector2.new(TopLeft.X - BarOffsetTable.WidthOffset,TopLeft.Y)
-                                local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopLeft) - Vector3.new(0,BarOffsetTable.Height,0))
-                                local BottomRight = Vector2.new(BottomLeft.X - BarOffsetTable.WidthOffset,BottomLeft.Y)
+                                local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopRight))
+                                local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.BottomLeft))
+                                local BottomRight =cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.BottomRight))
 
                                 OutlineBoxPreset.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
                                 OutlineBoxPreset.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
@@ -474,12 +475,12 @@ function ESPRenderer()
                                 local BarSizeInVec = (BarFilledOffsets.TopLeft.Y - BarFilledOffsets.BottomLeft.Y) 
                                 local BarHeight = BarSizeInVec * HP
 
-                                local TopLeftBar = CFrame.new(BarFilledOffsets.TopLeft.X,BarFilledOffsets.TopLeft.Y  + BarHeight,BarFilledOffsets.TopLeft.Z)
+                                local TopLeftBar = CFrame.new(BarFilledOffsets.TopLeft.X,BarFilledOffsets.BottomLeft.Y + BarHeight,BarFilledOffsets.TopLeft.Z)
                                 local TopRightBar = CFrame.new(BarFilledOffsets.TopRight.X,BarFilledOffsets.BottomRight.Y + BarHeight,BarFilledOffsets.TopRight.Z)
                                 local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopLeftBar))
-                                local TopRight = Vector2.new(TopLeft.X - BarOffsetTable.WidthOffset,TopLeft.Y)
+                                local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopRightBar))
                                 local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarFilledOffsets.BottomLeft))
-                                local BottomRight = Vector2.new(BottomLeft.X - BarOffsetTable.WidthOffset,BottomLeft.Y)
+                                local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarFilledOffsets.BottomRight))
 
                                 FilledBoxPreset.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
                                 FilledBoxPreset.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
