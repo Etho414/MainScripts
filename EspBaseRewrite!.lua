@@ -473,7 +473,7 @@ function ESPRenderer()
                                 
                                 
                             
-                                local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
+--[[                                local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
                                 local BottomRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * (TopRight) - Vector3.new(0,height,0)))
                                 local TopLeftPos = Vector2.new(TopRightPos.X - (presetthing ),TopRightPos.Y)
                                 local BottomLeftPos = Vector2.new(BottomRightPos.X - (presetthing ),BottomRightPos.Y )
@@ -482,13 +482,13 @@ function ESPRenderer()
                                 local PointB = Vector2.new(math.floor(BottomRightPos.X),math.floor(BottomRightPos.Y)) 
                                 local PointD = Vector2.new(math.floor(TopLeftPos.X) - presetthing * scale_factor,math.floor(TopLeftPos.Y)) 
                                 local PointC = Vector2.new(math.floor(BottomLeftPos.X) - presetthing * scale_factor ,math.floor(BottomLeftPos.Y))
-
-                                FilledBoxPreset.PointA = PointA -- Right side
+]]
+                                FilledBoxPreset.PointA = PointA 
                                 FilledBoxPreset.PointD = PointD
 
 
 
-                                FilledBoxPreset.PointB = PointB -- Left Side
+                                FilledBoxPreset.PointB = PointB 
                                 FilledBoxPreset.PointC = PointC 
 
 
