@@ -280,7 +280,7 @@ function ESPRenderer()
                                 local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
                                 if name then
                                     if FindPlayer(name,OptionTable) == true then
-                                        v.ZIndex = 2
+                                        v.ZIndex = 10
                                         if i ~= "HpBarFilled" then
                                             v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
                                         end  
