@@ -304,6 +304,7 @@ function ESPRenderer()
                                 end
                             end
                         end   
+                        
                         if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
                             --Settings texts for the lines!!!
 
@@ -453,7 +454,6 @@ function ESPRenderer()
                             local height = BarOffsetTable.Height
                             if HpCached ~= nil then
                                 local HP = HpCached.Min / HpCached.Max
-                                local ScreenPos,ONS = cam:WorldToViewportPoint(CFtoVec(PositionCached))
                                 local scale_factor = 1 / (ScreenPos.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
                                 local TopRight = BarOffsetTable.TopRight
 
@@ -494,7 +494,8 @@ function ESPRenderer()
 
                                 FilledBoxPreset.Color = Color3.fromRGB(255,0,0):lerp(Color3.fromRGB(0,255,0), HP)
 
-
+                                FilledBoxPreset.ZIndex = FilledBoxPreset.ZIndex  + 1 
+                                OutlineBoxPreset.ZIndex = OutlineBoxPreset.ZIndex + 2
                                 FilledBoxPreset.Visible = true 
                                 OutlineBoxPreset.Visible = true 
                             else
