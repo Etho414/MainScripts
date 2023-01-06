@@ -66,11 +66,10 @@ function AddPlayerESP(v)
                 end 
                 return nil
             end,
-            ReturnMagnitude = function(CFrameCached)
+            ReturnLocalPlayerpos = function()
                 if player and player.Character and player.Character.HumanoidRootPart then
-                    return (Vector3.new(CFrameCached.x,CFrameCached.Y,CFrameCached.Z)  - player.Character.HumanoidRootPart.Position ).Magnitude
+                    return player.Character.HumanoidRootPart.Position
                 end
-                return nil 
             end,
             CalcStringFunction = function(PassedTable)
                 local Line1Text = ""
@@ -156,10 +155,9 @@ function AddPlayerESP(v)
                     end
                 end,
                 BarOffsetTable = {
-                    TopLeft = CFrame.new(3,2,0),
                     TopRight = CFrame.new(2,2,0),
-                    BottomLeft = CFrame.new(3,-3.5,0),
-                    BottomRight = CFrame.new(2,-3.5,0)
+                    Height = 5,
+                    Width = 5
 
                 }
             },
@@ -337,7 +335,7 @@ local CustomOffsetTable = {
     
         }
     }
-    }
+    
 
 
 }
@@ -385,12 +383,6 @@ function AddMobToESP(v)
                     end
                 end 
                 return nil
-            end,
-            ReturnMagnitude = function(CFrameCached)
-                if player and player.Character and player.Character.HumanoidRootPart then
-                    return (Vector3.new(CFrameCached.x,CFrameCached.Y,CFrameCached.Z)  - player.Character.HumanoidRootPart.Position ).Magnitude
-                end
-                return nil 
             end,
             CalcStringFunction = function(PassedTable)
                 local Line1Text = ""

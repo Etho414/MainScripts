@@ -28,10 +28,7 @@ repeat wait(); player =  game.Players.LocalPlayer until player and player.Name a
 _G.EthoChamsDefaultESPToggle = true
 _G.EthoChamsDefaultESPTextSize = 30
 _G.EthoChamsDefaultESPTextColor = Color3.fromRGB(255,255,255)
-_G.EthoChamsDefaultESPShowDistance = true
 _G.EthoChamsDefaultESPMaxRenderDistance = 10000
-_G.EthoChamsDefaultESPShowHealth =  true
-_G.EthoChamsDefaultESPShowHealthPercent = false
 _G.EthoChamsDefaultESPScaledText = true
 _G.EthoChamsDefaultESPChamsToggle = false
 _G.EthoChamsDefaultESPChamsFillColor = Color3.fromRGB(255,0,0)
@@ -94,15 +91,9 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
 
         if OptionTable.Data.UseWhitelist.UseWhitelist == true and i ~= "HoBarFilled" then
             local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
-            if name then
-                if FindPlayer(name,OptionTable) == true then
-                    v.ZIndex = 10
-                    v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
-                else
-                    v.ZIndex = 1
-                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                    
-                end
+            if name and FindPlayer(name,OptionTable) == true  then
+                v.ZIndex = 10
+                v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
             else
                 v.ZIndex = 1
                 v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
@@ -169,12 +160,12 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         error("AddESPObj Function, Return pos function == nil aa3")
         return
     elseif OptionTable.Data.CalcStringFunction == nil then
-        error("AddESPObj Function, Calc String function == nil aa4")
+        error("AddESPObj Function, OptionTable.Data.CalcStringFunction, Make sure it returns {Line1 = '', Line2 = '', Line3 = ''}")
         return   
     elseif OptionTable.Data.DeterminToRemoveFunction == nil then
-        error("AddESPObj Function, DeterminToBeRemovedFunction == nil, aa5")    
+        error("AddESPObj Function, OptionTable.Data.DeterminToRemoveFunction, Make sure it returns true if part is == nil! ")    
     elseif OptionTable.Data.ReturnLocalPlayerpos == nil then
-        error("AddESPObj Function, ReturnLocalPlayerpos == nil, aa6")   
+        error("AddESPObj Function, OptionTable.Data.ReturnLocalPlayerpos, aa6")   
     elseif OptionTable.Data.ReturnTeamCheck == nil then
         error("AddESPObj Function, ReturnTeamCheck == nil, aa7") 
     end
@@ -191,10 +182,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.TextToggle = GlobalVariablePreset.TextToggle or "EthoChamsDefaultESPToggle"
     GlobalVariablePreset.TextSize = GlobalVariablePreset.TextSize or "EthoChamsDefaultESPTextSize"
     GlobalVariablePreset.TextColor = GlobalVariablePreset.TextColor or "EthoChamsDefaultESPTextColor"
-    GlobalVariablePreset.ShowDistance = GlobalVariablePreset.ShowDistance or "EthoChamsDefaultESPShowDistance"
     GlobalVariablePreset.MaxRenderDistance = GlobalVariablePreset.MaxRenderDistance or "EthoChamsDefaultESPMaxRenderDistance"
-    GlobalVariablePreset.ShowHealth = GlobalVariablePreset.ShowHealth or "EthoChamsDefaultESPShowHealth"
-    GlobalVariablePreset.ShowHealthPercent = GlobalVariablePreset.ShowHealthPercent or "EthoChamsDefaultESPShowHealthPercent"
     GlobalVariablePreset.ScaledText = GlobalVariablePreset.ScaledText or "EthoChamsDefaultESPScaledText"
     GlobalVariablePreset.ChamsToggle = GlobalVariablePreset.ChamsToggle or "EthoChamsDefaultESPChamsToggle"
     GlobalVariablePreset.ChamsFillColor = GlobalVariablePreset.ChamsFillColor or "EthoChamsDefaultESPChamsFillColor"
@@ -210,22 +198,29 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.ShowTeam = GlobalVariablePreset.ShowTeam or "EthoChamsDefaultESPShowTeam"
 
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
-    OptionTable.Data.BoxESP.OffsetTable = OptionTable.Data.BoxESP.OffsetTable or {TopLeft = CFrame.new(-2,2,0), TopRight = CFrame.new(2,2,0), BottomLeft = CFrame.new(-2,-3.5,0), BottomRight = CFrame.new(2,-3.5,0)}
+    if OptionTable.Data.BoxESP.OffsetTable == nil then
+        error("Add ESp OBj function, OptionTable.Data.BoxESP.OffsetTable == nil Example : TopLeft = CFrame.new(-2,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(-2,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)")
+    elseif OptionTable.Data.BoxESP.ThreeDOffsetTable == nil then
+        error("Add ESp OBj function, OptionTable.Data.BoxESP.ThreeDOffsetTable == nil Example: ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5")
+    end
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
-    OptionTable.Data.HpBar.BarOffsetTable = OptionTable.Data.HpBar.BarOffsetTable or {TopRight = CFrame.new(2,2,0),Height = 5, Width = 5}
+    if OptionTable.Data.HpBar.BarOffsetTable == nil then
+        error("Add ESP OBj Function, BarOffsetTable == nil")
+    end
     OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
-    OptionTable.Data.UseWhitelist.ReturnNameFunction = OptionTable.Data.UseWhitelist.ReturnNameFunction or function() return nil end
-    OptionTable.Data.BoxESP.ThreeDOffsetTable = OptionTable.Data.BoxESP.ThreeDOffsetTable or {ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5}
-    OptionTable.Data.ReturnTeamCheck = OptionTable.Data.ReturnTeamCheck or function() return true end 
+    if OptionTable.Data.UseWhitelist.ReturnNameFunction == nil then
+        error ("Add ESP OBj function, Optiontable.Data.UseWhitelist.ReturnNameFunction == nil, Make sure it returns a string!")
 
+    end
 
+    OptionTable.Data.ReturnTeamCheck = OptionTable.Data.ReturnTeamCheck or function() return false end 
+    OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
+    OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
 
-    OptionTable.Data.HpBar.BarOffsetTable.Height = OptionTable.Data.HpBar.BarOffsetTable.Height or 5
-    OptionTable.Data.HpBar.BarOffsetTable.Width = OptionTable.Data.HpBar.BarOffsetTable.Width or 5
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
-        local Highlight2 = Instance.new("Highlight"),ChamsFolder
+        local Highlight2 = Instance.new("Highlight",ChamsFolder)
         OptionTable.Data.Highlight.HighlightObj = Highlight
         OptionTable.Data.Highlight.HighlightObj2 = Highlight2
         OptionTable.Data.Highlight.LastKnownChildrenCache = -2
@@ -275,18 +270,17 @@ function ESPRenderer()
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
-            local NonCfLookatCached = PositionCached
+          
+        
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil then
-                
+                    local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),LocalPlayerPositionCached)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
                         
-                        if _G[OptionTable.GlobalVariableTable.UseLookAt] == true and LocalPlayerPositionCached ~= nil  then
-                            PositionCached = CFrame.lookAt(CFtoVec(PositionCached),LocalPlayerPositionCached)
-                        end
+                        
                         local cam = game.Workspace.CurrentCamera
                         local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                         if OnS then
@@ -365,7 +359,10 @@ function ESPRenderer()
                                             LeftsideQuad.Visible = false
                                             BackwardQuad.Visible = false
                                             RightsideQuad.Visible = false 
-    
+                                            local TwoDBoxCachedPos = PositionCached
+                                            if _G[OptionTable.GlobalVariableTable.UseLookAt] == true then
+                                                TwoDBoxCachedPos = LookedAtPosition
+                                            end
     
                                             local OffsetTable = BoxESPPreset.OffsetTable
                                             local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
@@ -391,15 +388,15 @@ function ESPRenderer()
                                         if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
                                             BoxEspObj.Visible = false 
                                             local Corneroffsets = BoxESPPreset.ThreeDOffsetTable
-                                            local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.ForwardLeft))
-                                            local ForwardRight = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.ForwardRight))
-                                            local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.BackwardLeft))
-                                            local BackwardRight = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.BackwardRight))
+                                            local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft))
+                                            local ForwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight))
+                                            local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft))
+                                            local BackwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight))
                                     
-                                            local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
-                                            local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
-                                            local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
-                                            local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(NonCfLookatCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
                                     
                                             ForwardQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
                                             ForwardQuad.PointB = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
@@ -457,10 +454,10 @@ function ESPRenderer()
                                         BottomRight = CFrame.new(BarOffsetTable.BottomRight.X + Widthinset,BarOffsetTable.BottomRight.Y + Heightinset,0)
                                     }
                                     -- Outline for HpBar
-                                    local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopLeft))
-                                    local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.TopRight))
-                                    local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.BottomLeft))
-                                    local BottomRight =cam:WorldToViewportPoint(CFtoVec(PositionCached * BarOffsetTable.BottomRight))
+                                    local TopLeft = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarOffsetTable.TopLeft))
+                                    local TopRight = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarOffsetTable.TopRight))
+                                    local BottomLeft = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarOffsetTable.BottomLeft))
+                                    local BottomRight =cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarOffsetTable.BottomRight))
 
                                     OutlineBoxPreset.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
                                     OutlineBoxPreset.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
@@ -473,10 +470,10 @@ function ESPRenderer()
 
                                     local TopLeftBar = CFrame.new(BarFilledOffsets.TopLeft.X,BarFilledOffsets.BottomLeft.Y + BarHeight,BarFilledOffsets.TopLeft.Z)
                                     local TopRightBar = CFrame.new(BarFilledOffsets.TopRight.X,BarFilledOffsets.BottomRight.Y + BarHeight,BarFilledOffsets.TopRight.Z)
-                                    local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopLeftBar))
-                                    local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopRightBar))
-                                    local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarFilledOffsets.BottomLeft))
-                                    local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * BarFilledOffsets.BottomRight))
+                                    local TopLeft = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * TopLeftBar))
+                                    local TopRight = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * TopRightBar))
+                                    local BottomLeft = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarFilledOffsets.BottomLeft))
+                                    local BottomRight = cam:WorldToViewportPoint(CFtoVec(LookedAtPosition * BarFilledOffsets.BottomRight))
 
                                     FilledBoxPreset.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
                                     FilledBoxPreset.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
