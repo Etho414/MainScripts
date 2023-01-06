@@ -86,7 +86,6 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
             ChangeTo = HoldSize
         end 
         if i == "Text1" or i == "Text2" or i == "Text3" then     
-            print("Changing To",ChangeTo)
             v.Size = ChangeTo 
         end  
 
@@ -133,11 +132,11 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             local HighlightObj = PassedTable.Data.Highlight.HighlightObj
             local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
             HighlightObj2.Adornee = PartToAdornee
-            wait()
+            wait(0.3)
             HighlightObj.Adornee = nil
-            wait()
+            wait(0.3)
             HighlightObj.Adornee = PartToAdornee
-            wait()
+            wait(0.3)
             HighlightObj2.Adornee = nil
             PassedTable.Data.Highlight.Refreshing = false 
         end
@@ -271,25 +270,28 @@ function ESPRenderer()
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
-          
+            local PositionCachedInVector = CFtoVec(PositionCached)
         
+            
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
+                    local LookedAtPositionInVector = CFtoVec(LookedAtPosition)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
                         local cam = game.Workspace.CurrentCamera
-                        local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
+                        local ScreenPos,OnS = cam:WorldToViewportPoint(PositionCachedInVector + OptionTable.Data.Vector3Offset)
                         if OnS then
                             local TextTable = OptionTable.ESPTextObjects
                             local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
                             
                             local TextOffset = MagnitudeCached / 500
+                            local TextSizeOffset = math.floor(MagnitudeCached / 150)
                             TextOffset = TextOffset
                             if TextOffset < 0 then TextOffset = 0 end
-                            SetTextOptions(OptionTable,TextTable,TextOffset)
+                            SetTextOptions(OptionTable,TextTable,TextSizeOffset)
                             
                             if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
                                 --Settings texts for the lines!!!
