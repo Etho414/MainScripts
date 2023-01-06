@@ -363,10 +363,10 @@ function ESPRenderer()
                                             end
     
                                             local OffsetTable = BoxESPPreset.OffsetTable
-                                            local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
-                                            local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopRight))
-                                            local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomLeft))
-                                            local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomRight))
+                                            local TopLeft = cam:WorldToViewportPoint(CFtoVec(TwoDBoxCachedPos * OffsetTable.TopLeft))
+                                            local TopRight = cam:WorldToViewportPoint(CFtoVec(TwoDBoxCachedPos * OffsetTable.TopRight))
+                                            local BottomLeft = cam:WorldToViewportPoint(CFtoVec(TwoDBoxCachedPos * OffsetTable.BottomLeft))
+                                            local BottomRight = cam:WorldToViewportPoint(CFtoVec(TwoDBoxCachedPos * OffsetTable.BottomRight))
                                             
                                             BoxEspObj.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
                                             BoxEspObj.PointA = Vector2.new(TopRight.X,TopRight.Y)
