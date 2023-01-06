@@ -275,7 +275,7 @@ function ESPRenderer()
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
-                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace:FindFirstChild("CurrentCamera") then
+                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(game.Workspace.CurrentCamera.CFrame),LocalPlayerPositionCached)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
