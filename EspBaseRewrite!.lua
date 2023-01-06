@@ -42,6 +42,8 @@ _G.EthoChamsDefaultESPHpBarToggle = false
 _G.EthoChamsDefaultESPWhitelistTable = {}
 _G.EthoChamsDefaultESPWhitelistColor = Color3.fromRGB(255,0,0)
 _G.EthoChamsDefaultESPLookAt = false 
+_G.EthoChamsDefaultESPShowTeam = true
+
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
@@ -73,7 +75,45 @@ function FindPlayer(name,OptionTable)
     return false 
 end
 
+function SetTextOptions(OptionTable,TextTable,TextOffset)
+    for i,v in pairs(TextTable) do
+        local ChangeTo;
+        local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
+        if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
+            ChangeTo = HoldSize - (TextOffset * 2)
+            if ChangeTo < (HoldSize / 2) then 
+                ChangeTo = (HoldSize / 2)
+            end
+        else
+            ChangeTo = HoldSize
+        end 
+        if i == "Text1" or i == "Text2" or i == "Text3" then      
+            v.Size = ChangeTo 
+        end  
 
+        if OptionTable.Data.UseWhitelist.UseWhitelist == true and i ~= "HoBarFilled" then
+            local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
+            if name then
+                if FindPlayer(name,OptionTable) == true then
+                    v.ZIndex = 10
+                    v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
+                else
+                    v.ZIndex = 1
+                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+                    
+                end
+            else
+                v.ZIndex = 1
+                v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+
+            end
+        else
+            v.ZIndex = 1
+            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
+
+        end
+    end   
+end
 
 
 
@@ -132,6 +172,10 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         return   
     elseif OptionTable.Data.DeterminToRemoveFunction == nil then
         error("AddESPObj Function, DeterminToBeRemovedFunction == nil, aa5")    
+    elseif OptionTable.Data.ReturnLocalPlayerpos == nil then
+        error("AddESPObj Function, ReturnLocalPlayerpos == nil, aa6")   
+    elseif OptionTable.Data.ReturnTeamCheck == nil then
+        error("AddESPObj Function, ReturnTeamCheck == nil, aa7") 
     end
     OptionTable.Data.ModdedName = OptionTable.Data.ModdedName or ""
     OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
@@ -140,7 +184,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     
     local GlobalVariablePreset = OptionTable.GlobalVariableTable
     if GlobalVariablePreset == nil then
-        error("AddESPObj Function, GlobalVariableTable == nil, aa6")
+        error("AddESPObj Function, GlobalVariableTable == nil, ab1")
         return
     end
     GlobalVariablePreset.TextToggle = GlobalVariablePreset.TextToggle or "EthoChamsDefaultESPToggle"
@@ -161,8 +205,9 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.WhitelistTable = GlobalVariablePreset.WhitelistTable or "EthoChamsDefaultESPWhitelistTable"
     GlobalVariablePreset.WhitelistColor = GlobalVariablePreset.WhitelistColor or "EthoChamsDefaultESPWhitelistColor"
     GlobalVariablePreset.UseTwoD = GlobalVariablePreset.UseTwoD or "EthoChamsDefaultESPUseTwoD"
+    GlobalVariablePreset.UseLookAt = GlobalVariablePreset.UseLookAt or "EthoChamsDefaultESPLookAt"
+    GlobalVariablePreset.ShowTeam = GlobalVariablePreset.ShowTeam or "EthoChamsDefaultESPShowTeam"
 
-    
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
     OptionTable.Data.BoxESP.OffsetTable = OptionTable.Data.BoxESP.OffsetTable or {TopLeft = CFrame.new(-2,2,0), TopRight = CFrame.new(2,2,0), BottomLeft = CFrame.new(-2,-3.5,0), BottomRight = CFrame.new(2,-3.5,0)}
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
@@ -170,6 +215,9 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
     OptionTable.Data.UseWhitelist.ReturnNameFunction = OptionTable.Data.UseWhitelist.ReturnNameFunction or function() return nil end
     OptionTable.Data.BoxESP.ThreeDOffsetTable = OptionTable.Data.BoxESP.ThreeDOffsetTable or {ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5}
+    OptionTable.Data.ReturnTeamCheck = OptionTable.Data.ReturnTeamCheck or function() return true end 
+
+
 
     OptionTable.Data.HpBar.BarOffsetTable.Height = OptionTable.Data.HpBar.BarOffsetTable.Height or 5
     OptionTable.Data.HpBar.BarOffsetTable.Width = OptionTable.Data.HpBar.BarOffsetTable.Width or 5
@@ -182,7 +230,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         OptionTable.Data.Highlight.LastKnownChildrenCache = -2
         OptionTable.Data.Highlight.Refreshing = false
         if OptionTable.Data.Highlight.ReturnPartFunction == nil then
-           error("AddESPObj Function - Highlight Portion, Return Part Function == nil, aa7") 
+           error("AddESPObj Function - Highlight Portion, Return Part Function == nil, ac1") 
         end
     end
 
@@ -227,316 +275,279 @@ function ESPRenderer()
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
-            if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil then
+            local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
+            if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
+                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil then
                 
-                local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
-                if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
-                    if _G[OptionTable.GlobalVariableTable.UseLookAt] == true then
-                        PositionCached = CFrame.lookAt(LocalPlayerPositionCached)
-
-                    end
-                    local cam = game.Workspace.CurrentCamera
-                    local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
-                    if OnS then
-                        local TextTable = OptionTable.ESPTextObjects
-                        local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
-                        
-                        local TextOffset = MagnitudeCached / 500
-                        TextOffset = TextOffset
-                        if TextOffset < 0 then TextOffset = 0 end
-                        for i,v in pairs(TextTable) do
-                            local ChangeTo;
-                            local HoldSize = _G[OptionTable.GlobalVariableTable.TextSize]
-                            if _G[OptionTable.GlobalVariableTable.ScaledText] == true then
-                                ChangeTo = HoldSize - (TextOffset * 2)
-                                if ChangeTo < (HoldSize / 2) then 
-                                    ChangeTo = (HoldSize / 2)
-                                end
-                            else
-                                ChangeTo = HoldSize
-                            end 
-                            if i == "Text1" or i == "Text2" or i == "Text3" then      
-                                v.Size = ChangeTo 
-                            end  
-                   
-                            if OptionTable.Data.UseWhitelist.UseWhitelist == true then
-                                local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
-                                if name then
-                                    if FindPlayer(name,OptionTable) == true then
-                                        v.ZIndex = 10
-                                        if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor]
-                                        end  
-                                    else
-                                        v.ZIndex = 1
-                                        if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                        end
-                                        
-                                    end
-                                else
-                                    v.ZIndex = 1
-                                    if i ~= "HpBarFilled" then
-                                            v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                    end
-                                end
-                            else
-                                v.ZIndex = 1
-                                if i ~= "HpBarFilled" then
-                                    v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
-                                end
-                            end
-                        end   
-                        
-                        if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
-                            --Settings texts for the lines!!!
-
-                            StringCached.Line1 = StringCached.Line1 or ""
-                            StringCached.Line2 = StringCached.Line2 or ""
-                            StringCached.Line2 = StringCached.Line2 or ""
-
-                            TextTable.Text1.Text = StringCached.Line1
-                            TextTable.Text2.Text = StringCached.Line2
-                            TextTable.Text3.Text = StringCached.Line3
-
-                            -- Settings positions of text objects 
-                            local PositionX = math.floor(ScreenPos.X)
-                            local Text1OffsetX = (TextTable.Text1.TextBounds.X / 2)
-                            local Text2OffsetX = (TextTable.Text2.TextBounds.X / 2)
-
-                            local PositionY = math.floor(ScreenPos.Y)
-                            local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
-                            local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
-                            local LineOffset = 2
-
-
-                            if TextTable.Text1.Text == "" then
-                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
-                            else
-                                TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,(PositionY - TextOffset) - OptionTable.Data.TextOffset)
-                            end
-                            if TextTable.Text2.Text == "" then
-                                TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
-                            else
-                                TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - LineOffset -( Text1OffsetY)))
-                            end
-                            
-                            TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - LineOffset - Text2OffsetY) )
-
-                            TextTable.Text1.Visible = true 
-                            TextTable.Text2.Visible = true
-                            TextTable.Text3.Visible = true 
-
-                            -- Changes Text Options / Makes Offsets!
-                            
-                        else
-                            TextTable.Text1.Visible = false 
-                            TextTable.Text2.Visible = false
-                            TextTable.Text3.Visible = false 
+                    local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
+                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
+                        if _G[OptionTable.GlobalVariableTable.UseLookAt] == true then
+                            PositionCached = CFrame.lookAt(LocalPlayerPositionCached)
                         end
-                        
-
-                        
-
-                        -- Box ESP !!!
-
-                        if OptionTable.Data.BoxESP.UseBoxESP == true then
-                            local BoxESPPreset = OptionTable.Data.BoxESP
-                            local BoxEspObj = OptionTable.ESPTextObjects.BoxObj
-                            local ForwardQuad = OptionTable.ESPTextObjects.ForwardQuad
-                            local LeftsideQuad = OptionTable.ESPTextObjects.LeftQuad
-                            local BackwardQuad = OptionTable.ESPTextObjects.BackwardQuad
-                            local RightsideQuad = OptionTable.ESPTextObjects.RightQuad
-
-                            if BoxESPPreset ~= nil then
-                                if _G[OptionTable.GlobalVariableTable.UseTwoD] == true then
-                                    if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then  
-                                        ForwardQuad.Visible = false
-                                        LeftsideQuad.Visible = false
-                                        BackwardQuad.Visible = false
-                                        RightsideQuad.Visible = false 
-
-
-                                        local OffsetTable = BoxESPPreset.OffsetTable
-                                        local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
-                                        local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopRight))
-                                        local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomLeft))
-                                        local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomRight))
-                                        
-                                        BoxEspObj.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
-                                        BoxEspObj.PointA = Vector2.new(TopRight.X,TopRight.Y)
-                                        BoxEspObj.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
-                                        BoxEspObj.PointD = Vector2.new(BottomRight.X,BottomRight.Y)
-        
-                                        BoxEspObj.Visible = true 
+                        local cam = game.Workspace.CurrentCamera
+                        local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
+                        if OnS then
+                            local TextTable = OptionTable.ESPTextObjects
+                            local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)
+                            
+                            local TextOffset = MagnitudeCached / 500
+                            TextOffset = TextOffset
+                            if TextOffset < 0 then TextOffset = 0 end
+                            SetTextOptions(OptionTable,TextTable,TextOffset)
+                            
+                            if _G[OptionTable.GlobalVariableTable.TextToggle] == true then
+                                --Settings texts for the lines!!!
     
-                                    else
-                                        BoxEspObj.Visible = false
-                                        ForwardQuad.Visible = false
-                                        LeftsideQuad.Visible = false
-                                        BackwardQuad.Visible = false
-                                        RightsideQuad.Visible = false 
-                                    end
-                                elseif _G[OptionTable.GlobalVariableTable.UseTwoD] == false then
-                                    if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
-                                        BoxEspObj.Visible = false 
-                                        local Corneroffsets = BoxESPPreset.ThreeDOffsetTable
-                                        local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft))
-                                        local ForwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight))
-                                        local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft))
-                                        local BackwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight))
-                                
-                                        local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
-                                        local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
-                                        local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
-                                        local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
-                                
-                                        ForwardQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
-                                        ForwardQuad.PointB = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
-                                        ForwardQuad.PointD = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
-                                        ForwardQuad.PointC = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
-                                
-                                        LeftsideQuad.PointA = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
-                                        LeftsideQuad.PointB = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
-                                        LeftsideQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
-                                        LeftsideQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
-                                
-                                        BackwardQuad.PointA = Vector2.new(BackwardRight.X,BackwardRight.Y)
-                                        BackwardQuad.PointB = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y)
-                                        BackwardQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
-                                        BackwardQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
-                                
-                                        RightsideQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
-                                        RightsideQuad.PointB = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
-                                        RightsideQuad.PointD = Vector2.new(BackwardRight.X,BackwardRight.Y)
-                                        RightsideQuad.PointC = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y) 
-                                        ForwardQuad.Visible = true
-                                        LeftsideQuad.Visible = true
-                                        BackwardQuad.Visible = true
-                                        RightsideQuad.Visible = true 
-                                    else
-                                        BoxEspObj.Visible = false 
-                                        ForwardQuad.Visible = false
-                                        LeftsideQuad.Visible = false
-                                        BackwardQuad.Visible = false
-                                        RightsideQuad.Visible = false 
-                                    end
-
+                                StringCached.Line1 = StringCached.Line1 or ""
+                                StringCached.Line2 = StringCached.Line2 or ""
+                                StringCached.Line2 = StringCached.Line2 or ""
+    
+                                TextTable.Text1.Text = StringCached.Line1
+                                TextTable.Text2.Text = StringCached.Line2
+                                TextTable.Text3.Text = StringCached.Line3
+    
+                                -- Settings positions of text objects 
+                                local PositionX = math.floor(ScreenPos.X)
+                                local Text1OffsetX = (TextTable.Text1.TextBounds.X / 2)
+                                local Text2OffsetX = (TextTable.Text2.TextBounds.X / 2)
+    
+                                local PositionY = math.floor(ScreenPos.Y)
+                                local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
+                                local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
+                                local LineOffset = 2
+    
+    
+                                if TextTable.Text1.Text == "" then
+                                    TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
+                                else
+                                    TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,(PositionY - TextOffset) - OptionTable.Data.TextOffset)
+                                end
+                                if TextTable.Text2.Text == "" then
+                                    TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
+                                else
+                                    TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - LineOffset -( Text1OffsetY)))
                                 end
                                 
-                            end
-                        end
-
-                        if OptionTable.Data.HpBar.UseHpBar == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true then
-                            local HpBarPreset = OptionTable.Data.HpBar
-                            local BarOffsetTable = HpBarPreset.BarOffsetTable
-                            local OutlineBoxPreset = OptionTable.ESPTextObjects.HpBarOutline
-                            local FilledBoxPreset = OptionTable.ESPTextObjects.HpBarFilled
-                            local HpCached = HpBarPreset.ReturnHPFunction(OptionTable)
-                            local presetthing = BarOffsetTable.Width
-                            local height = BarOffsetTable.Height
-                            if HpCached ~= nil then
-                                local HP = HpCached.Min / HpCached.Max
-                                local scale_factor = 1 / (ScreenPos.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
-                                local TopRight = BarOffsetTable.TopRight
-
-                                local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopRight))
-                                local BottomRightPos = cam:WorldToViewportPoint(CFtoVec((PositionCached * TopRight) - Vector3.new(0,height,0)))
-                                local TopLeftPos = Vector2.new(TopRightPos.X - presetthing,TopRightPos.Y)
-                                local BottomLeftPos = Vector2.new(BottomRightPos.X - presetthing,BottomRightPos.Y)
-
-                                local PointA = Vector2.new(math.floor(TopRightPos.X),math.floor(TopRightPos.Y))
-                                local PointB = Vector2.new(math.floor(BottomRightPos.X),math.floor(BottomRightPos.Y))
-                                local PointD = Vector2.new(math.floor(TopLeftPos.X) - presetthing * scale_factor,math.floor(TopLeftPos.Y))
-                                local PointC = Vector2.new(math.floor(BottomLeftPos.X) - presetthing * scale_factor ,math.floor(BottomLeftPos.Y))
-                                OutlineBoxPreset.PointA = PointA
-                                OutlineBoxPreset.PointB = PointB
-                                OutlineBoxPreset.PointD = PointD
-                                OutlineBoxPreset.PointC = PointC
+                                TextTable.Text3.Position = Vector2.new(PositionX - (TextTable.Text3.TextBounds.X / 2),(TextTable.Text2.Position.Y - LineOffset - Text2OffsetY) )
+    
+                                TextTable.Text1.Visible = true 
+                                TextTable.Text2.Visible = true
+                                TextTable.Text3.Visible = true 
+    
+                                -- Changes Text Options / Makes Offsets!
                                 
-                                
-                            
---[[                            local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
-                                local BottomRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * (TopRight) - Vector3.new(0,height,0)))
-                                local TopLeftPos = Vector2.new(TopRightPos.X - (presetthing ),TopRightPos.Y)
-                                local BottomLeftPos = Vector2.new(BottomRightPos.X - (presetthing ),BottomRightPos.Y )
-
-                                local PointA = Vector2.new(math.floor(TopRightPos.X),math.floor(TopRightPos.Y)) 
-                                local PointB = Vector2.new(math.floor(BottomRightPos.X),math.floor(BottomRightPos.Y)) 
-                                local PointD = Vector2.new(math.floor(TopLeftPos.X) - presetthing * scale_factor,math.floor(TopLeftPos.Y)) 
-                                local PointC = Vector2.new(math.floor(BottomLeftPos.X) - presetthing * scale_factor ,math.floor(BottomLeftPos.Y))
-]]
-                                FilledBoxPreset.PointA = PointA 
-                                FilledBoxPreset.PointD = PointD
-
-
-
-                                FilledBoxPreset.PointB = PointB 
-                                FilledBoxPreset.PointC = PointC 
-
-
-                                FilledBoxPreset.Color = Color3.fromRGB(255,0,0):lerp(Color3.fromRGB(0,255,0), HP)
-
-                                FilledBoxPreset.ZIndex = FilledBoxPreset.ZIndex  + 1 
-                                OutlineBoxPreset.ZIndex = OutlineBoxPreset.ZIndex + 2
-                                FilledBoxPreset.Visible = true 
-                                OutlineBoxPreset.Visible = true 
                             else
-                                OutlineBoxPreset.Visible = false
-                                FilledBoxPreset.Visible = false
+                                TextTable.Text1.Visible = false 
+                                TextTable.Text2.Visible = false
+                                TextTable.Text3.Visible = false 
                             end
+                            
+    
+                            
+    
+                            -- Box ESP !!!
+    
+                            if OptionTable.Data.BoxESP.UseBoxESP == true then
+                                local BoxESPPreset = OptionTable.Data.BoxESP
+                                local BoxEspObj = OptionTable.ESPTextObjects.BoxObj
+                                local ForwardQuad = OptionTable.ESPTextObjects.ForwardQuad
+                                local LeftsideQuad = OptionTable.ESPTextObjects.LeftQuad
+                                local BackwardQuad = OptionTable.ESPTextObjects.BackwardQuad
+                                local RightsideQuad = OptionTable.ESPTextObjects.RightQuad
+    
+                                if BoxESPPreset ~= nil then
+                                    if _G[OptionTable.GlobalVariableTable.UseTwoD] == true then
+                                        if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then  
+                                            ForwardQuad.Visible = false
+                                            LeftsideQuad.Visible = false
+                                            BackwardQuad.Visible = false
+                                            RightsideQuad.Visible = false 
+    
+    
+                                            local OffsetTable = BoxESPPreset.OffsetTable
+                                            local TopLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopLeft))
+                                            local TopRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.TopRight))
+                                            local BottomLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomLeft))
+                                            local BottomRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * OffsetTable.BottomRight))
+                                            
+                                            BoxEspObj.PointB = Vector2.new(TopLeft.X,TopLeft.Y)
+                                            BoxEspObj.PointA = Vector2.new(TopRight.X,TopRight.Y)
+                                            BoxEspObj.PointC = Vector2.new(BottomLeft.X,BottomLeft.Y)
+                                            BoxEspObj.PointD = Vector2.new(BottomRight.X,BottomRight.Y)
+            
+                                            BoxEspObj.Visible = true 
+        
+                                        else
+                                            BoxEspObj.Visible = false
+                                            ForwardQuad.Visible = false
+                                            LeftsideQuad.Visible = false
+                                            BackwardQuad.Visible = false
+                                            RightsideQuad.Visible = false 
+                                        end
+                                    elseif _G[OptionTable.GlobalVariableTable.UseTwoD] == false then
+                                        if _G[OptionTable.GlobalVariableTable.BoxToggle] == true then
+                                            BoxEspObj.Visible = false 
+                                            local Corneroffsets = BoxESPPreset.ThreeDOffsetTable
+                                            local ForwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft))
+                                            local ForwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight))
+                                            local BackwardLeft = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft))
+                                            local BackwardRight = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight))
+                                    
+                                            local ForwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local ForwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.ForwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local BackwardLeftBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardLeft) - Vector3.new(0,Corneroffsets.Height,0))
+                                            local BackwardRightBottom = cam:WorldToViewportPoint(CFtoVec(PositionCached * Corneroffsets.BackwardRight) - Vector3.new(0,Corneroffsets.Height,0))
+                                    
+                                            ForwardQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
+                                            ForwardQuad.PointB = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
+                                            ForwardQuad.PointD = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
+                                            ForwardQuad.PointC = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
+                                    
+                                            LeftsideQuad.PointA = Vector2.new(ForwardLeft.X,ForwardLeft.Y)
+                                            LeftsideQuad.PointB = Vector2.new(ForwardLeftBottom.X,ForwardLeftBottom.Y)
+                                            LeftsideQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
+                                            LeftsideQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
+                                    
+                                            BackwardQuad.PointA = Vector2.new(BackwardRight.X,BackwardRight.Y)
+                                            BackwardQuad.PointB = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y)
+                                            BackwardQuad.PointD = Vector2.new(BackwardLeft.X,BackwardLeft.Y)
+                                            BackwardQuad.PointC = Vector2.new(BackwardLeftBottom.X,BackwardLeftBottom.Y)
+                                    
+                                            RightsideQuad.PointA = Vector2.new(ForwardRight.X,ForwardRight.Y)
+                                            RightsideQuad.PointB = Vector2.new(ForwardRightBottom.X,ForwardRightBottom.Y)
+                                            RightsideQuad.PointD = Vector2.new(BackwardRight.X,BackwardRight.Y)
+                                            RightsideQuad.PointC = Vector2.new(BackwardRightBottom.X,BackwardRightBottom.Y) 
+                                            ForwardQuad.Visible = true
+                                            LeftsideQuad.Visible = true
+                                            BackwardQuad.Visible = true
+                                            RightsideQuad.Visible = true 
+                                        else
+                                            BoxEspObj.Visible = false 
+                                            ForwardQuad.Visible = false
+                                            LeftsideQuad.Visible = false
+                                            BackwardQuad.Visible = false
+                                            RightsideQuad.Visible = false 
+                                        end
+    
+                                    end
+                                    
+                                end
+                            end
+    
+                            if OptionTable.Data.HpBar.UseHpBar == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true then
+                                local HpBarPreset = OptionTable.Data.HpBar
+                                local BarOffsetTable = HpBarPreset.BarOffsetTable
+                                local OutlineBoxPreset = OptionTable.ESPTextObjects.HpBarOutline
+                                local FilledBoxPreset = OptionTable.ESPTextObjects.HpBarFilled
+                                local HpCached = HpBarPreset.ReturnHPFunction(OptionTable)
+                                local presetthing = BarOffsetTable.Width
+                                local height = BarOffsetTable.Height
+                                if HpCached ~= nil then
+                                    local HP = HpCached.Min / HpCached.Max
+                                    local scale_factor = 1 / (ScreenPos.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
+                                    local TopRight = BarOffsetTable.TopRight
+    
+                                    local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * TopRight))
+                                    local BottomRightPos = cam:WorldToViewportPoint(CFtoVec((PositionCached * TopRight) - Vector3.new(0,height,0)))
+                                    local TopLeftPos = Vector2.new(TopRightPos.X - presetthing,TopRightPos.Y)
+                                    local BottomLeftPos = Vector2.new(BottomRightPos.X - presetthing,BottomRightPos.Y)
+    
+                                    local PointA = Vector2.new(math.floor(TopRightPos.X),math.floor(TopRightPos.Y))
+                                    local PointB = Vector2.new(math.floor(BottomRightPos.X),math.floor(BottomRightPos.Y))
+                                    local PointD = Vector2.new(math.floor(TopLeftPos.X) - presetthing * scale_factor,math.floor(TopLeftPos.Y))
+                                    local PointC = Vector2.new(math.floor(BottomLeftPos.X) - presetthing * scale_factor ,math.floor(BottomLeftPos.Y))
+                                    OutlineBoxPreset.PointA = PointA
+                                    OutlineBoxPreset.PointB = PointB
+                                    OutlineBoxPreset.PointD = PointD
+                                    OutlineBoxPreset.PointC = PointC
+                                    
+                                    
+                                
+    --[[                            local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
+                                    local BottomRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * (TopRight) - Vector3.new(0,height,0)))
+                                    local TopLeftPos = Vector2.new(TopRightPos.X - (presetthing ),TopRightPos.Y)
+                                    local BottomLeftPos = Vector2.new(BottomRightPos.X - (presetthing ),BottomRightPos.Y )
+    
+                                    local PointA = Vector2.new(math.floor(TopRightPos.X),math.floor(TopRightPos.Y)) 
+                                    local PointB = Vector2.new(math.floor(BottomRightPos.X),math.floor(BottomRightPos.Y)) 
+                                    local PointD = Vector2.new(math.floor(TopLeftPos.X) - presetthing * scale_factor,math.floor(TopLeftPos.Y)) 
+                                    local PointC = Vector2.new(math.floor(BottomLeftPos.X) - presetthing * scale_factor ,math.floor(BottomLeftPos.Y))
+    ]]
+                                    FilledBoxPreset.PointA = PointA 
+                                    FilledBoxPreset.PointD = PointD
+    
+    
+    
+                                    FilledBoxPreset.PointB = PointB 
+                                    FilledBoxPreset.PointC = PointC 
+    
+    
+                                    FilledBoxPreset.Color = Color3.fromRGB(255,0,0):lerp(Color3.fromRGB(0,255,0), HP)
+    
+                                    FilledBoxPreset.ZIndex = FilledBoxPreset.ZIndex  + 1 
+                                    OutlineBoxPreset.ZIndex = OutlineBoxPreset.ZIndex + 2
+                                    FilledBoxPreset.Visible = true 
+                                    OutlineBoxPreset.Visible = true 
+                                else
+                                    OutlineBoxPreset.Visible = false
+                                    FilledBoxPreset.Visible = false
+                                end
+                            else
+                                OptionTable.ESPTextObjects.HpBarOutline.Visible = false
+                                OptionTable.ESPTextObjects.HpBarFilled.Visible = false
+                            end
+                            
+                            OptionTable.Data.RunAfterEverthing(OptionTable)
+    
                         else
-                            OptionTable.ESPTextObjects.HpBarOutline.Visible = false
-                            OptionTable.ESPTextObjects.HpBarFilled.Visible = false
+                            VisibleText(false,OptionTable)
                         end
                         
-                        OptionTable.Data.RunAfterEverthing(OptionTable)
-
+                        -- Chams !!!!
+    
+                        if  OptionTable.Data.Highlight.UseChams == true and OptionTable.Data.Highlight.HighlightObj ~= nil and _G.AllowChamsEtho == true  then
+                            
+                            local HighlightObj = OptionTable.Data.Highlight.HighlightObj
+                            local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
+                            local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
+                            if HighlightObj ~= nil and AdorneePart ~= nil then
+                                if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
+                                    local ChildrenCached = #AdorneePart:GetChildren()
+                                    if HighlightObj.Adornee ~= AdorneePart then
+                                        OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                        HighlightObj.Adornee = AdorneePart
+                                    end
+                                    if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() then
+                                        OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
+                                        ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
+                                    end
+                                    HighlightObj.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
+                                    HighlightObj.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
+                                    HighlightObj.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
+                                    HighlightObj.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
+                                    HighlightObj.Enabled = true 
+    
+                                    HighlightObj2.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
+                                    HighlightObj2.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
+                                    HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
+                                    HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
+                                    HighlightObj2.Enabled = false 
+                                else
+                                    HighlightObj.Enabled = false
+                                    HighlightObj2.Enabled = false 
+                                end
+                            end
+                        end
                     else
                         VisibleText(false,OptionTable)
                     end
-                    
-                    -- Chams !!!!
-
-                    if  OptionTable.Data.Highlight.UseChams == true and OptionTable.Data.Highlight.HighlightObj ~= nil and _G.AllowChamsEtho == true  then
-                        
-                        local HighlightObj = OptionTable.Data.Highlight.HighlightObj
-                        local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
-                        local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
-                        if HighlightObj ~= nil and AdorneePart ~= nil then
-                            if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
-                                local ChildrenCached = #AdorneePart:GetChildren()
-                                if HighlightObj.Adornee ~= AdorneePart then
-                                    OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
-                                    HighlightObj.Adornee = AdorneePart
-                                end
-                                if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() then
-                                    OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
-                                    ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
-                                end
-                                HighlightObj.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
-                                HighlightObj.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
-                                HighlightObj.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
-                                HighlightObj.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
-                                HighlightObj.Enabled = true 
-
-                                HighlightObj2.FillColor = _G[OptionTable.GlobalVariableTable.ChamsFillColor]
-                                HighlightObj2.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
-                                HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
-                                HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
-                                HighlightObj2.Enabled = false 
-                            else
-                                HighlightObj.Enabled = false
-                                HighlightObj2.Enabled = false 
-                            end
-                        end
-                    end
                 else
-                    VisibleText(false,OptionTable)
+                    VisibleText(false, OptionTable)
                 end
             else
                 VisibleText(false, OptionTable)
             end
+           
         end
     end
     PauseRender = false
