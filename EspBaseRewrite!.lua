@@ -85,7 +85,8 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
         else
             ChangeTo = HoldSize
         end 
-        if i == "Text1" or i == "Text2" or i == "Text3" then      
+        if i == "Text1" or i == "Text2" or i == "Text3" then     
+            print("Changing To",ChangeTo)
             v.Size = ChangeTo 
         end  
 
@@ -277,8 +278,6 @@ function ESPRenderer()
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
-                    local ddd = CFrame.lookAt(CFtoVec(game.Workspace.CurrentCamera.CFrame),CFtoVec(PositionCached))
-                    print(LookedAtPosition,ddd)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
                         local cam = game.Workspace.CurrentCamera
