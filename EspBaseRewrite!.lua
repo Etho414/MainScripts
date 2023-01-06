@@ -1,6 +1,6 @@
 -- ESP BASE REWRITE
 
-print("D")
+print("gf")
 
 
 
@@ -277,6 +277,8 @@ function ESPRenderer()
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
+                    local ddd = CFrame.lookAt(CFtoVec(game.Workspace.CurrentCamera.CFrame),CFtoVec(PositionCached))
+                    print(LookedAtPosition,ddd)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
                         local cam = game.Workspace.CurrentCamera
