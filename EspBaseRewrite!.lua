@@ -120,7 +120,7 @@ function VisibleText(Bool,TextTable)
         v.Visible = Bool
     end
     
-    if TextTable.Data.Highlight ~= nil and TextTable.Data.Highlight.HighlightObj ~= nil  then
+    if TextTable.Data.Highlight ~= nil and TextTable.Data.Highlight.HighlightObj ~= nil and _G.AllowChamsEtho == true  then
         TextTable.Data.Highlight.HighlightObj.Enabled = Bool
     end
 end
