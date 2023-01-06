@@ -133,11 +133,8 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
             HighlightObj2.Adornee = nil
             HighlightObj2.Adornee = PartToAdornee
-            wait(1)
             HighlightObj.Adornee = nil
-            wait(1)
             HighlightObj.Adornee = PartToAdornee
-            wait(1)
             HighlightObj2.Adornee = nil
             PassedTable.Data.Highlight.Refreshing = false 
         end
