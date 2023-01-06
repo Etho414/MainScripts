@@ -93,29 +93,6 @@ function VisibleText(Bool,TextTable)
     end
 end
 
-function ReturnColorOnHp(HP)
-    if HP <= 0.1 then
-        return Color3.fromRGB(255,0,0)
-    elseif HP <= 0.2 then
-        return Color3.fromRGB(255, 68, 68)
-    elseif HP <= 0.3 then
-        return Color3.fromRGB(247, 99, 99)
-    elseif HP <= 0.4 then
-        return Color3.fromRGB(255, 116, 62)
-    elseif HP <= 0.5 then
-        return Color3.fromRGB(255, 178, 36)
-    elseif HP <= 0.6 then
-        return Color3.fromRGB(253, 182, 74)
-    elseif HP <= 0.7 then
-        return Color3.fromRGB(226, 228, 98)
-    elseif HP <= 0.8 then
-        return Color3.fromRGB(155, 173, 71)
-    else
-        return Color3.fromRGB(0, 255, 0)
-    end
-
-end
-
 function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
     if PassedTable.Data.Highlight.Refreshing == false then
         local function RefreshThingy()
@@ -189,12 +166,13 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
     OptionTable.Data.BoxESP.OffsetTable = OptionTable.Data.BoxESP.OffsetTable or {TopLeft = CFrame.new(-2,2,0), TopRight = CFrame.new(2,2,0), BottomLeft = CFrame.new(-2,-3.5,0), BottomRight = CFrame.new(2,-3.5,0)}
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
-    OptionTable.Data.HpBar.BarOffsetTable = OptionTable.Data.HpBar.BarOffsetTable or {TopLeft = CFrame.new(3,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(3,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)}
+    OptionTable.Data.HpBar.BarOffsetTable = OptionTable.Data.HpBar.BarOffsetTable or {TopRight = CFrame.new(2,2,0),Height = 5, Width = 5}
     OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
     OptionTable.Data.UseWhitelist.ReturnNameFunction = OptionTable.Data.UseWhitelist.ReturnNameFunction or function() return nil end
     OptionTable.Data.BoxESP.ThreeDOffsetTable = OptionTable.Data.BoxESP.ThreeDOffsetTable or {ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5}
 
-
+    OptionTable.Data.HpBar.BarOffsetTable.Height = OptionTable.Data.HpBar.BarOffsetTable.Height or 5
+    OptionTable.Data.HpBar.BarOffsetTable.Width = OptionTable.Data.HpBar.BarOffsetTable.Width or 5
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
@@ -248,10 +226,15 @@ function ESPRenderer()
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
-            if PositionCached ~= nil  and DrawESP == true  then
-                local MagnitudeCached = OptionTable.Data.ReturnMagnitude(PositionCached)
+            local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
+            if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil then
+                
+                local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                 if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
-                    
+                    if _G[OptionTable.GlobalVariableTable.UseLookAt] == true then
+                        PositionCached = CFrame.lookAt(LocalPlayerPositionCached)
+
+                    end
                     local cam = game.Workspace.CurrentCamera
                     local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                     if OnS then
@@ -450,7 +433,7 @@ function ESPRenderer()
                             local OutlineBoxPreset = OptionTable.ESPTextObjects.HpBarOutline
                             local FilledBoxPreset = OptionTable.ESPTextObjects.HpBarFilled
                             local HpCached = HpBarPreset.ReturnHPFunction(OptionTable)
-                            local presetthing = 5
+                            local presetthing = BarOffsetTable.Width
                             local height = BarOffsetTable.Height
                             if HpCached ~= nil then
                                 local HP = HpCached.Min / HpCached.Max
@@ -473,7 +456,7 @@ function ESPRenderer()
                                 
                                 
                             
---[[                                local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
+--[[                            local TopRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * ((TopRight - Vector3.new(0,height,0)) + Vector3.new(0,(HP * height),0))) )
                                 local BottomRightPos = cam:WorldToViewportPoint(CFtoVec(PositionCached * (TopRight) - Vector3.new(0,height,0)))
                                 local TopLeftPos = Vector2.new(TopRightPos.X - (presetthing ),TopRightPos.Y)
                                 local BottomLeftPos = Vector2.new(BottomRightPos.X - (presetthing ),BottomRightPos.Y )
