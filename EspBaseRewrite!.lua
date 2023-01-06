@@ -41,7 +41,7 @@ _G.EthoChamsDefaultESPBoxToggle = false
 _G.EthoChamsDefaultESPHpBarToggle = false 
 _G.EthoChamsDefaultESPWhitelistTable = {}
 _G.EthoChamsDefaultESPWhitelistColor = Color3.fromRGB(255,0,0)
-_G.EthoChamsDefaultESPUseTwoD = true 
+_G.EthoChamsDefaultESPLookAt = false 
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
