@@ -144,7 +144,10 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
     end
 end
 function CFtoVec(cf)
-    return Vector3.new(cf.x,cf.y,cf.z)
+    if cf and cf.x and cf.y and cf.z then
+            return Vector3.new(cf.x,cf.y,cf.z)
+    end
+
 end
 function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if type(OptionTable) ~= "table"  then
