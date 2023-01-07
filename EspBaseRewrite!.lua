@@ -283,7 +283,7 @@ function ESPRenderer()
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
                     local LookedAtPositionInVector = CFtoVec(LookedAtPosition)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
-                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
+                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] and LookedAtPosition ~= nil and LookedAtPositionInVector ~= nil then
                         local cam = game.Workspace.CurrentCamera
                         local ScreenPos,OnS = cam:WorldToViewportPoint(PositionCachedInVector + OptionTable.Data.Vector3Offset)
                         if OnS then
