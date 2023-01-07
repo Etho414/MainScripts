@@ -63,6 +63,28 @@ function ESPFunctionReturnTable:GetMagnitude(Pos1,Pos2)
     return (Pos1 - Pos2).Magnitude
 end
 
+function ReturnColorOnHp(HP)
+    if HP <= 0.1 then
+        return Color3.fromRGB(255,0,0)
+    elseif HP <= 0.2 then
+        return Color3.fromRGB(255, 68, 68)
+    elseif HP <= 0.3 then
+        return Color3.fromRGB(247, 99, 99)
+    elseif HP <= 0.4 then
+        return Color3.fromRGB(255, 116, 62)
+    elseif HP <= 0.5 then
+        return Color3.fromRGB(255, 178, 36)
+    elseif HP <= 0.6 then
+        return Color3.fromRGB(253, 182, 74)
+    elseif HP <= 0.7 then
+        return Color3.fromRGB(226, 228, 98)
+    elseif HP <= 0.8 then
+        return Color3.fromRGB(155, 173, 71)
+    else
+        return Color3.fromRGB(0, 255, 0)
+    end
+end
+
 
 function FindPlayer(name,OptionTable)
 	for i,v in pairs(_G[OptionTable.GlobalVariableTable.WhitelistTable]) do 
@@ -279,7 +301,7 @@ function ESPRenderer()
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
-                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
+                if PositionCached ~= nil and PositionCachedInVector ~= nil and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
                     local LookedAtPositionInVector = CFtoVec(LookedAtPosition)
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
@@ -487,7 +509,7 @@ function ESPRenderer()
                                     FilledBoxPreset.Visible = true
     
     
-                                    FilledBoxPreset.Color = Color3.fromRGB(255,0,0):lerp(Color3.fromRGB(0,255,0), HP)
+                                    FilledBoxPreset.Color = ReturnColorOnHp(HP)
     
                                     FilledBoxPreset.ZIndex = FilledBoxPreset.ZIndex  + 1 
                                     OutlineBoxPreset.ZIndex = OutlineBoxPreset.ZIndex + 2
