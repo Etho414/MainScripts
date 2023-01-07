@@ -195,17 +195,20 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.ShowTeam = GlobalVariablePreset.ShowTeam or "EthoChamsDefaultESPShowTeam"
 
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
-    if OptionTable.Data.BoxESP.OffsetTable == nil then
-        error("Add ESp OBj function, OptionTable.Data.BoxESP.OffsetTable == nil Example : TopLeft = CFrame.new(-2,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(-2,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)")
-    elseif OptionTable.Data.BoxESP.ThreeDOffsetTable == nil then
-        error("Add ESp OBj function, OptionTable.Data.BoxESP.ThreeDOffsetTable == nil Example: ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5")
+    if OptionTable.Data.BoxESP.UseBoxESP == true then
+        if OptionTable.Data.BoxESP.OffsetTable == nil then
+            error("Add ESp OBj function, OptionTable.Data.BoxESP.OffsetTable == nil Example : TopLeft = CFrame.new(-2,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(-2,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)")
+        elseif OptionTable.Data.BoxESP.ThreeDOffsetTable == nil then
+            error("Add ESp OBj function, OptionTable.Data.BoxESP.ThreeDOffsetTable == nil Example: ForwardLeft = CFrame.new(-2,2,-2),ForwardRight = CFrame.new(2,2,-2),BackwardLeft = CFrame.new(-2,2,2),BackwardRight = CFrame.new(2,2,2),Height = 5")
+        end
     end
+    
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
-    if OptionTable.Data.HpBar.BarOffsetTable == nil then
-        error("Add ESP OBj Function, BarOffsetTable == nil")
+    if OptionTable.Data.HpBar.BarOffsetTable == nil and OptionTable.Data.HpBar.UseHpBar == true  then
+        error("Add ESP OBj Function, OptionTable.Data.HpBar.BarOffsetTable == nil")
     end
     OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
-    if OptionTable.Data.UseWhitelist.ReturnNameFunction == nil then
+    if OptionTable.Data.UseWhitelist.ReturnNameFunction == nil and OptionTable.Data.UseWhitelist.UseWhitelist == true  then
         error ("Add ESP OBj function, Optiontable.Data.UseWhitelist.ReturnNameFunction == nil, Make sure it returns a string!")
 
     end
@@ -438,8 +441,6 @@ function ESPRenderer()
                                 local OutlineBoxPreset = OptionTable.ESPTextObjects.HpBarOutline
                                 local FilledBoxPreset = OptionTable.ESPTextObjects.HpBarFilled
                                 local HpCached = HpBarPreset.ReturnHPFunction(OptionTable)
-                                local presetthing = BarOffsetTable.Width
-                                local height = BarOffsetTable.Height
                                 if HpCached ~= nil then
                                     local HP = HpCached.Min / HpCached.Max
                                     local scale_factor = 1 / (ScreenPos.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
