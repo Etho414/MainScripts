@@ -1,18 +1,13 @@
---[[
-    Left to add
- 
-    Inventory Viewer
-    Somesort of GUI
-    Closed Only Chest ESP
-]]
 
+--[[
 -- Misc Settings
+_G.EspToggleKey = "Y"
 _G.SillyNames = true -- Will require restart, Adds in so silly names omg!
 _G.ScaleESPText = true
 _G.OutlineText = true -- Outlines ESP Text, Fixes text over lapping however looks more ugly, Requires restart !
 _G.UseLookAt = true -- Makes 2D box esp always show on screen!
 _G.UseTwoD = true -- true == 2D box's, false == 3D Box's
-
+_G.V2 = true 
 -- Chams Settings 
 _G.AllowChamsEtho = false -- This is the only thing that could possibly be detected, Setting this to false will remove any detection possible not possible.
 
@@ -83,17 +78,18 @@ _G.ChestTextSize = 25
 _G.ChestColor = Color3.fromRGB(255,255,255) 
 _G.ShowChestDistance = true  
 _G.ChestMaxDistance = 10000
+]]
 
 local Live;
-repeat wait(); Live = game.Workspace.Live until Live ~= nil 
+repeat wait(); Live = game.Workspace:FindFirstChild("Live") until Live and Live.Name and Live.Parent 
 local player;
 repeat wait(); player = game.Players.LocalPlayer until player and player.Name and player.Parent
 local Ingre;
-repeat wait(); Ingre = workspace.Ingredients until Ingre and Ingre.Parent and Ingre.Name 
+repeat wait(); Ingre = workspace:FindFirstChild("Ingredients") until Ingre and Ingre.Parent and Ingre.Name 
 local np;
-repeat wait() np = workspace.NPCs until np and np.Name and np.Parent
+repeat wait() np = workspace:FindFirstChild("NPCs") until np and np.Name and np.Parent
 local th;
-repeat wait() th = workspace.Thrown until th and th.Name and th.Parent
+repeat wait() th = workspace:FindFirstChild("Thrown") until th and th.Name and th.Parent
  
 
 local ESPBASE =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/EspBaseRewrite!.lua", true))()
@@ -671,7 +667,7 @@ for i,v in pairs(game.Workspace.Thrown:GetChildren()) do
 end
 
 game.Workspace.Thrown.ChildAdded:connect(function(v)
-    print(v:FindFirstChild("RootPart"))
+
     if v.Name == "EventFeatherRef"  then
         Inter("Owl spawned!",10)
         AddOwlToEsp(v)
@@ -828,7 +824,7 @@ end)
 
 game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
     if gpe then return end
-    if i.KeyCode == Enum.KeyCode.T then
+    if i.KeyCode == Enum.KeyCode[string.upper(_G.EspToggleKey)] then
         ESPBASE:Toggle()
 
     end
