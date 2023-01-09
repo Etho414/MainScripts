@@ -295,19 +295,19 @@ function ESPRenderer()
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
-            local PositionCachedInVector = CFtoVec(PositionCached)
+           
         
             
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
-                if PositionCached ~= nil and PositionCachedInVector ~= nil and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
+                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
-                    local LookedAtPositionInVector = CFtoVec(LookedAtPosition)
+
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
-                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] and LookedAtPosition ~= nil and LookedAtPositionInVector ~= nil then
+                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] and LookedAtPosition ~= nil then
                         local cam = game.Workspace.CurrentCamera
-                        local ScreenPos,OnS = cam:WorldToViewportPoint(PositionCachedInVector + OptionTable.Data.Vector3Offset)
+                        local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                         if OnS then
                             local TextTable = OptionTable.ESPTextObjects
                             local StringCached = OptionTable.Data.CalcStringFunction(OptionTable)

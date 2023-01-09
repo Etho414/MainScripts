@@ -9,6 +9,9 @@
         "Quad",
         "mouse1release",
         "keypress",
-        "Text"
+        "Text",
+        "makefolder",
+        "isfolder",
+        "writefile"
     ]
 }
