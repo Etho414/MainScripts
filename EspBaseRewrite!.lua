@@ -307,8 +307,6 @@ function ESPRenderer()
             table.remove(ESPListenTable,i)
         elseif DrawESP == false then
             VisibleText(false, OptionTable)
-        elseif (_G[OptionTable.GlobalVariableTable.TextToggle] == false and _G[OptionTable.GlobalVariableTable.BoxToggle] == false and _G[OptionTable.GlobalVariableTable.HpBarToggle] == false and  _G[OptionTable.GlobalVariableTable.ChamsToggle] == false) then
-            VisibleText(false,OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
    
@@ -554,11 +552,11 @@ function ESPRenderer()
                             if HighlightObj ~= nil and AdorneePart ~= nil then
                                 if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
                                     local ChildrenCached = #AdorneePart:GetChildren()
-                                    if HighlightObj.Adornee ~= AdorneePart then
+                                    if HighlightObj.Adornee ~= AdorneePart and OptionTable.Data.Highlight.Refreshing == false  then
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         HighlightObj.Adornee = AdorneePart
                                     end
-                                    if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() then
+                                    if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() and OptionTable.Data.Highlight.Refreshing == false then
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
                                     end

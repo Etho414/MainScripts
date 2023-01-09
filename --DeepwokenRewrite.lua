@@ -1,3 +1,4 @@
+local GuiService = game:GetService("GuiService")
 
 
 
@@ -106,6 +107,16 @@ _G.IngredientTextSize = 25
 _G.IngredientColor = Color3.fromRGB(255,255,255)
 _G.ShowIngredientDistance = true  
 _G.IngredientMaxDistance = 1000 -- Dont put too high or else it will be hella laggy!
+_G.WhitelistIngredients = {"galewax","gobletto"} -- Whitelist for ingredients (to help reduce lag) make sure everything is spelled properly (Caps dont matter). Leave blank to have no whitelist
+
+-- NPC ESP
+
+_G.NPCEsp = true 
+_G.NPCEspSize = 25
+_G.NPCColor = Color3.fromRGB(255,255,255)
+_G.ShowNpcDistance = true
+_G.NpcRenderDistance = 3000
+_G.NPCWhitelist = {} -- Whitelist for NPC's  make sure everything is spelled properly (Caps dont matter). Leave blank to have no whitelist
 
 
 local LocalPlayerFunctionVariable = function(PassedTable)
@@ -597,7 +608,9 @@ game.Workspace.Thrown.ChildAdded:connect(function(v)
     end   
 end)
  
+
 function AddIngredient(v)
+    
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
@@ -610,7 +623,13 @@ function AddIngredient(v)
             end,
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
                 if v then
-                    return v.CFrame
+                    if _G.WhitelistIngredients ~= {} then
+                        if table.find(_G.WhitelistIngredients,string.upper(v.Name)) ~= nil  then
+                            return v.CFrame
+                        end
+                    else
+                        return v.CFrame
+                    end
                 end 
                 return nil
             end,
@@ -639,7 +658,9 @@ function AddIngredient(v)
                     end
                 end,
             RunAfterEverthing = function(PassedTable)
-                    
+                for i,v in pairs(_G.WhitelistIngredients) do
+                    _G.WhitelistIngredients[i] = string.upper(v)
+                end
 
             end,
             Highlight = {
@@ -681,6 +702,104 @@ workspace.Ingredients.ChildAdded:connect(function(v)
 
 end)
 
+
+function AddNPCToEsp(v)
+    local OptionTable = {
+        ToBeRemoved = false,
+        Data = {
+            ModdedName = "",
+            TextOffset = 0,
+            Vector3Offset = Vector3.new(0,4,0),
+            BaseZIndex = 100000,
+            ReturnTeamCheck = function()
+                return false 
+            end,
+            ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
+                print(table.find(_G.NPCWhitelist,string.upper(v.Name)),_G.NPCWhitelist ~= {})
+                if v and v:FindFirstChild("HumanoidRootPart")    then
+                    if _G.NPCWhitelist ~= {} then
+                        if table.find(_G.NPCWhitelist,string.upper(v.Name)) ~= nil then
+                            return v.HumanoidRootPart.CFrame
+                        end
+                    else
+                        return v.HumanoidRootPart.CFrame
+                    end
+                   
+                end 
+                return nil
+            end,
+            ReturnLocalPlayerpos = LocalPlayerFunctionVariable,
+            CalcStringFunction = function(PassedTable)
+                local Line1Text = ""
+                local Line2Text = ""
+                local Line3Text = ""
+                if v then
+                    local MagnitudeChached = Round((PassedTable.Data.ReturnPosFunc() - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude)
+                    if PassedTable.Data.ModdedName ~= "" then
+                        Line1Text = PassedTable.Data.ModdedName
+                    else
+                        Line1Text = v.Name
+                    end
+                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        Line1Text = Line1Text.." ["..tostring(MagnitudeChached).."] "
+                    end
+                    
+                end
+                return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
+            end,
+            DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
+                if ESPBASE:CheckBasePartValid(v) == false then
+                    PassedTable.ToBeRemoved = true
+                    end
+                end,
+            RunAfterEverthing = function(PassedTable)
+                for i,v in pairs(_G.NPCWhitelist) do
+                    _G.NPCWhitelist[i] = string.upper(v)
+                end
+
+            end,
+            Highlight = {
+                 UseChams = false,
+
+            },
+            BoxESP = {
+                UseBoxESP = false
+            },
+            HpBar = {
+                UseHpBar = false,
+            },
+            UseWhitelist = {
+                UseWhitelist = false
+            }
+        },
+        GlobalVariableTable = {
+
+            TextToggle = "NPCEsp",
+            TextSize = "NPCEspSize",
+            TextColor = "NPCColor",
+            ShowDistance = "ShowNpcDistance",
+            MaxRenderDistance = "NpcRenderDistance",
+            ScaledText = "ScaleESPText",
+        }
+
+
+        
+    }
+    ESPBASE:AddESPObj(OptionTable)
+
+end
+
+
+
+
+for i,v in pairs(workspace.NPCs:GetChildren()) do
+    AddNPCToEsp(v)
+
+end
+
+workspace.NPCs.ChildAdded:connect(function(v)
+    AddNPCToEsp(v)
+end)
 
 
 game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
