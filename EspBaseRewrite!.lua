@@ -307,8 +307,8 @@ function ESPRenderer()
             table.remove(ESPListenTable,i)
         elseif DrawESP == false then
             VisibleText(false, OptionTable)
-        elseif not (_G[OptionTable.GlobalVariableTable.TextToggle] == true and _G[OptionTable.GlobalVariableTable.BoxToggle] == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true and  _G[OptionTable.GlobalVariableTable.ChamsToggle] == true) then
-            VisibleText(false,OptionTable)
+        --[[elseif not (_G[OptionTable.GlobalVariableTable.TextToggle] == true and _G[OptionTable.GlobalVariableTable.BoxToggle] == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true and  _G[OptionTable.GlobalVariableTable.ChamsToggle] == true) then
+            VisibleText(false,OptionTable)]]
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
    
