@@ -439,40 +439,37 @@ function AddMobToESP(v)
                 local Line2Text = ""
                 local Line3Text = ""
 
-                local CFramePosition;
-                if v  and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    if v:FindFirstChild("HumanoidRootPart") then
-                        CFramePosition = v.HumanoidRootPart.Position
-                    elseif v:FindFirstChild("SpawnCF")  then
-                        CFramePosition = v.SpawnCF.Value
-                        CFramePosition = Vector3.new(CFramePosition.X,CFramePosition.Y,CFramePosition.Z)
-                    end
-                end
+                local CFramePosition = CFtoVec(PassedTable.Data.ReturnPosFunc())
                 if CFramePosition then  
-                    local MagnitudeChached = (CFramePosition - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
-                    if MagnitudeChached then 
-                        if _G[PassedTable.GlobalVariableTable.ShowHealth] == true then
+                    
+                    if _G[PassedTable.GlobalVariableTable.ShowHealth] == true then
+                        if v:FindFirstChild("Humanoid") then
                             local MinHp = v.Humanoid.Health
                             local MaxHp = v.Humanoid.MaxHealth
                             if _G[PassedTable.GlobalVariableTable.ShowHealthPercent] == true then
                                 Line3Text = Line3Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
-                           else
+                            else
                                 Line3Text = Line3Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
                             end
                         end
-                        if PassedTable.Data.ModdedName ~= "" then
-                            Line3Text = Line3Text..PassedTable.Data.ModdedName.." "
-                        else
-                            Line3Text = Line3Text..v.Name.." "
-                        end
-                        if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        
+                    end
+                    if PassedTable.Data.ModdedName ~= "" then
+                        Line3Text = Line3Text..PassedTable.Data.ModdedName.." "
+                    else
+                        Line3Text = Line3Text..v.Name.." "
+                    end
+
+                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        local MagnitudeChached = (CFramePosition - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
+                        if MagnitudeChached then 
                             Line3Text = Line3Text.."["..tostring(Round(MagnitudeChached)).."] "
                         end
-                        if _G[PassedTable.GlobalVariableTable.ShowPosture] == true then
-                            if v:FindFirstChild("BreakMeter") then
-                                Line2Text = Line2Text.."P: "..tostring(CalcPercent(v.BreakMeter.Value,v.BreakMeter.MaxValue)).."% "
-                            end 
-                        end
+                    end
+                    if _G[PassedTable.GlobalVariableTable.ShowPosture] == true then
+                        if v:FindFirstChild("BreakMeter") then
+                            Line2Text = Line2Text.."P: "..tostring(CalcPercent(v.BreakMeter.Value,v.BreakMeter.MaxValue)).."% "
+                        end 
                     end
                 end
                 return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
@@ -667,15 +664,17 @@ for i,v in pairs(game.Workspace.Thrown:GetChildren()) do
     if v.Name == "EventFeatherRef"  then
         Inter("Owl spawned!",10)
         AddOwlToEsp(v)
+    elseif v:FindFirstChild("RootPart") then
+        AddChestToEsp(v)
     end 
 end
 
 game.Workspace.Thrown.ChildAdded:connect(function(v)
+    print(v:FindFirstChild("RootPart"))
     if v.Name == "EventFeatherRef"  then
         Inter("Owl spawned!",10)
         AddOwlToEsp(v)
-    elseif  v:FindFirstChild("RootPart") and v:FindFirstChild("Lid") then
-        print("DADADADD")
+    elseif v:FindFirstChild("RootPart") then
         AddChestToEsp(v)
     end   
 end)
