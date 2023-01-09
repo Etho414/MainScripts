@@ -48,6 +48,7 @@ local ESPFunctionReturnTable = {}
 
 _G.AllowChamsEtho = _G.AllowChamsEtho or false 
 if _G.AllowChamsEtho == true then
+    print("ALLOWING CHAMS FOLDER HOLY MOLY SHMOLYYYY")
     ChamsFolder = Instance.new("Folder")
     syn.protect_gui(ChamsFolder)
     ChamsFolder.Parent = game.CoreGui
@@ -550,14 +551,11 @@ function ESPRenderer()
                             local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
                             local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
                             
-                            print("555",HighlightObj ~= nil , AdorneePart ~= nil)
                             if HighlightObj ~= nil and AdorneePart ~= nil then
                                 
-                                print("1",ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true,_G[OptionTable.GlobalVariableTable.ChamsToggle] == true)
                                 if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
                                     
                                     local ChildrenCached = #AdorneePart:GetChildren()
-                                    print(ChildrenCached,"----")
                                     if HighlightObj.Adornee ~= AdorneePart and OptionTable.Data.Highlight.Refreshing == false  then
                                         print("2") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
