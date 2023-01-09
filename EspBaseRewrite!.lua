@@ -249,6 +249,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
     OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
     OptionTable.Data.TextOutline = OptionTable.Data.TextOutline or false 
+    OptionTable.Data.Highlight.UseChams = OptionTable.Data.Highlight.UseChams or false 
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)

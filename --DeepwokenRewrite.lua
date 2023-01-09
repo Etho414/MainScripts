@@ -77,6 +77,12 @@ _G.NpcRenderDistance = 3000
 _G.NPCWhitelist = {} -- Whitelist for NPC's, Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
 
 
+-- Chest ESP
+_G.ChestEsp  = true 
+_G.ChestTextSize = 25 
+_G.ChestColor = Color3.fromRGB(255,255,255) 
+_G.ShowChestDistance = true  
+_G.ChestMaxDistance = 10000
 
 local Live;
 repeat wait(); Live = game.Workspace.Live until Live ~= nil 
@@ -498,9 +504,6 @@ function AddMobToESP(v)
                     end
                 end,
                 BarOffsetTable = BarOffset
-            },
-            UseWhitelist = {
-                UseWhitelist = false
             }
         },
         GlobalVariableTable = {
@@ -546,7 +549,62 @@ game.Workspace.Live.ChildAdded:connect(function(v)
     end
 end)
 
+function AddChestToEsp(v)
+    local OptionTable = {
+        ToBeRemoved = false,
+        Data = {
+            ModdedName = "",
+            TextOffset = 0,
+            TextOutline = _G.OutlineText,
+            Vector3Offset = Vector3.new(0,4,0),
+            BaseZIndex = 100000,
+            ReturnTeamCheck = function()
+                return false 
+            end,
+            ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
+                if v and v:FindFirstChild("RootPart") then
+                    return v.RootPart.CFrame
+                end 
+                return nil
+            end,
+            ReturnLocalPlayerpos = LocalPlayerFunctionVariable,
+            CalcStringFunction = function(PassedTable)
+                local Line1Text = ""
+                local Line2Text = ""
+                local Line3Text = ""
+                if v then
+                    Line1Text = "CHEST"
+                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        local MagnitudeChached = (v.RootPart.Position - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
+                        if MagnitudeChached then
+                            Line1Text = Line1Text .." ["..tostring(Round(MagnitudeChached)).."]"
+                        end
+                    end
+                end
+                return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
+            end,
+            DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
+                if ESPBASE:CheckBasePartValid(v) == false then
+                    PassedTable.ToBeRemoved = true
+                end
+            end
+        },
+        GlobalVariableTable = {
+            
+            TextToggle = "OwlEsp",
+            TextSize = "OwlTextSize",
+            TextColor = "OwlColor",
+            ShowDistance = "ShowOwlDistance",
+            MaxRenderDistance = "OwlMaxDistance",
+            ScaledText = "ScaleESPText",
+        }
 
+
+        
+    }
+    ESPBASE:AddESPObj(OptionTable)
+    
+end
 
 function AddOwlToEsp(v)
     local OptionTable = {
@@ -585,33 +643,16 @@ function AddOwlToEsp(v)
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
-                    end
-                end,
-            RunAfterEverthing = function(PassedTable)
-                    
-
-            end,
-            Highlight = {
-                 UseChams = false,
-
-            },
-            BoxESP = {
-                UseBoxESP = false
-            },
-            HpBar = {
-                UseHpBar = false,
-            },
-            UseWhitelist = {
-                UseWhitelist = false
-            }
+                end
+            end
         },
         GlobalVariableTable = {
             
-            TextToggle = "OwlEsp",
-            TextSize = "OwlTextSize",
-            TextColor = "OwlColor",
-            ShowDistance = "ShowOwlDistance",
-            MaxRenderDistance = "OwlMaxDistance",
+            TextToggle = "ChestEsp",
+            TextSize = "ChestTextSize",
+            TextColor = "ChestColor",
+            ShowDistance = "ShowChestDistance",
+            MaxRenderDistance = "ChestMaxDistance",
             ScaledText = "ScaleESPText",
         }
 
@@ -633,6 +674,8 @@ game.Workspace.Thrown.ChildAdded:connect(function(v)
     if v.Name == "EventFeatherRef"  then
         Inter("Owl spawned!",10)
         AddOwlToEsp(v)
+    elseif v.Name == "Model" and v:FindFirstChild("RootPart") and v:FindFirstChild("Lid") then
+        AddChestToEsp(v)
     end   
 end)
  
@@ -680,25 +723,8 @@ function AddIngredient(v)
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
-                    end
-                end,
-            RunAfterEverthing = function(PassedTable)
-                
-
-            end,
-            Highlight = {
-                 UseChams = false,
-
-            },
-            BoxESP = {
-                UseBoxESP = false
-            },
-            HpBar = {
-                UseHpBar = false,
-            },
-            UseWhitelist = {
-                UseWhitelist = false
-            }
+                end
+            end
         },
         GlobalVariableTable = {
             
@@ -769,27 +795,8 @@ function AddNPCToEsp(v)
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
-                    end
-                end,
-            RunAfterEverthing = function(PassedTable)
-                for i,v in pairs(_G.NPCWhitelist) do
-                    _G.NPCWhitelist[i] = string.upper(v)
                 end
-
-            end,
-            Highlight = {
-                 UseChams = false,
-
-            },
-            BoxESP = {
-                UseBoxESP = false
-            },
-            HpBar = {
-                UseHpBar = false,
-            },
-            UseWhitelist = {
-                UseWhitelist = false
-            }
+            end
         },
         GlobalVariableTable = {
 
