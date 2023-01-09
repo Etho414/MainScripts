@@ -5,7 +5,8 @@ local Live;
 repeat wait(); Live = game.Workspace.Live until Live ~= nil 
 local player;
 repeat wait(); player = game.Players.LocalPlayer until player and player.Name and player.Parent
-
+local Ingre;
+repeat wait(); Ingre = workspace.Ingredients until Ingre and Ingre.Parent and Ingre.Name 
 local ESPBASE =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/EspBaseRewrite!.lua", true))()
 
 _G.AllowChamsEtho = true 
@@ -98,6 +99,13 @@ _G.OwlTextSize = 30
 _G.OwlColor = Color3.fromRGB(255,255,255)
 _G.ShowOwlDistance = true 
 _G.OwlMaxDistance = 100000
+
+-- Ingredient ESP
+_G.IngredientESP = true 
+_G.IngredientTextSize = 25
+_G.IngredientColor = Color3.fromRGB(255,255,255)
+_G.ShowIngredientDistance = true  
+_G.IngredientMaxDistance = 1000 -- Dont put too high or else it will be hella laggy!
 
 
 local LocalPlayerFunctionVariable = function(PassedTable)
@@ -589,6 +597,91 @@ game.Workspace.Thrown.ChildAdded:connect(function(v)
     end   
 end)
  
+function AddIngredient(v)
+    local OptionTable = {
+        ToBeRemoved = false,
+        Data = {
+            ModdedName = "",
+            TextOffset = 0,
+            Vector3Offset = Vector3.new(0,0,0),
+            BaseZIndex = 1,
+            ReturnTeamCheck = function()
+                return false 
+            end,
+            ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
+                if v then
+                    return v.CFrame
+                end 
+                return nil
+            end,
+            ReturnLocalPlayerpos = LocalPlayerFunctionVariable,
+            CalcStringFunction = function(PassedTable)
+                local Line1Text = ""
+                local Line2Text = ""
+                local Line3Text = ""
+                if v then
+                    local MagnitudeChached = (v.Position - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
+                    if PassedTable.Data.ModdedName ~= nil and PassedTable.Data.ModdedName ~= "" then
+                        Line1Text = PassedTable.Data.ModdedName
+                    else
+                        Line1Text = v.Name
+                    end 
+                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        Line1Text = Line1Text.." ["..tostring(math.floor(MagnitudeChached)).."]"
+                    end
+                    
+                end
+                return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
+            end,
+            DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
+                if ESPBASE:CheckBasePartValid(v) == false then
+                    PassedTable.ToBeRemoved = true
+                    end
+                end,
+            RunAfterEverthing = function(PassedTable)
+                    
+
+            end,
+            Highlight = {
+                 UseChams = false,
+
+            },
+            BoxESP = {
+                UseBoxESP = false
+            },
+            HpBar = {
+                UseHpBar = false,
+            },
+            UseWhitelist = {
+                UseWhitelist = false
+            }
+        },
+        GlobalVariableTable = {
+            
+            TextToggle = "IngredientESP",
+            TextSize = "IngredientTextSize",
+            TextColor = "IngredientColor",
+            ShowDistance = "ShowIngredientDistance",
+            MaxRenderDistance = "IngredientMaxDistance",
+            ScaledText = "ScaleESPText",
+        }
+
+
+        
+    }
+    ESPBASE:AddESPObj(OptionTable)
+
+end
+for i,v in pairs(workspace.Ingredients:GetChildren()) do
+    
+    AddIngredient(v)
+end
+workspace.Ingredients.ChildAdded:connect(function(v)
+    AddIngredient(v)
+
+end)
+
+
 
 game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
     if gpe then return end
