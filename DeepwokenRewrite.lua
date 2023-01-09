@@ -78,6 +78,7 @@ _G.ChestTextSize = 25
 _G.ChestColor = Color3.fromRGB(255,255,255) 
 _G.ShowChestDistance = true  
 _G.ChestMaxDistance = 10000
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/DeepwokenRewrite.lua", true))()
 ]]
 
 local Live;
