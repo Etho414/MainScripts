@@ -549,8 +549,11 @@ function ESPRenderer()
                             local HighlightObj = OptionTable.Data.Highlight.HighlightObj
                             local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
                             local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
+                            
+                            print("555",HighlightObj ~= nil , AdorneePart ~= nil)
                             if HighlightObj ~= nil and AdorneePart ~= nil then
-                                print("1")
+                                
+                                print("1",ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true,_G[OptionTable.GlobalVariableTable.ChamsToggle] == true)
                                 if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
                                     
                                     local ChildrenCached = #AdorneePart:GetChildren()
@@ -576,7 +579,6 @@ function ESPRenderer()
                                     HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
                                     HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
                                     HighlightObj2.Enabled = false 
-                                    print("3") 
                                 else
                                     HighlightObj.Enabled = false
                                     HighlightObj2.Enabled = false 
