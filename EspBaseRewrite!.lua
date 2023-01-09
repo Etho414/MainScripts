@@ -342,23 +342,23 @@ function ESPRenderer()
                                 TextTable.Text3.Text = StringCached.Line3
     
                                 -- Settings positions of text objects 
-                                local PositionX = math.floor(ScreenPos.X)
+                              
                                 local Text1OffsetX = (TextTable.Text1.TextBounds.X / 2)
                                 local Text2OffsetX = (TextTable.Text2.TextBounds.X / 2)
-    
-                                local PositionY = math.floor(ScreenPos.Y)
+                                local PositionX = math.floor(ScreenPos.X) - Text1OffsetX
+                                
                                 local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
                                 local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
                                 local LineOffset = 2
-    
+    local PositionY = math.floor(ScreenPos.Y) - TextOffset
     
                                 if TextTable.Text1.Text == "" then
-                                    TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
+                                    TextTable.Text1.Position = Vector2.new(PositionX,((PositionY) - OptionTable.Data.TextOffset) + Text1OffsetY)
                                 else
-                                    TextTable.Text1.Position = Vector2.new(PositionX - Text1OffsetX,(PositionY - TextOffset) - OptionTable.Data.TextOffset)
+                                    TextTable.Text1.Position = Vector2.new(PositionX,(PositionY) - OptionTable.Data.TextOffset)
                                 end
                                 if TextTable.Text2.Text == "" then
-                                    TextTable.Text2.Position = Vector2.new(PositionX - Text1OffsetX,((PositionY - TextOffset) - OptionTable.Data.TextOffset) + Text1OffsetY)
+                                    TextTable.Text2.Position = Vector2.new(PositionX ,((PositionY) - OptionTable.Data.TextOffset) + Text1OffsetY)
                                 else
                                     TextTable.Text2.Position = Vector2.new(PositionX - Text2OffsetX,(TextTable.Text1.Position.Y - LineOffset -( Text1OffsetY)))
                                 end
