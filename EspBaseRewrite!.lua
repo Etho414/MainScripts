@@ -235,7 +235,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if OptionTable.Data.RunAfterEverthing == nil then OptionTable.Data.RunAfterEverthing = function() end end
     if OptionTable.Data.UseWhitelist == nil or OptionTable.Data.UseWhitelist.UseWhitelist == nil then OptionTable.Data.UseWhitelist = {UseWhitelist = false,ReturnNameFunction = function() return "" end} end 
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
-
+    if OptionTable.Data.HpBar == nil or OptionTable.Data.HpBar.UseHpBar == nil then OptionTable.Data.HpBar = {UseHpBar = false} end 
     if OptionTable.Data.BoxESP.UseBoxESP == true then
         if OptionTable.Data.BoxESP.OffsetTable == nil then
             error("Add ESp OBj function, OptionTable.Data.BoxESP.OffsetTable == nil Example : TopLeft = CFrame.new(-2,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(-2,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)")
