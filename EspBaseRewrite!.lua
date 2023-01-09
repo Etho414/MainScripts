@@ -25,7 +25,7 @@ repeat wait(); player =  game.Players.LocalPlayer until player and player.Name a
 
 -- Backup Global Variables incase they are not set
 
-_G.EthoChamsDefaultESPToggle = true
+_G.EthoChamsDefaultESPToggle = false
 _G.EthoChamsDefaultESPTextSize = 30
 _G.EthoChamsDefaultESPTextColor = Color3.fromRGB(255,255,255)
 _G.EthoChamsDefaultESPMaxRenderDistance = 10000
@@ -307,7 +307,7 @@ function ESPRenderer()
             table.remove(ESPListenTable,i)
         elseif DrawESP == false then
             VisibleText(false, OptionTable)
-        elseif PauseRender == false then
+        elseif PauseRender == false and (_G[OptionTable.GlobalVariableTable.TextToggle] == true or _G[OptionTable.GlobalVariableTable.BoxToggle] == true or _G[OptionTable.GlobalVariableTable.HpBarToggle] == true or  _G[OptionTable.GlobalVariableTable.ChamsToggle] == true) then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
    
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
