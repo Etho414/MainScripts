@@ -50,7 +50,7 @@ _G.AllowChamsEtho = _G.AllowChamsEtho or false
 if _G.AllowChamsEtho == true then
     print("ALLOWING CHAMS FOLDER HOLY MOLY SHMOLYYYY")
     ChamsFolder = Instance.new("Folder")
-    syn.protect_gui(ChamsFolder)
+   
     ChamsFolder.Parent = game.CoreGui
     print(ChamsFolder.Parent)
 end
@@ -248,7 +248,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     OptionTable.Data.ReturnTeamCheck = OptionTable.Data.ReturnTeamCheck or function() return false end 
     OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
     OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
-
+    OptionTable.Data.TextOutline = OptionTable.Data.TextOutline or false 
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
@@ -266,6 +266,9 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     local ESPPresetText1 = Drawing.new("Text")
     local ESPPresetText2 = Drawing.new("Text")
     local ESPPresetText3 = Drawing.new("Text")
+    ESPPresetText1.Outline = OptionTable.Data.TextOutline
+    ESPPresetText2.Outline = OptionTable.Data.TextOutline
+    ESPPresetText3.Outline = OptionTable.Data.TextOutline
     local ESPPresetBox = Drawing.new("Quad")
     local HpBarOutlineBox = Drawing.new("Quad")
     local HpBarFilledBox = Drawing.new("Quad")

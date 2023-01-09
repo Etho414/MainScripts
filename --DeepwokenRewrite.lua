@@ -1,3 +1,11 @@
+--[[
+    Left to add
+    Chest ESP
+    Inventory Viewer
+    Somesort of GUI
+
+]]
+
 -- Chams Settings 
 _G.AllowChamsEtho = true -- This is the only thinbg that could possibly be detected, However merh and me have been using it and no bans for around a week
 
@@ -59,12 +67,12 @@ _G.NPCEspSize = 25
 _G.NPCColor = Color3.fromRGB(255,255,255)
 _G.ShowNpcDistance = true
 _G.NpcRenderDistance = 3000
-_G.NPCWhitelist = {} -- Whitelist for NPC's HIGHLY RECOMMENED (As it will be laggy wihtout one..), Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
+_G.NPCWhitelist = {} -- Whitelist for NPC's, Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
 
 -- Misc Settings
 _G.SillyNames = true -- Will require restart
 _G.ScaleESPText = true
-
+_G.OutlineText = true -- Outlines ESP Text 
 _G.UseLookAt = true -- Makes 2D box esp always show on screen!
 _G.UseTwoD = true -- true == 2D box's, false == 3D Box's
 
@@ -120,9 +128,7 @@ function Inter(con,dura)
     coroutine.wrap(CreateNotif)(con,dura)
 end
 
-local RandomTextTable = {"Judge is ugly asf","I LOVE PEBBELS","ASMR Intense kisses for you to sleep","Saiah WAS NOT taken","Age of Empires","Morii is like dorii got emm","Extinct Species will NEVER get a girl","OMG do clan GAMES!","i love peanut",""}
-
-Inter(RandomTextTable[math.random(1,#RandomTextTable)],10)
+local RandomTextTable = {"Judge is ugly asf","I LOVE PEBBELS","ASMR Intense kisses for you to sleep  💖" ,"Saiah WAS NOT taken","Age of Empires","Morii is like dorii got emm","Extinct Species will NEVER get a girl","OMG do clan GAMES!","i love peanut","ON YOUR FEET SOLDIER WE ARE LEAVING","Soon.","I love big mike"}
 
 
 
@@ -173,7 +179,6 @@ function ReturnPowerLevel(v)
     local Level =  math.floor((Points / 15) + 1)
     return Level
 end
-ESPBASE:Toggle()
 
 local player = game.Players.LocalPlayer
 local TotalPlayer = 10000
@@ -185,6 +190,7 @@ function AddPlayerESP(v)
             ModdedName = "",
             BaseZIndex = TotalPlayer, 
             TextOffset = 0,
+            TextOutline = _G.OutlineText,
             Vector3Offset = Vector3.new(0,3,0),
             ReturnTeamCheck = function()
                 return false 
@@ -403,10 +409,11 @@ function AddMobToESP(v)
             ModdedName = MobName,
             BaseZIndex = TotalMobs,
             TextOffset = 0,
+            TextOutline = _G.OutlineText,
             Vector3Offset = Vector3.new(0,3,0),
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
                 if v  then
-                    if v:FindFirstChild("HumanoidRootPart") then
+                    if v:FindFirstChild("HumanoidRootPart") and v.HumanoidRootPart.CFrame then
                         return v.HumanoidRootPart.CFrame
                     elseif v:FindFirstChild("SpawnCF") then
                         return v.SpawnCF.Value
@@ -543,8 +550,8 @@ function AddOwlToEsp(v)
         ToBeRemoved = false,
         Data = {
             ModdedName = "",
-            
             TextOffset = 0,
+            TextOutline = _G.OutlineText,
             Vector3Offset = Vector3.new(0,4,0),
             BaseZIndex = 100000,
             ReturnTeamCheck = function()
@@ -562,9 +569,13 @@ function AddOwlToEsp(v)
                 local Line2Text = ""
                 local Line3Text = ""
                 if v then
-                    local MagnitudeChached = (v.Position - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
-                    Line1Text = "OWL".." ["..tostring(Round(MagnitudeChached)).."]"
-                    
+                    Line1Text = "OWL"
+                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                        local MagnitudeChached = (v.Position - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
+                        if MagnitudeChached then
+                            Line1Text = Line1Text .." ["..tostring(Round(MagnitudeChached)).."]"
+                        end
+                    end
                 end
                 return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
             end,
@@ -632,6 +643,7 @@ function AddIngredient(v)
         Data = {
             ModdedName = "",
             TextOffset = 0,
+            TextOutline = _G.OutlineText,
             Vector3Offset = Vector3.new(0,0,0),
             BaseZIndex = 1,
             ReturnTeamCheck = function()
@@ -720,6 +732,7 @@ function AddNPCToEsp(v)
         Data = {
             ModdedName = "",
             TextOffset = 0,
+            TextOutline = _G.OutlineText,
             Vector3Offset = Vector3.new(0,4,0),
             BaseZIndex = 100000,
             ReturnTeamCheck = function()
@@ -793,11 +806,8 @@ function AddNPCToEsp(v)
 end
 
 
-
-
 for i,v in pairs(workspace.NPCs:GetChildren()) do
     AddNPCToEsp(v)
-
 end
 
 workspace.NPCs.ChildAdded:connect(function(v)
@@ -813,3 +823,8 @@ game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
     end
 
 end)
+
+
+ESPBASE:Toggle()
+
+Inter(RandomTextTable[math.random(1,#RandomTextTable)],10)
