@@ -483,7 +483,7 @@ function ESPRenderer()
                                 end
                             end
     
-                            if OptionTable.Data.HpBar.UseHpBar == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true then
+                            if OptionTable.Data.HpBar ~= nil and OptionTable.Data.HpBar.UseHpBar == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true then
                                 local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
                                 local HpBarPreset = OptionTable.Data.HpBar
                                 local BarOffsetTable = HpBarPreset.BarOffsetTable
