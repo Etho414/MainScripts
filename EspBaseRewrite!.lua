@@ -114,15 +114,15 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
         if OptionTable.Data.UseWhitelist.UseWhitelist == true and i ~= "HoBarFilled" then
             local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
             if name and FindPlayer(name,OptionTable) == true  then
-                v.ZIndex = 10
+                v.ZIndex =  OptionTable.Data.BaseZIndex + 10000
                 v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
             else
-                v.ZIndex = 1
+                v.ZIndex = OptionTable.Data.BaseZIndex
                 v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
 
             end
         else
-            v.ZIndex = 1
+            v.ZIndex =  OptionTable.Data.BaseZIndex
             v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
 
         end
@@ -218,7 +218,8 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.UseTwoD = GlobalVariablePreset.UseTwoD or "EthoChamsDefaultESPUseTwoD"
     GlobalVariablePreset.UseLookAt = GlobalVariablePreset.UseLookAt or "EthoChamsDefaultESPLookAt"
     GlobalVariablePreset.ShowTeam = GlobalVariablePreset.ShowTeam or "EthoChamsDefaultESPShowTeam"
-
+    
+    OptionTable.Data.BaseZIndex = OptionTable.Data.BaseZIndex or 1 
     OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
     if OptionTable.Data.BoxESP.UseBoxESP == true then
         if OptionTable.Data.BoxESP.OffsetTable == nil then
@@ -295,15 +296,12 @@ function ESPRenderer()
             VisibleText(false, OptionTable)
         elseif PauseRender == false then
             local PositionCached = OptionTable.Data.ReturnPosFunc(OptionTable) 
-           
-        
-            
+   
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
                     local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
-
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
                     if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] and LookedAtPosition ~= nil then
                         local cam = game.Workspace.CurrentCamera
