@@ -197,10 +197,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     elseif OptionTable.Data.ReturnTeamCheck == nil then
         error("AddESPObj Function, ReturnTeamCheck == nil, aa7") 
     end
-    OptionTable.Data.ModdedName = OptionTable.Data.ModdedName or ""
-    OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
-    OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
-    OptionTable.ToBeRemoved = OptionTable.ToBeRemoved or false
+    
     
     local GlobalVariablePreset = OptionTable.GlobalVariableTable
     if GlobalVariablePreset == nil then
@@ -225,8 +222,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     GlobalVariablePreset.UseLookAt = GlobalVariablePreset.UseLookAt or "EthoChamsDefaultESPLookAt"
     GlobalVariablePreset.ShowTeam = GlobalVariablePreset.ShowTeam or "EthoChamsDefaultESPShowTeam"
     
-    OptionTable.Data.BaseZIndex = OptionTable.Data.BaseZIndex or 1 
-    OptionTable.Data.BoxESP = OptionTable.Data.BoxESP or {UseBoxESP = false}
+
     if OptionTable.Data.BoxESP.UseBoxESP == true then
         if OptionTable.Data.BoxESP.OffsetTable == nil then
             error("Add ESp OBj function, OptionTable.Data.BoxESP.OffsetTable == nil Example : TopLeft = CFrame.new(-2,2,0),TopRight = CFrame.new(2,2,0),BottomLeft = CFrame.new(-2,-3.5,0),BottomRight = CFrame.new(2,-3.5,0)")
@@ -244,13 +240,18 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         error ("Add ESP OBj function, Optiontable.Data.UseWhitelist.ReturnNameFunction == nil, Make sure it returns a string!")
 
     end
-
-    OptionTable.Data.ReturnTeamCheck = OptionTable.Data.ReturnTeamCheck or function() return false end 
-    OptionTable.Data.TextOffset = OptionTable.Data.TextOffset or 0
-    OptionTable.Data.Vector3Offset = OptionTable.Data.Vector3Offset or Vector3.new(0,0,0)
-    OptionTable.Data.TextOutline = OptionTable.Data.TextOutline or false 
+    if OptionTable.ToBeRemoved  == nil then OptionTable.ToBeRemoved  = false end 
+    if OptionTable.Data.ModdedName == nil then OptionTable.Data.ModdedName = "" end 
+    if OptionTable.Data.TextOffset == nil then  OptionTable.Data.TextOffset = 0 end 
+    if OptionTable.Data.Vector3Offset == nil then OptionTable.Data.Vector3Offset = Vector3.new(0,0,0) end
+    if OptionTable.Data.BoxESP == nil or OptionTable.Data.BoxESP.UseBoxESP == nil then OptionTable.Data.BoxESP = {UseBoxESP = false} end 
+    if OptionTable.Data.BaseZIndex == nil then OptionTable.Data.BaseZIndex = 1 end
+    if OptionTable.Data.ReturnTeamCheck == nil then OptionTable.Data.ReturnTeamCheck = function() return false end end
+    if OptionTable.Data.TextOffset == nil then OptionTable.Data.TextOffset = 0 end 
+    if OptionTable.Data.Vector3Offset == nil then OptionTable.Data.Vector3Offset = Vector3.new(0,0,0) end
+    if OptionTable.Data.TextOutline == nil then OptionTable.Data.TextOutline = false end 
     if OptionTable.Data.Highlight == nil or OptionTable.Data.Highlight.UseChams == nil then OptionTable.Data.Highlight = {UseChams = false} end
- 
+    if OptionTable.Data.RunAfterEverthing == nil then OptionTable.Data.RunAfterEverthing = function() end end
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
         local Highlight = Instance.new("Highlight",ChamsFolder)
