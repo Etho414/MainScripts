@@ -114,7 +114,6 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
         if OptionTable.Data.UseWhitelist.UseWhitelist == true and i ~= "HoBarFilled" then
             local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
             if name and FindPlayer(name,OptionTable) == true  then
-                v.ZIndex =  OptionTable.Data.BaseZIndex + 10000
                 v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
             else
                 
