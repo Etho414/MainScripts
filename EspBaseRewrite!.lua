@@ -163,6 +163,7 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             HighlightObj2.Adornee = nil
             wait(0.3)
             PassedTable.Data.Highlight.Refreshing = false 
+            print("Refreshing",PartToAdornee)
         end
         
         
@@ -558,11 +559,9 @@ function ESPRenderer()
                                     
                                     local ChildrenCached = #AdorneePart:GetChildren()
                                     if HighlightObj.Adornee ~= AdorneePart and OptionTable.Data.Highlight.Refreshing == false  then
-                                        print("2") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         HighlightObj.Adornee = AdorneePart
-                                    elseif ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() and OptionTable.Data.Highlight.Refreshing == false then
-                                        print("3") 
+                                    elseif ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and OptionTable.Data.Highlight.Refreshing == false then 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
                                     end
@@ -577,7 +576,6 @@ function ESPRenderer()
                                     HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
                                     HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
                                     HighlightObj2.Enabled = true 
-                                    print("IOIEORIEORIEORIE")
                                 else
                                     HighlightObj.Enabled = false
                                     HighlightObj2.Enabled = false 
