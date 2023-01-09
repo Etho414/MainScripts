@@ -312,11 +312,10 @@ function ESPRenderer()
    
             local LocalPlayerPositionCached = OptionTable.Data.ReturnLocalPlayerpos(OptionTable)
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
-            if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
-                if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
-                    
-                    local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
-                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance]  then
+            if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil then
+                 local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
+                if  MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] then
+                    if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false   then
                         local cam = game.Workspace.CurrentCamera
                         local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                         if OnS then
@@ -349,7 +348,7 @@ function ESPRenderer()
                                 local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
                                 local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
                                 local LineOffset = 2
-    local PositionY = math.floor(ScreenPos.Y) - TextOffset
+                                local PositionY = math.floor(ScreenPos.Y) - TextOffset
     
                                 if TextTable.Text1.Text == "" then
                                     TextTable.Text1.Position = Vector2.new(PositionX,((PositionY) - OptionTable.Data.TextOffset) + Text1OffsetY)
@@ -587,7 +586,8 @@ function ESPRenderer()
             else
                 VisibleText(false, OptionTable)
             end
-           
+        else
+            VisibleText(false,OptionTable)   
         end
     end
     PauseRender = false
