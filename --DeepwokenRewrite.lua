@@ -72,7 +72,7 @@ _G.NPCWhitelist = {} -- Whitelist for NPC's, Caps dont matter, Requries restart 
 -- Misc Settings
 _G.SillyNames = true -- Will require restart
 _G.ScaleESPText = true
-_G.OutlineText = true -- Outlines ESP Text 
+_G.OutlineText = true -- Outlines ESP Text, Fixes text over lapping however looks more ugly
 _G.UseLookAt = true -- Makes 2D box esp always show on screen!
 _G.UseTwoD = true -- true == 2D box's, false == 3D Box's
 
@@ -181,7 +181,7 @@ function ReturnPowerLevel(v)
 end
 
 local player = game.Players.LocalPlayer
-local TotalPlayer = 10000
+local TotalPlayer = 1
 function AddPlayerESP(v)
     TotalPlayer = TotalPlayer + 1 
     local OptionTable = {
@@ -362,7 +362,7 @@ local CustomOffsetTable = {
 
 }
 
-local TotalMobs = 1 
+local TotalMobs = 100000
 
 function AddMobToESP(v)
     TotalMobs = TotalMobs + 1 

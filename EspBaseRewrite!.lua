@@ -293,6 +293,8 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
             local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
             if name and FindPlayer(name,OptionTable) == true  then
                 v.ZIndex =  OptionTable.Data.BaseZIndex + 100000
+            else
+                 v.ZIndex =  OptionTable.Data.BaseZIndex
             end
         else
             v.ZIndex =  OptionTable.Data.BaseZIndex
