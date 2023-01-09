@@ -1,4 +1,5 @@
---DeepwokenRewrite
+
+
 
 local Live;
 repeat wait(); Live = game.Workspace.Live until Live ~= nil 
@@ -7,10 +8,56 @@ repeat wait(); player = game.Players.LocalPlayer until player and player.Name an
 
 local ESPBASE =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/EspBaseRewrite!.lua", true))()
 
+_G.AllowChamsEtho = true 
+local NotifTab = {}
+
+local cam = game.Workspace.CurrentCamera
+
+
+
+
+local BaseNotifPos = Vector2.new(cam.ViewportSize.X/ 19 ,cam.ViewportSize.Y / 2)
+function CreateNotif(Contents, Duration)
+    Contents = Contents or "retard"
+    Duration = Duration or 3
+    local NotifPos = #NotifTab
+    local text = Drawing.new("Text")
+    text.Visible = true
+    text.Size = 35
+    text.Color = Color3.fromRGB(255,255,255)
+    NotifTab[#NotifTab+ 1] = {Message = Contents,Dura = Duration, Pos = NotifPos, NotifText = text}
+    local function CreateText()
+        
+        text.Text = Contents
+        text.Position = BaseNotifPos + Vector2.new(0 ,0 - #NotifTab * text.TextBounds.y)
+       
+        wait(Duration)
+        text.Visible = false
+        table.remove(NotifTab,NotifPos)
+        local function ReDrawNotifs()
+            for i,v in pairs(NotifTab) do
+                v.NotifText.Position = BaseNotifPos + Vector2.new(0,0 - i* v.NotifText.TextBounds.Y)
+            end
+        end
+        ReDrawNotifs()
+    end
+    CreateText()
+end
+function Inter(con,dura)
+    coroutine.wrap(CreateNotif)(con,dura)
+end
+
+local RandomTextTable = {"Judge is ugly asf","I LOVE PEBBELS","ASMR Intense kisses for you to sleep","Saiah WAS NOT taken","Age of Empires","Morii is like dorii got emm","Extinct Species will NEVER get a girl","OMG do clan GAMES!","i love peanut",""}
+
+Inter(RandomTextTable[math.random(1,#RandomTextTable)],10)
+
+
+
+-- Misc Settings
 _G.SillyNames = true 
 
-
-
+_G.ScaleESPText = true
+-- Player ESP Settings
 _G.PlayerESP = true
 _G.PlayerTextSize = 30
 _G.PlayerTextColor = Color3.fromRGB(255,255,255)
@@ -18,11 +65,11 @@ _G.PlayerDist = true
 _G.ShowPlayerHealthPercent = false
 _G.PlayerMaxDist = 20000
 _G.ShowPlayerHealth = true
-_G.ScalePlayerText = true
+
 _G.ShowChams = true
 _G.ChamsFillColor = Color3.fromRGB(255,0,255)
 _G.ChamsOutlineColor = Color3.fromRGB(0,0,0)
-_G.ChamsFill = 0
+_G.ChamsFill = 1
 _G.ChamsOutlineTrans = 0
 _G.ShowPlayerBox = true
 _G.ShowHpBars = true
@@ -31,6 +78,26 @@ _G.WhitelistColor = Color3.fromRGB(255,0,0)
 _G.ShowPlayerEther = true
 _G.ShowPlayerTalents = true 
 _G.ShowPlayerPosture = true 
+-- Mob ESP Settings
+_G.MobEsp = true 
+_G.MobTextSize = 20
+_G.MobColor = Color3.fromRGB(255,255,255)
+_G.ShowMobDistance = true 
+_G.MobMaxDist = 5000
+_G.ShowMobHp = true 
+_G.ShowMobHpPercent = false
+_G.ShowMobChams = true 
+_G.ShowMobBox = true 
+_G.ShowMobHpBars = true 
+_G.ShowMobPosture = true 
+
+-- OWL / Artifact ESP Settings
+
+_G.OwlEsp = true 
+_G.OwlTextSize = 30
+_G.OwlColor = Color3.fromRGB(255,255,255)
+_G.ShowOwlDistance = true 
+_G.OwlMaxDistance = 100000
 
 
 local LocalPlayerFunctionVariable = function(PassedTable)
@@ -65,11 +132,16 @@ end
 ESPBASE:Toggle()
 
 local player = game.Players.LocalPlayer
+local TotalPlayer = 10000
 function AddPlayerESP(v)
+    TotalPlayer = TotalPlayer + 1 
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
             ModdedName = "",
+            BaseZIndex = TotalPlayer, 
+            TextOffset = 0,
+            Vector3Offset = Vector3.new(0,4,0),
             ReturnTeamCheck = function()
                 return false 
             end,
@@ -118,8 +190,6 @@ function AddPlayerESP(v)
                 end
                 return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
             end,
-            TextOffset = 0,
-            Vector3Offset = Vector3.new(0,4,0),
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
@@ -218,17 +288,6 @@ game.Players.PlayerAdded:connect(function(v)
 
 end)
 
-_G.MobEsp = true 
-_G.MobTextSize = 20
-_G.MobColor = Color3.fromRGB(255,255,255)
-_G.ShowMobDistance = true 
-_G.MobMaxDist = 3000
-_G.ShowMobHp = true 
-_G.ShowMobHpPercent = false
-_G.ShowMobChams = true 
-_G.ShowMobBox = true 
-_G.ShowMobHpBars = true 
-_G.ShowMobPosture = true 
 
 local CustomOffsetTable = {
     RotSkipper = {
@@ -252,9 +311,10 @@ local CustomOffsetTable = {
 
 }
 
-
+local TotalMobs = 1 
 
 function AddMobToESP(v)
+    TotalMobs = TotalMobs + 1 
     local MobName = v:GetAttribute("MOB_rich_name")
     local BoxOffset = {
         TopLeft = CFrame.new(-2,2,0),
@@ -296,6 +356,9 @@ function AddMobToESP(v)
         ToBeRemoved = false,
         Data = {
             ModdedName = MobName,
+            BaseZIndex = TotalMobs,
+            TextOffset = 0,
+            Vector3Offset = Vector3.new(0,4,0),
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
                 if v  then
                     if v:FindFirstChild("HumanoidRootPart") then
@@ -314,35 +377,46 @@ function AddMobToESP(v)
                 local Line1Text = ""
                 local Line2Text = ""
                 local Line3Text = ""
-                if v  and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
-                    local MagnitudeChached = (v.HumanoidRootPart.Position - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
-                    if _G[PassedTable.GlobalVariableTable.ShowHealth] == true then
-                        local MinHp = v.Humanoid.Health
-                        local MaxHp = v.Humanoid.MaxHealth
-                        if _G[PassedTable.GlobalVariableTable.ShowHealthPercent] == true then
-                            Line3Text = Line3Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
-                        else
-                            Line3Text = Line3Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
+
+                local CFramePosition;
+                if v  and player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    if v:FindFirstChild("HumanoidRootPart") then
+                        CFramePosition = v.HumanoidRootPart.Position
+                    elseif v:FindFirstChild("SpawnCF")  then
+                        CFramePosition = v.SpawnCF.Value
+                        CFramePosition = Vector3.new(CFramePosition.X,CFramePosition.Y,CFramePosition.Z)
+                    end
+                end
+                if CFramePosition then  
+                    local MagnitudeChached = (CFramePosition - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude
+                    if MagnitudeChached then 
+                        if _G[PassedTable.GlobalVariableTable.ShowHealth] == true then
+                            local MinHp = v.Humanoid.Health
+                            local MaxHp = v.Humanoid.MaxHealth
+                            if _G[PassedTable.GlobalVariableTable.ShowHealthPercent] == true then
+                                Line3Text = Line3Text.."["..tostring(Round(CalcPercent(MinHp,MaxHp))).."%] "
+                           else
+                                Line3Text = Line3Text.."["..tostring(Round(MinHp)).."/"..tostring(Round(MaxHp)).."] "
+                            end
                         end
-                    end
-                    if PassedTable.Data.ModdedName ~= "" then
-                        Line3Text = Line3Text..PassedTable.Data.ModdedName.." "
-                    else
-                        Line3Text = Line3Text..v.Name.." "
-                    end
-                    if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
-                        Line3Text = "["..tostring(Round(MagnitudeChached)).."] "..Line3Text
-                    end
-                    if _G[PassedTable.GlobalVariableTable.ShowPosture] == true then
-                        if v:FindFirstChild("BreakMeter") then
-                            Line2Text = Line2Text.."P: "..tostring(CalcPercent(v.BreakMeter.Value,v.BreakMeter.MaxValue)).."% "
-                        end 
+                        if PassedTable.Data.ModdedName ~= "" then
+                            Line3Text = Line3Text..PassedTable.Data.ModdedName.." "
+                        else
+                            Line3Text = Line3Text..v.Name.." "
+                        end
+                        if _G[PassedTable.GlobalVariableTable.ShowDistance] == true then
+                            Line3Text = Line3Text.."["..tostring(Round(MagnitudeChached)).."] "
+                        end
+                        if _G[PassedTable.GlobalVariableTable.ShowPosture] == true then
+                            if v:FindFirstChild("BreakMeter") then
+                                Line2Text = Line2Text.."P: "..tostring(CalcPercent(v.BreakMeter.Value,v.BreakMeter.MaxValue)).."% "
+                            end 
+                        end
                     end
                 end
                 return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
             end,
-            TextOffset = 0,
-            Vector3Offset = Vector3.new(0,4,0),
+            
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
@@ -419,11 +493,14 @@ end)
 
 
 function AddOwlToEsp(v)
-    print("HOMOMHOMHOMHOMG")
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
             ModdedName = "",
+            
+            TextOffset = 0,
+            Vector3Offset = Vector3.new(0,4,0),
+            BaseZIndex = 100000,
             ReturnTeamCheck = function()
                 return false 
             end,
@@ -449,8 +526,6 @@ function AddOwlToEsp(v)
                 end
                 return {Line1 = Line1Text,Line2 = Line2Text,Line3 = Line3Text} -- Dont change return!
             end,
-            TextOffset = 0,
-            Vector3Offset = Vector3.new(0,4,0),
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
@@ -475,23 +550,13 @@ function AddOwlToEsp(v)
             }
         },
         GlobalVariableTable = {
-            TextToggle = "MobEsp",
-            TextSize = "MobTextSize",
-            TextColor = "MobColor",
-            ShowDistance = "ShowMobDistance",
-            MaxRenderDistance = "MobMaxDist",
-            ShowHealth = "ShowMobHp",
-            ShowHealthPercent = "ShowMobHpPercent",
-            ScaledText = "ScalePlayerText",
-            ChamsToggle = "ShowMobChams",
-            ChamsFillColor = "ChamsFillColor",
-            ChamsOutlineColor = "ChamsOutlineColor",
-            ChamsFillTrans = "ChamsFill",
-            ChamsOutlineTrans = "ChamsOutlineTrans",
-            BoxToggle = "ShowMobBox",
-            HpBarToggle = "ShowMobHpBars",
-            UseTwoD = "UseTwoD",
-            ShowPosture = "ShowMobPosture",
+            
+            TextToggle = "OwlEsp",
+            TextSize = "OwlTextSize",
+            TextColor = "OwlColor",
+            ShowDistance = "ShowOwlDistance",
+            MaxRenderDistance = "OwlMaxDistance",
+            ScaledText = "ScaleESPText",
         }
 
 
@@ -503,12 +568,14 @@ end
 
 for i,v in pairs(game.Workspace.Thrown:GetChildren()) do
     if v.Name == "EventFeatherRef"  then
+        Inter("Owl spawned!",10)
         AddOwlToEsp(v)
     end 
 end
 
 game.Workspace.Thrown.ChildAdded:connect(function(v)
     if v.Name == "EventFeatherRef"  then
+        Inter("Owl spawned!",10)
         AddOwlToEsp(v)
     end   
 end)

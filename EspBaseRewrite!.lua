@@ -45,7 +45,7 @@ _G.EthoChamsDefaultESPShowTeam = true
 local ESPListenTable = {}
 local ESPRunServ;
 local ESPFunctionReturnTable = {}
-_G.AllowChamsEtho = true 
+
 _G.AllowChamsEtho = _G.AllowChamsEtho or false 
 if _G.AllowChamsEtho == true then
     ChamsFolder = Instance.new("Folder")
@@ -154,9 +154,13 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             local HighlightObj = PassedTable.Data.Highlight.HighlightObj
             local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
             HighlightObj2.Adornee = PartToAdornee
+            wait()
             HighlightObj.Adornee = nil
+            wait()
             HighlightObj.Adornee = PartToAdornee
+            wait()
             HighlightObj2.Adornee = nil
+            wait()
             PassedTable.Data.Highlight.Refreshing = false 
         end
         
