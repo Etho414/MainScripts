@@ -50,7 +50,7 @@ _G.AllowChamsEtho = _G.AllowChamsEtho or false
 if _G.AllowChamsEtho == true then
     print("ALLOWING CHAMS FOLDER HOLY MOLY SHMOLYYYY")
     ChamsFolder = Instance.new("Folder")
-   
+    syn.protect_gui(ChamsFolder)
     ChamsFolder.Parent = game.CoreGui
     print(ChamsFolder.Parent)
 end

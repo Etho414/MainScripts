@@ -6,6 +6,13 @@
 
 ]]
 
+-- Misc Settings
+_G.SillyNames = true -- Will require restart, Adds in so silly names omg!
+_G.ScaleESPText = true
+_G.OutlineText = true -- Outlines ESP Text, Fixes text over lapping however looks more ugly, Requires restart !
+_G.UseLookAt = true -- Makes 2D box esp always show on screen!
+_G.UseTwoD = true -- true == 2D box's, false == 3D Box's
+
 -- Chams Settings 
 _G.AllowChamsEtho = true -- This is the only thinbg that could possibly be detected, However merh and me have been using it and no bans for around a week
 
@@ -69,12 +76,7 @@ _G.ShowNpcDistance = true
 _G.NpcRenderDistance = 3000
 _G.NPCWhitelist = {} -- Whitelist for NPC's, Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
 
--- Misc Settings
-_G.SillyNames = true -- Will require restart
-_G.ScaleESPText = true
-_G.OutlineText = true -- Outlines ESP Text, Fixes text over lapping however looks more ugly
-_G.UseLookAt = true -- Makes 2D box esp always show on screen!
-_G.UseTwoD = true -- true == 2D box's, false == 3D Box's
+
 
 local Live;
 repeat wait(); Live = game.Workspace.Live until Live ~= nil 
@@ -177,11 +179,12 @@ function ReturnPowerLevel(v)
     end
     local Points = ReturnStatPoints(v) - 28
     local Level =  math.floor((Points / 15) + 1)
+    if Level == 21 then Level = 20 end 
     return Level
 end
 
 local player = game.Players.LocalPlayer
-local TotalPlayer = 1
+local TotalPlayer = 100000
 function AddPlayerESP(v)
     TotalPlayer = TotalPlayer + 1 
     local OptionTable = {
@@ -362,7 +365,7 @@ local CustomOffsetTable = {
 
 }
 
-local TotalMobs = 100000
+local TotalMobs = 0
 
 function AddMobToESP(v)
     TotalMobs = TotalMobs + 1 
