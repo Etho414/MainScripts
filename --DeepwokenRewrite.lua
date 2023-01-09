@@ -1,9 +1,9 @@
 --[[
     Left to add
-    Chest ESP
+ 
     Inventory Viewer
     Somesort of GUI
-
+    Closed Only Chest ESP
 ]]
 
 -- Misc Settings
@@ -14,7 +14,7 @@ _G.UseLookAt = true -- Makes 2D box esp always show on screen!
 _G.UseTwoD = true -- true == 2D box's, false == 3D Box's
 
 -- Chams Settings 
-_G.AllowChamsEtho = true -- This is the only thinbg that could possibly be detected, However merh and me have been using it and no bans for around a week
+_G.AllowChamsEtho = false -- This is the only thing that could possibly be detected, Setting this to false will remove any detection possible not possible.
 
 _G.ChamsFillColor = Color3.fromRGB(255,0,255)
 _G.ChamsOutlineColor = Color3.fromRGB(0,0,0)
@@ -92,8 +92,9 @@ local Ingre;
 repeat wait(); Ingre = workspace.Ingredients until Ingre and Ingre.Parent and Ingre.Name 
 local np;
 repeat wait() np = workspace.NPCs until np and np.Name and np.Parent
-
-
+local th;
+repeat wait() th = workspace.Thrown until th and th.Name and th.Parent
+ 
 
 local ESPBASE =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/EspBaseRewrite!.lua", true))()
 
