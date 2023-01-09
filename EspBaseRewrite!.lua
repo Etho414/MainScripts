@@ -52,6 +52,7 @@ if _G.AllowChamsEtho == true then
     ChamsFolder = Instance.new("Folder")
     syn.protect_gui(ChamsFolder)
     ChamsFolder.Parent = game.CoreGui
+    print(ChamsFolder.Parent)
 end
 function CalcPercent(min,max)
     return math.floor(((min / max) * 100) + 0.5)
@@ -154,13 +155,13 @@ function ESPFunctionReturnTable:RefreshHighlight(PassedTable,PartToAdornee)
             local HighlightObj = PassedTable.Data.Highlight.HighlightObj
             local HighlightObj2 = PassedTable.Data.Highlight.HighlightObj2
             HighlightObj2.Adornee = PartToAdornee
-            wait()
+            wait(0.3)
             HighlightObj.Adornee = nil
-            wait()
+            wait(0.3)
             HighlightObj.Adornee = PartToAdornee
-            wait()
+            wait(0.3)
             HighlightObj2.Adornee = nil
-            wait()
+            wait(0.3)
             PassedTable.Data.Highlight.Refreshing = false 
         end
         
