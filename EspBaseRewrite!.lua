@@ -550,13 +550,18 @@ function ESPRenderer()
                             local HighlightObj2 = OptionTable.Data.Highlight.HighlightObj2
                             local AdorneePart = OptionTable.Data.Highlight.ReturnPartFunction()
                             if HighlightObj ~= nil and AdorneePart ~= nil then
+                                print("1")
                                 if ESPFunctionReturnTable:CheckBasePartValid(AdorneePart) == true and _G[OptionTable.GlobalVariableTable.ChamsToggle] == true then
+                                    
                                     local ChildrenCached = #AdorneePart:GetChildren()
+                                    print(ChildrenCached,"----")
                                     if HighlightObj.Adornee ~= AdorneePart and OptionTable.Data.Highlight.Refreshing == false  then
+                                        print("2") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         HighlightObj.Adornee = AdorneePart
                                     end
                                     if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() and OptionTable.Data.Highlight.Refreshing == false then
+                                        print("3") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
                                     end
@@ -571,6 +576,7 @@ function ESPRenderer()
                                     HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
                                     HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
                                     HighlightObj2.Enabled = false 
+                                    print("3") 
                                 else
                                     HighlightObj.Enabled = false
                                     HighlightObj2.Enabled = false 
