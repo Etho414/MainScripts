@@ -355,7 +355,7 @@ function ESPRenderer()
                                 
                                 local Text1OffsetY = (TextTable.Text1.TextBounds.Y / 2)
                                 local Text2OffsetY = (TextTable.Text2.TextBounds.Y / 2 )
-                                local LineOffset = 2
+                                local LineOffset = 5
                                 local PositionY = math.floor(ScreenPos.Y) - TextOffset
     
                                 if TextTable.Text1.Text == "" then
