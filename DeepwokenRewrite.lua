@@ -821,13 +821,16 @@ end
 workspace.NPCs.ChildAdded:connect(function(v)
     AddNPCToEsp(v)
 end)
-
+function KickLocPlayer()
+    game.Players.LocalPlayer:Kick(RandomTextTable[math.random(1,#RandomTextTable)])
+end
 
 game:GetService("UserInputService").InputBegan:connect(function(i,gpe)
-    if gpe then return end
-    if i.KeyCode == Enum.KeyCode[string.upper(_G.EspToggleKey)] then
+    if gpe or _G.EspToggleKey == "" then return end
+    if _G.EspToggleKey ~= "" and  i.KeyCode == Enum.KeyCode[string.upper(_G.EspToggleKey)] then
         ESPBASE:Toggle()
-
+    elseif _G.InstantLogKey  ~= "" and i.KeyCode == Enum.KeyCode[string.upper(_G.InstantLogKey)] then
+        KickLocPlayer()
     end
 
 end)

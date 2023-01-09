@@ -19,7 +19,7 @@ end
 function CreateSaveFile()
     local TableStringed = "{"
     for i,v in pairs(WaypointTable) do
-        TableStringed = TableStringed.."\n{Position = Vector3.new("..tostring(v.Position).."),\nName = "..v.Name..",\nKeybind = "..v.Keybind.."}"
+        TableStringed = TableStringed.."\nX = "..tostring(v.X)..",\n Y = "..tostring(v.Y)..", \n Z = "..tostring(v.Z)..",\nName = "..v.Name..",\nKeybind = "..v.Keybind.."}"
         if i ~= #WaypointTable then
             TableStringed = TableStringed..", "
         end
@@ -33,7 +33,7 @@ function AddWayPoint(Settings)
     local WaypointName = Settings.Name
     local WaypointPosition = Settings.Position
     local KeybindPosition = #ConnectionTable + 1 
-    local CLickPosition = #ConnectionTable + 2 
+    local ClickPosition = #ConnectionTable + 2 
     local RemoveCheckPosition = #ConnectionTable + 3
     local SettingsTablePosition =   # WaypointTable + 1 
     WaypointTable[SettingsTablePosition] = Settings
@@ -42,7 +42,7 @@ function AddWayPoint(Settings)
 
 
 end
-AddWayPoint({Name = "daddy",Position = Vector3.new(0,9,0),Keybind = "K"})
+AddWayPoint({Name = "daddy",X = 0,Y = 0, Z = 10,Keybind = "K"})
 
 --[[
 
