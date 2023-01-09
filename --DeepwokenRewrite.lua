@@ -136,7 +136,7 @@ function Inter(con,dura)
     coroutine.wrap(CreateNotif)(con,dura)
 end
 
-local RandomTextTable = {"Judge is ugly asf","I LOVE PEBBELS","ASMR Intense kisses for you to sleep  💖" ,"Saiah WAS NOT taken","Age of Empires","Morii is like dorii got emm","Extinct Species will NEVER get a girl","OMG do clan GAMES!","i love peanut","ON YOUR FEET SOLDIER WE ARE LEAVING","Soon.","I love big mike"}
+local RandomTextTable = {"Judge is ugly asf","I LOVE PEBBELS","ASMR Intense kisses for you to sleep <3" ,"Saiah WAS NOT taken","Age of Empires","Morii is like dorii got emm","Extinct Species will NEVER get a girl","OMG do clan GAMES!","i love peanut","ON YOUR FEET SOLDIER WE ARE LEAVING","Soon.","I love big mike","I fucking love etho","Holy fuck merh is ugly IRL","I wanna kill merhs dog","Why silver so hot IRL","Why saiah skinny asf??"}
 
 
 
@@ -556,7 +556,7 @@ function AddChestToEsp(v)
             ModdedName = "",
             TextOffset = 0,
             TextOutline = _G.OutlineText,
-            Vector3Offset = Vector3.new(0,4,0),
+            Vector3Offset = Vector3.new(0,0,0),
             BaseZIndex = 100000,
             ReturnTeamCheck = function()
                 return false 
@@ -674,7 +674,8 @@ game.Workspace.Thrown.ChildAdded:connect(function(v)
     if v.Name == "EventFeatherRef"  then
         Inter("Owl spawned!",10)
         AddOwlToEsp(v)
-    elseif v.Name == "Model" and v:FindFirstChild("RootPart") and v:FindFirstChild("Lid") then
+    elseif  v:FindFirstChild("RootPart") and v:FindFirstChild("Lid") then
+        print("DADADADD")
         AddChestToEsp(v)
     end   
 end)

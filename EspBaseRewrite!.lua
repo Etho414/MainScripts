@@ -233,6 +233,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     if OptionTable.Data.TextOutline == nil then OptionTable.Data.TextOutline = false end 
     if OptionTable.Data.Highlight == nil or OptionTable.Data.Highlight.UseChams == nil then OptionTable.Data.Highlight = {UseChams = false} end
     if OptionTable.Data.RunAfterEverthing == nil then OptionTable.Data.RunAfterEverthing = function() end end
+    if OptionTable.Data.UseWhitelist == nil or OptionTable.Data.UseWhitelist.UseWhitelist == nil then OptionTable.Data.UseWhitelist = {UseWhitelist = false} end 
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
 
     if OptionTable.Data.BoxESP.UseBoxESP == true then
