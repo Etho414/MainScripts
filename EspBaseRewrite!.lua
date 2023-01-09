@@ -315,9 +315,9 @@ function ESPRenderer()
             local TeamChecked = OptionTable.Data.ReturnTeamCheck(OptionTable)
             if _G[OptionTable.GlobalVariableTable.ShowTeam] == true  or _G[OptionTable.GlobalVariableTable.ShowTeam] == false and TeamChecked == false  then
                 if PositionCached ~= nil  and DrawESP == true and LocalPlayerPositionCached ~= nil and game.Workspace.CurrentCamera ~= nil   then
-                    local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
+                    
                     local MagnitudeCached = ESPFunctionReturnTable:GetMagnitude(LocalPlayerPositionCached,CFtoVec(PositionCached))
-                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance] and LookedAtPosition ~= nil then
+                    if MagnitudeCached ~= nil and MagnitudeCached < _G[OptionTable.GlobalVariableTable.MaxRenderDistance]  then
                         local cam = game.Workspace.CurrentCamera
                         local ScreenPos,OnS = cam:WorldToViewportPoint(CFtoVec(PositionCached) + OptionTable.Data.Vector3Offset)
                         if OnS then
@@ -383,6 +383,7 @@ function ESPRenderer()
                             -- Box ESP !!!
     
                             if OptionTable.Data.BoxESP.UseBoxESP == true then
+                                local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
                                 local BoxESPPreset = OptionTable.Data.BoxESP
                                 local BoxEspObj = OptionTable.ESPTextObjects.BoxObj
                                 local ForwardQuad = OptionTable.ESPTextObjects.ForwardQuad
@@ -398,7 +399,7 @@ function ESPRenderer()
                                             BackwardQuad.Visible = false
                                             RightsideQuad.Visible = false 
                                             local TwoDBoxCachedPos = PositionCached
-                                            if _G[OptionTable.GlobalVariableTable.UseLookAt] == true then
+                                            if _G[OptionTable.GlobalVariableTable.UseLookAt] == true and LookedAtPosition ~= nil then
                                                 TwoDBoxCachedPos = LookedAtPosition
                                             end
     
@@ -473,12 +474,13 @@ function ESPRenderer()
                             end
     
                             if OptionTable.Data.HpBar.UseHpBar == true and _G[OptionTable.GlobalVariableTable.HpBarToggle] == true then
+                                local LookedAtPosition = CFrame.lookAt(CFtoVec(PositionCached),CFtoVec(game.Workspace.CurrentCamera.CFrame))
                                 local HpBarPreset = OptionTable.Data.HpBar
                                 local BarOffsetTable = HpBarPreset.BarOffsetTable
                                 local OutlineBoxPreset = OptionTable.ESPTextObjects.HpBarOutline
                                 local FilledBoxPreset = OptionTable.ESPTextObjects.HpBarFilled
                                 local HpCached = HpBarPreset.ReturnHPFunction(OptionTable)
-                                if HpCached ~= nil then
+                                if HpCached ~= nil and LookedAtPosition ~= nil then
                                     local HP = HpCached.Min / HpCached.Max
                                     local scale_factor = 1 / (ScreenPos.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
                                     local Widthinset = 0.25
