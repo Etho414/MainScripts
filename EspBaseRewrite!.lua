@@ -561,8 +561,7 @@ function ESPRenderer()
                                         print("2") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         HighlightObj.Adornee = AdorneePart
-                                    end
-                                    if ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() and OptionTable.Data.Highlight.Refreshing == false then
+                                    elseif ChildrenCached ~= OptionTable.Data.Highlight.LastKnownChildrenCache and HighlightObj.Adornee == OptionTable.Data.Highlight.ReturnPartFunction() and OptionTable.Data.Highlight.Refreshing == false then
                                         print("3") 
                                         OptionTable.Data.Highlight.LastKnownChildrenCache = ChildrenCached
                                         ESPFunctionReturnTable:RefreshHighlight(OptionTable,OptionTable.Data.Highlight.ReturnPartFunction())
@@ -577,7 +576,8 @@ function ESPRenderer()
                                     HighlightObj2.OutlineColor = _G[OptionTable.GlobalVariableTable.ChamsOutlineColor]
                                     HighlightObj2.FillTransparency = _G[OptionTable.GlobalVariableTable.ChamsFillTrans]
                                     HighlightObj2.OutlineTransparency = _G[OptionTable.GlobalVariableTable.ChamsOutlineTrans]
-                                    HighlightObj2.Enabled = false 
+                                    HighlightObj2.Enabled = true 
+                                    print("IOIEORIEORIEORIE")
                                 else
                                     HighlightObj.Enabled = false
                                     HighlightObj2.Enabled = false 

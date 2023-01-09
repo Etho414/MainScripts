@@ -1,6 +1,72 @@
-local GuiService = game:GetService("GuiService")
+-- Chams Settings 
+_G.AllowChamsEtho = true -- This is the only thinbg that could possibly be detected, However merh and me have been using it and no bans for around a week
 
+_G.ChamsFillColor = Color3.fromRGB(255,0,255)
+_G.ChamsOutlineColor = Color3.fromRGB(0,0,0)
+_G.ChamsFill = 1
+_G.ChamsOutlineTrans = 0
 
+-- Player ESP Settings
+_G.PlayerESP = true
+_G.PlayerTextSize = 30
+_G.PlayerTextColor = Color3.fromRGB(43, 171, 245)
+_G.PlayerDist = true
+_G.ShowPlayerHealthPercent = false
+_G.PlayerMaxDist = 20000
+_G.ShowPlayerHealth = true
+
+_G.ShowChams = true
+_G.ShowPlayerBox = true
+_G.ShowHpBars = true
+_G.WhitelistNames = {"etho","mori","saiah","christopher","GrenadeGrey"} -- Caps DO NOT matter and it will Auto Fill Names
+_G.WhitelistColor = Color3.fromRGB(255,0,0)
+_G.ShowPlayerLevel = true 
+_G.ShowPlayerPosture = true 
+
+-- Mob ESP Settings
+_G.MobEsp = true 
+_G.MobTextSize = 20
+_G.MobColor = Color3.fromRGB(255,255,255)
+_G.ShowMobDistance = true 
+_G.MobMaxDist = 5000
+_G.ShowMobHp = true 
+_G.ShowMobHpPercent = false
+_G.ShowMobChams = true 
+_G.ShowMobBox = true 
+_G.ShowMobHpBars = true 
+_G.ShowMobPosture = true 
+
+-- OWL
+
+_G.OwlEsp = true 
+_G.OwlTextSize = 30
+_G.OwlColor = Color3.fromRGB(255,255,255)
+_G.ShowOwlDistance = true 
+_G.OwlMaxDistance = 100000
+
+-- Ingredient ESP
+_G.IngredientESP = true 
+_G.IngredientTextSize = 25
+_G.IngredientColor = Color3.fromRGB(233, 255, 39)
+_G.ShowIngredientDistance = true  
+_G.IngredientMaxDistance = 1000
+_G.WhitelistIngredients = {"GALEWAX"} -- Whitelist for ingredients HIGHLY RECOMMENED (As it will be laggy wihtout one..), Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
+
+-- NPC ESP
+
+_G.NPCEsp = true 
+_G.NPCEspSize = 25
+_G.NPCColor = Color3.fromRGB(255,255,255)
+_G.ShowNpcDistance = true
+_G.NpcRenderDistance = 3000
+_G.NPCWhitelist = {} -- Whitelist for NPC's HIGHLY RECOMMENED (As it will be laggy wihtout one..), Caps dont matter, Requries restart to Change Whitelist, Leave blank for no Whitelist
+
+-- Misc Settings
+_G.SillyNames = true -- Will require restart
+_G.ScaleESPText = true
+
+_G.UseLookAt = true -- Makes 2D box esp always show on screen!
+_G.UseTwoD = true -- true == 2D box's, false == 3D Box's
 
 local Live;
 repeat wait(); Live = game.Workspace.Live until Live ~= nil 
@@ -8,9 +74,14 @@ local player;
 repeat wait(); player = game.Players.LocalPlayer until player and player.Name and player.Parent
 local Ingre;
 repeat wait(); Ingre = workspace.Ingredients until Ingre and Ingre.Parent and Ingre.Name 
+local np;
+repeat wait() np = workspace.NPCs until np and np.Name and np.Parent
+
+
+
 local ESPBASE =  loadstring(game:HttpGet("https://raw.githubusercontent.com/Etho414/MainScripts/main/EspBaseRewrite!.lua", true))()
 
-_G.AllowChamsEtho = true 
+
 local NotifTab = {}
 
 local cam = game.Workspace.CurrentCamera
@@ -55,69 +126,6 @@ Inter(RandomTextTable[math.random(1,#RandomTextTable)],10)
 
 
 
--- Misc Settings
-_G.SillyNames = true 
-
-_G.ScaleESPText = true
--- Player ESP Settings
-_G.PlayerESP = true
-_G.PlayerTextSize = 30
-_G.PlayerTextColor = Color3.fromRGB(255,255,255)
-_G.PlayerDist = true
-_G.ShowPlayerHealthPercent = false
-_G.PlayerMaxDist = 20000
-_G.ShowPlayerHealth = true
-
-_G.ShowChams = true
-_G.ChamsFillColor = Color3.fromRGB(255,0,255)
-_G.ChamsOutlineColor = Color3.fromRGB(0,0,0)
-_G.ChamsFill = 1
-_G.ChamsOutlineTrans = 0
-_G.ShowPlayerBox = true
-_G.ShowHpBars = true
-_G.WhitelistNames = {"etho","mori","saiah","christopher"}
-_G.WhitelistColor = Color3.fromRGB(255,0,0)
-_G.ShowPlayerEther = true
-_G.ShowPlayerLevel = true 
-_G.ShowPlayerPosture = true 
--- Mob ESP Settings
-_G.MobEsp = true 
-_G.MobTextSize = 20
-_G.MobColor = Color3.fromRGB(255,255,255)
-_G.ShowMobDistance = true 
-_G.MobMaxDist = 5000
-_G.ShowMobHp = true 
-_G.ShowMobHpPercent = false
-_G.ShowMobChams = true 
-_G.ShowMobBox = true 
-_G.ShowMobHpBars = true 
-_G.ShowMobPosture = true 
-
--- OWL / Artifact ESP Settings
-
-_G.OwlEsp = true 
-_G.OwlTextSize = 30
-_G.OwlColor = Color3.fromRGB(255,255,255)
-_G.ShowOwlDistance = true 
-_G.OwlMaxDistance = 100000
-
--- Ingredient ESP
-_G.IngredientESP = true 
-_G.IngredientTextSize = 25
-_G.IngredientColor = Color3.fromRGB(255,255,255)
-_G.ShowIngredientDistance = true  
-_G.IngredientMaxDistance = 1000 -- Dont put too high or else it will be hella laggy!
-_G.WhitelistIngredients = {"galewax","gobletto"} -- Whitelist for ingredients (to help reduce lag) make sure everything is spelled properly (Caps dont matter). Leave blank to have no whitelist
-
--- NPC ESP
-
-_G.NPCEsp = true 
-_G.NPCEspSize = 25
-_G.NPCColor = Color3.fromRGB(255,255,255)
-_G.ShowNpcDistance = true
-_G.NpcRenderDistance = 3000
-_G.NPCWhitelist = {} -- Whitelist for NPC's  make sure everything is spelled properly (Caps dont matter). Leave blank to have no whitelist
-
 
 local LocalPlayerFunctionVariable = function(PassedTable)
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -126,7 +134,9 @@ local LocalPlayerFunctionVariable = function(PassedTable)
 
 end
 
-
+function CFtoVec(c)
+    return Vector3.new(c.x,c.y,c.z)
+end
 
 function CalcPercent(min,max)
     return math.floor(((min / max) * 100) + 0.5)
@@ -294,7 +304,8 @@ function AddPlayerESP(v)
             WhitelistTable = "WhitelistNames",
             WhitelistColor = "WhitelistColor",
             UseTwoD = "UseTwoD",
-            
+            UseLookAt = "UseLookAt",
+
             ShowPosture = "ShowPlayerPosture",
             ShowPowerLevel = "ShowPlayerLevel",
             ShowHealth = "ShowPlayerHealth",
@@ -491,6 +502,7 @@ function AddMobToESP(v)
             ShowHealth = "ShowMobHp",
             ShowHealthPercent = "ShowMobHpPercent",
             ScaledText = "ScalePlayerText",
+            
             ChamsToggle = "ShowMobChams",
             ChamsFillColor = "ChamsFillColor",
             ChamsOutlineColor = "ChamsOutlineColor",
@@ -499,7 +511,9 @@ function AddMobToESP(v)
             BoxToggle = "ShowMobBox",
             HpBarToggle = "ShowMobHpBars",
             UseTwoD = "UseTwoD",
+
             ShowPosture = "ShowMobPosture",
+            UseLookAt = "UseLookAt"
         }
 
 
@@ -610,7 +624,9 @@ end)
  
 
 function AddIngredient(v)
-    
+    if table.find(_G.WhitelistIngredients,string.upper(v.Name)) == nil then
+        return
+    end
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
@@ -623,13 +639,7 @@ function AddIngredient(v)
             end,
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
                 if v then
-                    if _G.WhitelistIngredients ~= {} then
-                        if table.find(_G.WhitelistIngredients,string.upper(v.Name)) ~= nil  then
-                            return v.CFrame
-                        end
-                    else
-                        return v.CFrame
-                    end
+                    return v.CFrame
                 end 
                 return nil
             end,
@@ -658,9 +668,7 @@ function AddIngredient(v)
                     end
                 end,
             RunAfterEverthing = function(PassedTable)
-                for i,v in pairs(_G.WhitelistIngredients) do
-                    _G.WhitelistIngredients[i] = string.upper(v)
-                end
+                
 
             end,
             Highlight = {
@@ -695,15 +703,18 @@ function AddIngredient(v)
 end
 for i,v in pairs(workspace.Ingredients:GetChildren()) do
     
-    AddIngredient(v)
+   AddIngredient(v)
 end
 workspace.Ingredients.ChildAdded:connect(function(v)
-    AddIngredient(v)
+   AddIngredient(v)
 
 end)
 
 
 function AddNPCToEsp(v)
+    if table.find(_G.NPCWhitelist,string.upper(v.Name)) == nil then
+        return
+    end
     local OptionTable = {
         ToBeRemoved = false,
         Data = {
@@ -715,16 +726,8 @@ function AddNPCToEsp(v)
                 return false 
             end,
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
-                print(table.find(_G.NPCWhitelist,string.upper(v.Name)),_G.NPCWhitelist ~= {})
-                if v and v:FindFirstChild("HumanoidRootPart")    then
-                    if _G.NPCWhitelist ~= {} then
-                        if table.find(_G.NPCWhitelist,string.upper(v.Name)) ~= nil then
-                            return v.HumanoidRootPart.CFrame
-                        end
-                    else
-                        return v.HumanoidRootPart.CFrame
-                    end
-                   
+                if v and v:FindFirstChild("HumanoidRootPart") then
+                    return v.HumanoidRootPart.CFrame
                 end 
                 return nil
             end,
@@ -734,7 +737,7 @@ function AddNPCToEsp(v)
                 local Line2Text = ""
                 local Line3Text = ""
                 if v then
-                    local MagnitudeChached = Round((PassedTable.Data.ReturnPosFunc() - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude)
+                    local MagnitudeChached = Round((CFtoVec(PassedTable.Data.ReturnPosFunc()) - PassedTable.Data.ReturnLocalPlayerpos()).Magnitude)
                     if PassedTable.Data.ModdedName ~= "" then
                         Line1Text = PassedTable.Data.ModdedName
                     else
