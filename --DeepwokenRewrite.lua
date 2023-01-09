@@ -76,7 +76,7 @@ _G.ShowHpBars = true
 _G.WhitelistNames = {"etho","mori","saiah","christopher"}
 _G.WhitelistColor = Color3.fromRGB(255,0,0)
 _G.ShowPlayerEther = true
-_G.ShowPlayerTalents = true 
+_G.ShowPlayerLevel = true 
 _G.ShowPlayerPosture = true 
 -- Mob ESP Settings
 _G.MobEsp = true 
@@ -129,6 +129,21 @@ function ReturnPlayerTalents(v)
      return nil 
 end
 
+function ReturnPowerLevel(v)
+    local function ReturnStatPoints()
+        local StatPoints = 0 
+        for i,v in pairs(v:GetAttributes()) do
+            if string.match(i,"Stat") then
+               StatPoints = StatPoints + v 
+            end
+    
+        end
+        return StatPoints
+    end
+    local Points = ReturnStatPoints(v) - 28
+    local Level =  math.floor((Points / 15) + 1)
+    return Level
+end
 ESPBASE:Toggle()
 
 local player = game.Players.LocalPlayer
@@ -141,7 +156,7 @@ function AddPlayerESP(v)
             ModdedName = "",
             BaseZIndex = TotalPlayer, 
             TextOffset = 0,
-            Vector3Offset = Vector3.new(0,4,0),
+            Vector3Offset = Vector3.new(0,3,0),
             ReturnTeamCheck = function()
                 return false 
             end,
@@ -181,10 +196,10 @@ function AddPlayerESP(v)
                         end
                     end
                     
-                    if _G[PassedTable.GlobalVariableTable.ShowTalents] == true then 
-                        local Talents = ReturnPlayerTalents(v)
-                        if Talents ~= nil then
-                            Line2Text = Line2Text.."Talents: "..tostring(Talents).." "
+                    if _G[PassedTable.GlobalVariableTable.ShowPowerLevel] == true then 
+                        local Level = ReturnPowerLevel(v.Character)
+                        if Level ~= nil then
+                            Line2Text = Line2Text.."Level: "..tostring(Level).." "
                         end
                     end
                 end
@@ -262,7 +277,7 @@ function AddPlayerESP(v)
             UseTwoD = "UseTwoD",
             
             ShowPosture = "ShowPlayerPosture",
-            ShowTalents = "ShowPlayerTalents",
+            ShowPowerLevel = "ShowPlayerLevel",
             ShowHealth = "ShowPlayerHealth",
             ShowHealthPercent = "ShowPlayerHealthPercent",
             ShowDistance = "PlayerDist"
@@ -358,7 +373,7 @@ function AddMobToESP(v)
             ModdedName = MobName,
             BaseZIndex = TotalMobs,
             TextOffset = 0,
-            Vector3Offset = Vector3.new(0,4,0),
+            Vector3Offset = Vector3.new(0,3,0),
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
                 if v  then
                     if v:FindFirstChild("HumanoidRootPart") then
@@ -420,17 +435,15 @@ function AddMobToESP(v)
             DeterminToRemoveFunction = function(PassedTable) -- P MUCH keep the same
                 if ESPBASE:CheckBasePartValid(v) == false then
                     PassedTable.ToBeRemoved = true
-                    end
-                end,
-                RunAfterEverthing = function(PassedTable)
-                    
-
-                end,
-                Highlight = {
-                    UseChams = true,
-                    ReturnPartFunction = function(PassedTable)
-                        return v
-                    end
+                end
+            end,
+            RunAfterEverthing = function(PassedTable)  
+            end,
+            Highlight = {
+                UseChams = true,
+                ReturnPartFunction = function(PassedTable)
+                    return v
+                end
             },
             BoxESP = {
                 UseBoxESP = true,
@@ -505,12 +518,8 @@ function AddOwlToEsp(v)
                 return false 
             end,
             ReturnPosFunc = function(PassedTable) -- Make sure to return CFRAME
-                if v  then
-                    if v:FindFirstChild("HumanoidRootPart") then
-                        return v.HumanoidRootPart.CFrame
-                    elseif v:FindFirstChild("SpawnCF") then
-                        return v.SpawnCF.Value
-                    end
+                if v then
+                    return v.CFrame
                 end 
                 return nil
             end,

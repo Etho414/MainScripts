@@ -117,12 +117,12 @@ function SetTextOptions(OptionTable,TextTable,TextOffset)
                 v.ZIndex =  OptionTable.Data.BaseZIndex + 10000
                 v.Color = _G[OptionTable.GlobalVariableTable.WhitelistColor] 
             else
-                v.ZIndex = OptionTable.Data.BaseZIndex
+                
                 v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
 
             end
         else
-            v.ZIndex =  OptionTable.Data.BaseZIndex
+           
             v.Color = _G[OptionTable.GlobalVariableTable.TextColor]
 
         end
@@ -283,6 +283,16 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     ESPPresetBox.Thickness = 1 
     OptionTable.ESPTextObjects = {Text1 =ESPPresetText1,Text2 = ESPPresetText2,Text3 = ESPPresetText3,BoxObj = ESPPresetBox, HpBarOutline = HpBarOutlineBox,HpBarFilled = HpBarFilledBox,ForwardQuad = ForwardQuadPreset,LeftQuad = LeftQuadPreset, BackwardQuad = BackwardQuadPreset,RightQuad = RightQuadPreset}
 
+    for i,v in pairs(OptionTable.ESPTextObjects) do
+         if OptionTable.Data.UseWhitelist.UseWhitelist == true and i ~= "HoBarFilled" then
+            local name = OptionTable.Data.UseWhitelist.ReturnNameFunction(OptionTable)  
+            if name and FindPlayer(name,OptionTable) == true  then
+                v.ZIndex =  OptionTable.Data.BaseZIndex + 100000
+            end
+        else
+            v.ZIndex =  OptionTable.Data.BaseZIndex
+        end
+    end
     ESPListenTable[#ESPListenTable + 1] = OptionTable
 end
 local PauseRender = false
