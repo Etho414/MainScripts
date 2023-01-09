@@ -490,7 +490,7 @@ local MobsInESP = {}
 local MobRetryTable = {}
 function AddMobToESP(v)
     if not v:IsA("Model") then return end
-    debug(v.Name)
+
     if v and v:FindFirstChild("Humanoid") and CheckMob(v) == true  and v:GetAttribute("MOB_rich_name") ~= nil then
         local HpValTable = {
             Type = "Humanoid",
