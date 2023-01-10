@@ -751,7 +751,7 @@ end)
 
 
 function AddNPCToEsp(v)
-    if table.find(_G.NPCWhitelist,string.upper(v.Name)) == nil then
+    if #_G.NPCWhitelist > 0 and  table.find(_G.NPCWhitelist,string.upper(v.Name)) == nil then
         return
     end
     local OptionTable = {
