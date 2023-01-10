@@ -250,11 +250,18 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     OptionTable.Data.HpBar = OptionTable.Data.HpBar or {UseHpBar = false}
     if OptionTable.Data.HpBar.BarOffsetTable == nil and OptionTable.Data.HpBar.UseHpBar == true  then
         error("Add ESP OBj Function, OptionTable.Data.HpBar.BarOffsetTable == nil")
+        return
     end
     OptionTable.Data.UseWhitelist = OptionTable.Data.UseWhitelist or {UseWhitelist = false, ReturnNameFunction = function() return nil end}
     if OptionTable.Data.UseWhitelist.ReturnNameFunction == nil and OptionTable.Data.UseWhitelist.UseWhitelist == true  then
         error ("Add ESP OBj function, Optiontable.Data.UseWhitelist.ReturnNameFunction == nil, Make sure it returns a string!")
-
+        return
+    end
+    
+    if OptionTable.Data.Highlight == nil then OptionTable.Data.Highlight = {UseChams =  false} end
+    if OptionTable.Data.Highlight.ReturnPartFunction == nil then
+        error("Add ESP OBJ Function, OptionTable.Data.Highlight.ReturnPartFunction == nil")
+        return
     end
     if _G.AllowChamsEtho == true and ChamsFolder ~= nil  and OptionTable.Data.Highlight.UseChams == true then
     
