@@ -259,7 +259,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
     end
     
     if OptionTable.Data.Highlight == nil then OptionTable.Data.Highlight = {UseChams =  false} end
-    if OptionTable.Data.Highlight.ReturnPartFunction == nil then
+    if OptionTable.Data.Highlight.ReturnPartFunction == nil and OptionTable.Data.Highlight.UseChams == true  then
         error("Add ESP OBJ Function, OptionTable.Data.Highlight.ReturnPartFunction == nil")
         return
     end
