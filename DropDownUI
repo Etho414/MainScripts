@@ -264,10 +264,6 @@ function libary:CreateWindow(Name)
 				local n  = Starte / Maxe
 				return n
 			end
-			
-			
-			
-			
 		end
 		SliderNameLab.Text = " "..Name
 		WhiteButton.Position = UDim2.new(CalculateStartPos(Min,Max,Start),0,-0.2,0) - UDim2.new(0,WhiteButton.Size.X.Offset / 2,0,0)

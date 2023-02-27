@@ -273,9 +273,7 @@ function ESPFunctionReturnTable:AddESPObj(OptionTable)
         OptionTable.Data.Highlight.HighlightObj2 = Highlight2
         OptionTable.Data.Highlight.LastKnownChildrenCache = -2
         OptionTable.Data.Highlight.Refreshing = false
-        if OptionTable.Data.Highlight.ReturnPartFunction == nil then
-           error("AddESPObj Function - Highlight Portion, Return Part Function == nil, ac1") 
-        end
+        
     end
 
 
@@ -362,7 +360,7 @@ function ESPRenderer()
                                 TextTable.Text2.Text = StringCached.Line2
                                 TextTable.Text3.Text = StringCached.Line3
     
-                                -- Settings positions of text objects 
+                                -- Setting positions of text objects 
                               
                                 local Text1OffsetX = (TextTable.Text1.TextBounds.X / 2)
                                 local Text2OffsetX = (TextTable.Text2.TextBounds.X / 2)
